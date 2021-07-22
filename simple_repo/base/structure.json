@@ -1,0 +1,30 @@
+{
+    "name": "SplitTrainTest",
+    "input": [
+        {
+            "input_name": "dataset",
+            "input_type": "pandas.DataFrame"
+        }
+    ],
+    "parameters": [
+        {
+            "param_name": "train_size",
+            "param_type": "float",
+            "is_mandatory": true
+        },
+        {
+            "param_name": "shuffle",
+            "param_type": "bool"
+        }
+    ],
+    "output": [
+        {
+            "output_name": "train_dataset",
+            "output_type": "pandas.DataFrame"
+        },
+        {
+            "output_name": "test_dataset",
+            "output_type": "pandas.DataFrame"
+        }
+    ]
+}
