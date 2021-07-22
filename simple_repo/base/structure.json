@@ -1,5 +1,7 @@
 {
-    "name": "SplitTrainTest",
+    "package": "simple_repo.simple_sklearn",
+    "module": "model_selection",
+    "name": "TrainTestSplit",
     "input": [
         {
             "input_name": "dataset",
