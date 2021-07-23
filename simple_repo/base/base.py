@@ -1,230 +1,85 @@
-from abc import abstractmethod
-
+from abc import ABC, abstractmethod
 import pandas as pd
-from typing import Any, List
-
-_io_types_mapping = {"pandas.DataFrame": pd.DataFrame}
-
-_types_mapping = {
-    "str": str,
-    "int": int,
-    "float": float,
-    "complex": complex,
-    "list": list,
-    "tuple": tuple,
-    "range": range,
-    "dict": dict,
-    "set": set,
-    "frozenset": frozenset,
-    "bool": bool,
-    "bytes": bytes,
-    "bytearray": bytearray,
-    "memoryview": memoryview,
-}
+import logger as lg
 
 
-class SimpleInput:
-    def __init__(self, input_name: str, input_type: str):
-        self._input_name = input_name
-        self._input_type = _io_types_mapping[input_type]
-        self._input_value = None
+def get_step(step_id: str, step_list: list):
+    """
+    Utility function that given a step id and the list of steps, returns the step instance with the corresponding id.
+    """
+    # get all the nodes with the request id
+    corr_steps = [step for step in step_list if step.step_id == step_id]
 
-    @property
-    def input_name(self):
-        return self._input_name
-
-    @property
-    def input_type(self):
-        return self._input_type
-
-    @property
-    def input_value(self):
-        return self._input_value
-
-    @input_value.setter
-    def input_value(self, input_value: Any):
-        self._input_value = input_value
-
-    def __str__(self):
-        return "{}: {}".format(self.__class__.__name__, self.__dict__)
-
-
-class SimpleInputs:
-    def __init__(self, inputs: List[dict]):
-        self._inputs = [SimpleInput(**inp) for inp in inputs]
-
-    def __str__(self):
-        return "{}{}".format(
-            self.__class__.__name__, [str(inp) for inp in self._inputs]
+    if len(corr_steps) > 1:
+        raise Exception(
+            "Error! There are duplicated nodes with same id '{}'.".format(step_id)
         )
+    elif len(corr_steps) < 1:
+        raise Exception("Error! There aren't nodes with id '{}'.".format(step_id))
+
+    return corr_steps[0]
 
 
-class ParameterNotFound(Exception):
-    def __init__(self, msg):
-        self._msg = msg
-        super(ParameterNotFound, self).__init__(self._msg)
+class Node(object):
+    """
+    Class to represent, as a Python object, the configuration file.
 
+        Parameters
+        ----------
 
-class SimpleParameter:
-    def __init__(
-        self, param_name: str, param_type: str, is_mandatory: bool = False
-    ) -> None:
-        self._param_name = param_name
-        self._param_type = _types_mapping[param_type]
-        self._is_mandatory = is_mandatory
-        self._param_value = None
+        idd : string
+            The unique identifier that each node must have.
 
-    @property
-    def param_name(self):
-        return self._param_name
+        name : string
+            The full-name formed by \textit{package + module + class}, useful to dynamically import the
+            module and to return the wanted class representing one step of the pipeline
 
-    @property
-    def param_type(self):
-        return self._param_type
+        attr : dict
+            List of features that characterizes each step of the pipeline. Obviously, depending on the node,
+            we have a different structure of the list with different number of features.
 
-    @property
-    def param_value(self):
-        return self._param_value
+        then : list
+            List of idd representing the node(s) that are directly linked with the current node.
 
-    @param_value.setter
-    def param_value(self, param_value: Any):
-        if not isinstance(param_value, (self._param_type,)):
-            raise TypeError(
-                "Expected type '{}' for parameter '{}', received '{}'.".format(
-                    self._param_type.__name__,
-                    self._param_name,
-                    type(param_value).__name__,
-                )
-            )
+    """
 
-        self._param_value = param_value
-
-    def __str__(self):
-        return "{}: {}".format(self.__class__.__name__, self.__dict__)
-
-
-class SimpleParameters:
-    def __init__(self, parameters: List[dict]):
-        self._parameters = [SimpleParameter(**par) for par in parameters]
-
-    def get_parameter(self, param_name: str):
-        for sp in self._parameters:
-            if sp.param_name == param_name:
-                return sp
-
-        return None
-
-    def __str__(self):
-        return "{}{}".format(
-            self.__class__.__name__, [str(par) for par in self._parameters]
-        )
-
-
-class SimpleOutput:
-    def __init__(self, output_name: str, output_type: str):
-        self._output_name = output_name
-        self._output_type = _io_types_mapping[output_type]
-        self._output_value = None
-        self._receiver_id = None
-        self._receiver_field = None
+    def __init__(self, idd: str, name: str, attr: dict, then: list):
+        self._idd = idd
+        self._name = name
+        self._attr = attr
+        self._then = then
 
     @property
-    def output_name(self):
-        return self._output_name
+    def id(self):
+        return self._idd
 
     @property
-    def output_type(self):
-        return self._output_type
+    def name(self):
+        return self._name
 
     @property
-    def output_value(self):
-        return self._output_value
-
-    @output_value.setter
-    def output_value(self, output_value: Any):
-        self._output_value = output_value
+    def attr(self):
+        return self._attr
 
     @property
-    def receiver_id(self):
-        return self._receiver_id
-
-    @receiver_id.setter
-    def receiver_id(self, receiver_id: Any):
-        self._receiver_id = receiver_id
-
-    @property
-    def receiver_field(self):
-        return self._receiver_field
-
-    @receiver_field.setter
-    def receiver_field(self, receiver_field: Any):
-        self._receiver_field = receiver_field
-
-    def __str__(self):
-        return "{}: {}".format(self.__class__.__name__, self.__dict__)
+    def then(self):
+        return self._then
 
 
-class SimpleOutputs:
-    def __init__(self, outputs: List[dict]):
-        self._outputs = [SimpleOutput(**out) for out in outputs]
+class PipelineStep(ABC):
+    """
+    Class implemented in order to represent the actual step of the pipeline that has to be performed.
+    It is modeled as an abstract class that represents the root of the hierarchical structure of all the pipeline steps.
+    """
 
-    def get_output(self, output_name: str):
-        for out in self._outputs:
-            if out.output_name == output_name:
-                return out
+    def __init__(self):
+        self._step_id = None
+        self._next_steps = []
 
-        return None
+    def add_step(self, step):
+        self._next_steps.append(step)
 
-    def __str__(self):
-        return "{}{}".format(
-            self.__class__.__name__, [str(outs) for outs in self._outputs]
-        )
-
-
-class Meta(type):
-    def __new__(cls, name, bases, dct):
-        import json
-
-        with open("structure.json", "r") as jf:
-            jload = json.load(jf)
-
-            super_new = super(Meta, cls).__new__
-
-            parents = [b for b in bases if isinstance(b, Meta)]
-            if not parents:
-                dct["input"] = SimpleInputs(jload.get("input"))
-                dct["parameters"] = SimpleParameters(jload.get("parameters"))
-                dct["output"] = SimpleOutputs(jload.get("output"))
-
-            return super_new(cls, name, bases, dct)
-
-
-class SimpleStep(metaclass=Meta):
-    def __init__(self, step_id: str, parameters: dict, output: list):
-        super(SimpleStep, self).__init__()
-        self._step_id = step_id
-        self._init_parameters(**parameters)
-        self._init_output(output)
-
-    def _init_parameters(self, **kwargs):
-        for k, v in kwargs.items():
-            try:
-                self.parameters.get_parameter(k).param_value = v
-            except AttributeError:
-                raise ParameterNotFound(
-                    "Parameter {} can't be set for class {}.".format(
-                        k, self.__class__.__name__
-                    )
-                )
-
-    def _init_output(self, output_list: list):
-        for output in output_list:
-            try:
-                out_obj = self.output.get_output(output.get("result"))
-                out_obj.receiver_id = output.get("receiver_id")
-                out_obj.receiver_field = output.get("receiver_field")
-            except Exception as e:
-                print(e)
+        return self
 
     @abstractmethod
     def check_execution(self) -> bool:
@@ -246,38 +101,177 @@ class SimpleStep(metaclass=Meta):
     def step_id(self, s_id: str):
         self._step_id = s_id
 
-    def __str__(self):
-        return "{}: {}{}{}".format(
-            self.__class__.__name__,
-            str(self.input),
-            str(self.parameters),
-            str(self.output),
-        )
+    @property
+    def next_steps(self):
+        return self._next_steps
+
+    @next_steps.setter
+    def next_steps(self, n_steps: str):
+        self._next_steps = n_steps
 
 
-class SplitTrainTest(SimpleStep):
+class DataFrameManipulator(PipelineStep):
+    """
+    Class implemented in order to handle the manipulation of a DataFrame by taking one as input and returning its
+    modified version as output.
+    """
+
+    def __init__(self):
+        super(DataFrameManipulator, self).__init__()
+        self._dataset = None
+
     def check_execution(self) -> bool:
-        pass
+        return self._dataset is not None
 
+    @abstractmethod
     def execute(self):
         pass
 
     def communicate_result(self):
+        for next_step in self.next_steps:
+            if next_step.dataset is not None:
+                lg.log_error(
+                    "Cannot pass {}'s result to {}, it is used by another node.".format(
+                        self.__class__.__name__, next_step.__class__.__name__
+                    )
+                )
+                continue
+            next_step.dataset = pd.DataFrame.copy(self._dataset)
+
+        self._dataset = None
+
+    @property
+    def dataset(self):
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, dset):
+        self._dataset = dset
+
+
+class ModelManipulator(PipelineStep):
+    """
+    Class implemented in order to handle the manipulation of a Machine Learning model by taking one as input and
+    performing some specific tasks (e.g. pickle export).
+    """
+
+    def __init__(self):
+        super(ModelManipulator, self).__init__()
+        self._model = None
+
+    def check_execution(self) -> bool:
+        return self._model is not None
+
+    @abstractmethod
+    def execute(self):
         pass
 
+    def communicate_result(self):
+        for next_step in self.next_steps:
+            if next_step.model is not None:
+                lg.log_error(
+                    "Cannot pass {}'s result to {}, it is used by another node.".format(
+                        self.__class__.__name__, next_step.__class__.__name__
+                    )
+                )
+                continue
+            next_step.model = self._model
 
-if __name__ == "__main__":
-    params = {"train_size": 0.6}
+        self._model = None
 
-    out = [
-        {
-            "result": "train_dataset",
-            "receiver_id": "zscorepred",
-            "receiver_field": "dataset",
-        },
-        {"result": "test_dataset", "receiver_id": "out", "receiver_field": "dataset"},
-    ]
+    @property
+    def model(self):
+        return self._model
 
-    stt = SplitTrainTest("stt", parameters=params, output=out)
+    @model.setter
+    def model(self, mod):
+        self._model = mod
 
-    print(stt)
+
+class Trainer(PipelineStep):
+    """
+    Class implemented in order to handle the creation (and the consequent output) of a model by taking a DataFrame (
+    training dataset) as input.
+    """
+
+    def __init__(self):
+        super(Trainer, self).__init__()
+        self._dataset = None
+        self._model = None
+
+    def check_execution(self) -> bool:
+        return self._dataset is not None
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+    def communicate_result(self):
+        for next_step in self.next_steps:
+            if next_step.model is not None:
+                lg.log_error(
+                    "Cannot pass {}'s result to {}, it is used by another node.".format(
+                        self.__class__.__name__, next_step.__class__.__name__
+                    )
+                )
+                continue
+            next_step.model = self._model
+
+        self._model = None
+        self._dataset = None
+
+    @property
+    def dataset(self):
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, dset):
+        self._dataset = dset
+
+
+class Predictor(PipelineStep):
+    """
+    Class implemented in order to handle the prediction over some data by taking a DataFrame (predict dataset) and a
+    trained model as input, returning a DataFrame containing the predicted values.
+    """
+
+    def __init__(self):
+        super(Predictor, self).__init__()
+        self._dataset = None
+        self._model = None
+
+    def check_execution(self) -> bool:
+        return self._dataset is not None and self._model is not None
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+    def communicate_result(self):
+        for next_step in self.next_steps:
+            if next_step.dataset is not None:
+                lg.log_error(
+                    "Cannot pass {}'s result to {}, it is used by another node.".format(
+                        self.__class__.__name__, next_step.__class__.__name__
+                    )
+                )
+            next_step.dataset = pd.DataFrame.copy(self._dataset)
+
+        self._dataset = None
+        self._model = None
+
+    @property
+    def dataset(self):
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, dset):
+        self._dataset = dset
+
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self, mod):
+        self._model = mod

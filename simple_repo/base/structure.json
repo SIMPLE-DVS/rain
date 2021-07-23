@@ -1,4 +1,4 @@
-{
+[{
     "package": "simple_repo.simple_sklearn",
     "module": "model_selection",
     "name": "TrainTestSplit",
@@ -29,4 +29,28 @@
             "output_type": "pandas.DataFrame"
         }
     ]
-}
+},
+{
+  "step_id": "split",
+  "name": "sigmalib.transform.data_wrangling.SplitTrainTest",
+  "attr": {
+    "send_train_to": "zscore",
+    "send_test_to": [
+      "outtest",
+      "zscorepred"
+    ],
+    "test_size": 0.3
+  },
+  "output": [
+    {
+      "result": "dataset_train",
+      "send_to": "zscorepred",
+      "as": "dataset"
+    },
+    {
+      "result": "dataset_test",
+      "send_to": "out",
+      "as": "dataset"
+    }
+  ]
+}]
