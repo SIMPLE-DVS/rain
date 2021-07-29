@@ -1,0 +1,32 @@
+{
+    "pandas": {
+        "pipeline_id": "pandas1",
+        "stages": [
+            {
+                "node": "simple_repo.simple_pandas.load_nodes.PandasCSVLoader",
+                "parameters": {
+                    "path": "C:/Users/RICCARDO/Desktop/iris_ds.csv"
+                }
+            },
+            {
+                "node": "simple_repo.simple_pandas.transform_nodes.PandasColumnSelector",
+                "parameters": {
+                    "columns": [
+                        {
+                            "name": "sepal width (cm)",
+                            "type": "float"
+                        },
+                        {
+                            "name": "petal width (cm)",
+                            "type": "float"
+                        }
+                    ]
+                }
+            }
+        ],
+        "result": {
+            "receiver_id": "pippo",
+            "receiver_field": "pluto"
+        }
+    }
+}
