@@ -1,19 +1,77 @@
-    {
-      "load": {
-        "": "",
-        "": ""
-      },
-      "stages": [
-          {
-            "p1": "",
-            "p2": ""
-          },
-          {
-            "p1": "",
-            "p2": ""
-          }
-        ],
-      "out": {
-        "": ""
-      }
-    }
+{
+    "sparkNode": [
+        {
+            "idd": "load",
+            "name": "load.loader.SparkCSVLoader",
+            "attr": {
+                "path": "spark.csv",
+                "header": true,
+                "schema": true
+            },
+            "then": [
+                "filt"
+            ]
+        },
+        {
+            "idd": "filter",
+            "name": "transform.data_wrangling.SparkColumnSelector",
+            "attr": {
+                "features": [
+                    {
+                        "col": "id"
+                    },
+                    {
+                        "col": "text"
+                    },
+                    {
+                        "col": "label"
+                    }
+                ]
+            },
+            "then": [
+                "pipeline"
+            ]
+        },
+        {
+            "idd": "pipeline",
+            "name": "pipeline.spark_pipeline.SparkPipelineNode",
+            "attr": {
+                "stages": [
+                    {
+                        "name": "pipeline.stages.Tokenizer",
+                        "param": {
+                            "inCol": "text",
+                            "outCol": "words"
+                        }
+                    },
+                    {
+                        "name": "pipeline.stages.HashingTF",
+                        "param": {
+                            "inCol": "words",
+                            "outCol": "features"
+                        }
+                    },
+                    {
+                        "name": "pipeline.stages.LogisticRegression",
+                        "param": {
+                            "maxIter": 10,
+                            "regParam": 0.001
+                        }
+                    }
+                ]
+            },
+            "then": [
+                "out"
+            ]
+        },
+        {
+            "idd": "output",
+            "name": "output.output_step.SaveDataset",
+            "attr": {
+                "path": "dataset.csv",
+                "index": false
+            },
+            "then": []
+        }
+    ]
+}
