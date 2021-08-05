@@ -18,15 +18,28 @@
             "attr": {
                 "features": [
                     {
-                        "col": "id"
+                        "col": "id",
+                        "value": "id < 9"
                     },
                     {
                         "col": "text"
                     },
                     {
-                        "col": "label"
+                        "col": "label",
+                        "value": "label != 2.0"
                     }
                 ]
+            },
+            "then": [
+                "split"
+            ]
+        },
+        {
+            "idd": "split",
+            "name": "transform.data_wrangling.SparkSplitDataset",
+            "attr": {
+                "train": 0.7,
+                "test": 0.3
             },
             "then": [
                 "pipeline"
@@ -66,10 +79,9 @@
         },
         {
             "idd": "output",
-            "name": "output.output_step.SaveDataset",
+            "name": "output.output_step.SaveModel",
             "attr": {
-                "path": "dataset.csv",
-                "index": false
+                "path": "model"
             },
             "then": []
         }
