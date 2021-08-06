@@ -13,6 +13,13 @@
                   "dataset": "dataset"
               }
           ]
+        },
+        {
+          "node_id": "save",
+          "node": "simple_repo.simple_pandas.load_nodes.PandasCSVWriter",
+          "parameters": {
+            "path": "C:/Users/RICCARDO/Desktop/iris_ds.csv"
+          }
         }
     ],
     "sklearn": [
@@ -25,10 +32,6 @@
             "then": [
                 {
                     "send_to": "lsvc",
-                    "train_dataset": "fit_dataset"
-                },
-                {
-                    "send_to": "gauss",
                     "train_dataset": "fit_dataset"
                 },
                 {
@@ -49,7 +52,8 @@
             ],
             "then": [
                 {
-                    "send_to": "gauss"
+                    "send_to": "save",
+                    "scores": "dataset"
                 }
             ]
         }
