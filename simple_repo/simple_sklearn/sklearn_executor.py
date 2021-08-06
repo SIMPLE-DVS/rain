@@ -22,16 +22,14 @@ if __name__ == "__main__":
     for node in pd_config:
         clazz = get_class(node.get("node"))
 
-        inst = clazz(**node.get("parameters"))
+        inst = clazz(node.get("execute"), **node.get("parameters"))
 
         inst.fit_dataset = risultati.get("d1_dt")
         inst.fit_target = risultati.get("d1_trg")
 
-        inst.fit()
-
         inst.score_dataset = risultati.get("d2_dt")
         inst.score_target = risultati.get("d2_trg")
 
-        inst.score()
+        inst.execute()
 
         print(inst.scores)

@@ -20,5 +20,5 @@ class SklearnLinearSVC(SklearnClassifier):
         "max_iter": KeyValueParameter("max_iter", int, value=1000),
     }
 
-    def __init__(self, **kwargs):
-        super(SklearnLinearSVC, self).__init__(LinearSVC, **kwargs)
+    def __init__(self, execute: list, **kwargs):
+        super(SklearnLinearSVC, self).__init__(LinearSVC, execute, **kwargs)

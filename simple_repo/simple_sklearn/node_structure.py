@@ -8,7 +8,7 @@ from simple_repo.parameter import KeyValueParameter
 
 
 class SklearnMethod:
-    def __init__(self, method_name: str):
+    def __init__(self, method_name: str, execute: bool = False):
         self._method_name = method_name
 
     @property
@@ -32,20 +32,24 @@ class SklearnFunction(SklearnNode):
 
 
 class SklearnEstimator(SklearnNode):
-    _input_vars = {
-        "fit_dataset": pandas.DataFrame
-    }
+    _input_vars = {"fit_dataset": pandas.DataFrame}
     _parameters = {}
-    _methods = {
-        "fit": SklearnMethod("fit")
-    }
-    _output_vars = {
-        "fitted_model": sklearn.base.BaseEstimator
-    }
+    _methods = {"fit": False}
+    _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
 
-    def __init__(self, estimator_class: type, **kwargs):
+    def __init__(self, estimator_class: type, execute: list, **kwargs):
         super(SklearnEstimator, self).__init__(**kwargs)
         self._estimator = estimator_class(**self._get_params_as_dict())
+
+        for method in execute:
+            if method not in self._methods.keys():
+                raise Exception(
+                    "Method {} not found for estimator {}".format(
+                        method, self.__class__.__name__
+                    )
+                )
+
+            self._methods[method] = True
 
     def fit(self):
         if self._estimator_type == "classifier" and self.fit_target is not None:
@@ -53,12 +57,27 @@ class SklearnEstimator(SklearnNode):
         else:
             self.fitted_model = self._estimator.fit(self.fit_dataset)
 
+    def execute(self):
+        # se la fit deve essere eseguita, allora sarà sempre eseguita per prima
+        if self._methods.get("fit"):
+            self.fit()
+
+        remaining_methods = [
+            method
+            for method, must_exec in self._methods.items()
+            if must_exec and not method == "fit"
+        ]
+
+        for method_name in remaining_methods:
+            method = eval("self.{}".format(method_name))
+            method()
+
 
 class PredictorMixin:
     def __init__(self):
         self._input_vars["predict_dataset"] = pandas.DataFrame
         self._output_vars["predictions"] = pandas.DataFrame
-        self._methods["predict"] = SklearnMethod("predict")
+        self._methods["predict"] = False
 
     def predict(self):
         if self.fitted_model is not None and self.predict_dataset is not None:
@@ -69,7 +88,7 @@ class ScorerMixin:
     def __init__(self):
         self._input_vars["score_dataset"] = pandas.DataFrame
         self._output_vars["scores"] = List[Tuple]
-        self._methods["score"] = SklearnMethod("score")
+        self._methods["score"] = False
 
     def score(self):
         if self.fitted_model is not None and self.score_dataset is not None:
@@ -84,10 +103,10 @@ class ScorerMixin:
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
-    def __init__(self, estimator_type: type, **kwargs):
+    def __init__(self, estimator_type: type, execute: list, **kwargs):
         PredictorMixin.__init__(self)
         ScorerMixin.__init__(self)
         # self._parameters["target_col"] = KeyValueParameter("target_col", str, is_mandatory=True)
         # self._input_vars["fit_target"] = pandas.DataFrame
         # self._input_vars["score_target"] = pandas.DataFrame
-        super(SklearnClassifier, self).__init__(estimator_type, **kwargs)
+        super(SklearnClassifier, self).__init__(estimator_type, execute, **kwargs)
