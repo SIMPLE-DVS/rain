@@ -1,7 +1,7 @@
-from simple_repo.base import DataFrameManipulator, ModelManipulator
+from simple_repo.commons import DataFrameManipulator, ModelManipulator
 import pandas as pd
 import pickle
-import simple_repo.base.logger as lg
+import simple_repo.logger as lg
 
 
 class CSVLoader(DataFrameManipulator):

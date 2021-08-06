@@ -1,0 +1,14 @@
+{
+    "sklearn": [
+        {
+            "id": "linearSvc1",
+            "node": "simple_repo.simple_sklearn.svm.SklearnLinearSVC",
+            "parameters": {
+            },
+            "functions": {
+                "fit": "d1",
+                "score": "d2"
+            }
+        }
+    ]
+}

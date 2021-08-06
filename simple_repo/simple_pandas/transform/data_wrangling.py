@@ -1,9 +1,9 @@
-from simple_repo.base import DataFrameManipulator
+from simple_repo.commons import DataFrameManipulator
 from typing import List
 from sklearn.model_selection import train_test_split
-from simple_repo.base import get_step
+from simple_repo.commons import get_step
 import pandas as pd
-import simple_repo.base.logger as lg
+import simple_repo.logger as lg
 
 __all__ = ["Filter", "Pivot", "SplitTrainTest"]
 

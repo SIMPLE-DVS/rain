@@ -1,8 +1,8 @@
 import os
 import pickle as pkl
 from datetime import datetime
-from simple_repo.base import DataFrameManipulator, ModelManipulator
-import simple_repo.base.logger as lg
+from simple_repo.commons import DataFrameManipulator, ModelManipulator
+import simple_repo.logger as lg
 
 
 def check_dir(path):
