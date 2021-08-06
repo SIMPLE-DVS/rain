@@ -1,9 +1,7 @@
 import pandas
 
-from node_structure import PandasNode, PandasParameter
-
-from pandas._libs import lib
-from pandas._typing import FilePathOrBuffer, DtypeArg
+from node_structure import PandasNode
+from simple_repo.parameter import KeyValueParameter
 
 
 class PandasCSVLoader(PandasNode):
@@ -19,8 +17,8 @@ class PandasCSVLoader(PandasNode):
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
     _parameters = {
-        "path": PandasParameter("filepath_or_buffer", str, is_mandatory=True),
-        "delim": PandasParameter("delimiter", str, is_mandatory=True),
+        "path": KeyValueParameter("filepath_or_buffer", str, is_mandatory=True),
+        "delim": KeyValueParameter("delimiter", str, is_mandatory=True),
     }
 
     def __init__(self, **kwargs):

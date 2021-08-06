@@ -1,6 +1,7 @@
 import pandas
 
-from node_structure import PandasNode, PandasParameter, PandasParameterList
+from node_structure import PandasNode
+from simple_repo.parameter import KeyValueParameter, StructuredParameterList
 
 
 def _filter_column_by_value(dataset, column: str, value):
@@ -47,7 +48,7 @@ class PandasColumnSelector(PandasNode):
         # A variable number of columns can be passed, but all of them must have the same structure specified here.
         # A keyword represent the keyword that can be written in the json, the value True or False tells if it is
         # mandatory or not.
-        "columns": PandasParameterList(name=True, type=False)
+        "columns": StructuredParameterList(name=True, type=False)
     }
 
     def __init__(self, **kwargs):
@@ -75,13 +76,13 @@ class PandasColumnSelector(PandasNode):
 
 class PandasPivot(PandasNode):
     _parameters = {
-        "rows": PandasParameter("index", str, is_mandatory=True),
-        "columns": PandasParameter("columns", str, is_mandatory=True),
-        "values": PandasParameter("values", str, is_mandatory=True),
-        "aggfunc": PandasParameter("aggfunc", str, param_value="mean"),
-        "fill_value": PandasParameter("fill_value", int, param_value=0),
-        "dropna": PandasParameter("dropna", bool, param_value=True),
-        "sort": PandasParameter("sort", bool, param_value=True),
+        "rows": KeyValueParameter("index", str, is_mandatory=True),
+        "columns": KeyValueParameter("columns", str, is_mandatory=True),
+        "values": KeyValueParameter("values", str, is_mandatory=True),
+        "aggfunc": KeyValueParameter("aggfunc", str, value="mean"),
+        "fill_value": KeyValueParameter("fill_value", int, value=0),
+        "dropna": KeyValueParameter("dropna", bool, value=True),
+        "sort": KeyValueParameter("sort", bool, value=True),
     }
 
     def __init__(self, **kwargs):

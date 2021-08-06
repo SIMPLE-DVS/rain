@@ -5,7 +5,7 @@
             {
                 "node": "simple_repo.simple_pandas.load_nodes.PandasCSVLoader",
                 "parameters": {
-                    "path": "C:/Users/RICCARDO/Desktop/iris_ds.csv"
+                    "path": "./iris.csv"
                 }
             },
             {
@@ -13,11 +13,11 @@
                 "parameters": {
                     "columns": [
                         {
-                            "name": "sepal width (cm)",
+                            "name": "sepal.width",
                             "type": "float"
                         },
                         {
-                            "name": "petal width (cm)",
+                            "name": "petal.width",
                             "type": "float"
                         }
                     ]
