@@ -4,13 +4,7 @@ from typing import List
 from pyspark.sql import SparkSession
 
 from simple_repo.simple_spark.spark_node import SparkNode, Transformer, Estimator
-from simple_repo.base import get_class
-
-
-def reset(simple_node):
-    dic = vars(simple_node)
-    for i in dic.keys():
-        dic[i] = None
+from simple_repo.base import get_class, reset
 
 
 class SparkPipeline:

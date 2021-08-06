@@ -50,6 +50,12 @@ def get_step(step_id: str, step_list: list):
     return corr_steps[0]
 
 
+def reset(simple_node):
+    dic = vars(simple_node)
+    for i in dic.keys():
+        dic[i] = None
+
+
 class SimpleNode:
     _input_vars = {}
     _parameters = {}

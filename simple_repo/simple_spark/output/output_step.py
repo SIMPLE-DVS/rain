@@ -1,4 +1,5 @@
 from pyspark.ml import PipelineModel
+from pyspark.sql import DataFrame
 
 from simple_repo.parameter import KeyValueParameter
 from simple_repo.simple_spark.spark_node import SparkNode
@@ -21,6 +22,10 @@ class SaveModel(SparkNode):
 
 
 class SaveDataset(SparkNode):
+    _input_vars = {
+        "dataset": DataFrame
+    }
+
     _attr = {
         "path": KeyValueParameter("path_or_buf", str, is_mandatory=True),
         "index": KeyValueParameter("index", bool)
