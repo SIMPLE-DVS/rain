@@ -1,30 +1,34 @@
 from pyspark.ml import PipelineModel
+from pyspark.sql import DataFrame
 
-from simple_repo.simple_spark.spark_node import SparkParameter, Transformer, SparkNode
+from simple_repo.parameter import KeyValueParameter
+from simple_repo.simple_spark.spark_node import SparkNode
 
 
-class SparkCSVLoader(Transformer):
+class SparkCSVLoader(SparkNode):
+    _parameters = {
+        "path": KeyValueParameter("path", str, is_mandatory=True),
+        "header": KeyValueParameter("header", bool),
+        "schema": KeyValueParameter("inferSchema", bool)
+    }
 
-    _attr = {
-        "path": SparkParameter("path", str, is_required=True),
-        "header": SparkParameter("header", bool),
-        "schema": SparkParameter("inferSchema", bool)
+    _output_vars = {
+        "dataset": DataFrame
     }
 
     def __init__(self, spark, **kwargs):
         super(SparkCSVLoader, self).__init__(spark, **kwargs)
 
     def execute(self):
-        self.dataset = self.spark.read.csv(**self._get_attr_as_dict())
+        self.dataset = self.spark.read.csv(**self._get_params_as_dict())
 
 
 class SparkModelLoader(SparkNode):
-
-    _attr = {
-        "path": SparkParameter("path", str, is_required=True)
+    _parameters = {
+        "path": KeyValueParameter("path", str, is_mandatory=True)
     }
 
-    _output = {
+    _output_vars = {
         "model": PipelineModel
     }
 
@@ -32,4 +36,4 @@ class SparkModelLoader(SparkNode):
         super(SparkCSVLoader, self).__init__(spark, **kwargs)
 
     def execute(self):
-        self.model = PipelineModel.load(self._attr.get("path").value)
+        self.model = PipelineModel.load(self._parameters.get("path").value)

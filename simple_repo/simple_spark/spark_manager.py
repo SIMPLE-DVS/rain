@@ -1,23 +1,16 @@
-import importlib
 import json
 from typing import List
 
 from pyspark.sql import SparkSession
 
 from simple_repo.simple_spark.spark_node import SparkNode, Transformer, Estimator
+from simple_repo.base import get_class
 
 
-def get_class(fullname: str) -> SparkNode:
-    full_name_parts = fullname.split(".")
-
-    package_name = ".".join(full_name_parts[:-2])
-    module_name = full_name_parts[-2]
-    class_name = full_name_parts[-1]
-
-    module = importlib.import_module("." + module_name, package_name)
-    class_ = getattr(module, class_name)
-
-    return class_
+def reset(simple_node):
+    dic = vars(simple_node)
+    for i in dic.keys():
+        dic[i] = None
 
 
 class SparkPipeline:
@@ -42,14 +35,12 @@ class SparkPipeline:
             try:
                 if isinstance(self._nodes[i + 1], Transformer) or isinstance(self._nodes[i + 1], Estimator):
                     self._nodes[i + 1].dataset = self._nodes[i].dataset
-                    self._nodes[i].dataset = None
-                    self._nodes[i].spark = None
                 elif isinstance(self._nodes[i + 1], SparkNode):
                     self._nodes[i + 1].model = self._nodes[i].model
-                    self._nodes[i].model = None
-                    self._nodes[i].spark = None
             except Exception as e:
                 print(e)
+
+            reset(self.nodes[i])
 
 
 if __name__ == '__main__':

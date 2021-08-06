@@ -1,5 +1,9 @@
 import importlib
 import json
+from abc import abstractmethod
+
+from simple_repo.exception import ParameterNotFound
+from simple_repo.parameter import StructuredParameterList
 
 
 def get_class(fullname: str):
@@ -44,6 +48,52 @@ def get_step(step_id: str, step_list: list):
         raise Exception("Error! There aren't nodes with id '{}'.".format(step_id))
 
     return corr_steps[0]
+
+
+class SimpleNode:
+    _input_vars = {}
+    _parameters = {}
+    _output_vars = {}
+
+    def __init__(self, **kwargs):
+
+        # Set every input as an attribute
+        for key in self._input_vars.keys():
+            setattr(self, key, None)
+
+        # Set every output as an attribute if not already set
+        for key in self._output_vars.keys():
+            if key not in self._input_vars:
+                setattr(self, key, None)
+
+        # check the parameter passed and set their values
+        for name, value in kwargs.items():
+            try:
+                # retrieve the parameter from its name
+                par = self._parameters.get(name)
+
+                # if it is a parameter list add all the values inside, otherwise set the value of the parameter.
+                if isinstance(par, StructuredParameterList):
+                    par.add_all_parameters(*value)
+                elif not isinstance(value, par.type):
+                    raise TypeError("Expected type '{}' for parameter '{}' in class '{}', received type '{}'.".format(
+                        par.type, name, self.__class__.__name__, type(value)))
+                else:
+                    par.value = value
+
+            except AttributeError:
+                raise ParameterNotFound("Class '{}' has no attribute '{}'".format(self.__class__.__name__, name))
+
+    def _get_params_as_dict(self) -> dict:
+        dct = {}
+        for val in self._parameters.values():
+            dct[val.name] = val.value
+
+        return dct
+
+    @abstractmethod
+    def execute(self):
+        pass
 
 
 class Node(object):

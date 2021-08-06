@@ -1,34 +1,33 @@
 from pyspark.ml import PipelineModel
 
-from simple_repo.simple_spark.spark_node import SparkParameter, SparkNode, Transformer
+from simple_repo.parameter import KeyValueParameter
+from simple_repo.simple_spark.spark_node import SparkNode
 
 
 class SaveModel(SparkNode):
-
-    _input = {
+    _input_vars = {
         "model": PipelineModel
     }
 
-    _attr = {
-        "path": SparkParameter("path", str, is_required=True)
+    _parameters = {
+        "path": KeyValueParameter("path", str, is_mandatory=True)
     }
 
     def __init__(self, spark, **kwargs):
         super(SaveModel, self).__init__(spark, **kwargs)
 
     def execute(self):
-        self.model.write().overwrite().save(**self._get_attr_as_dict())
+        self.model.write().overwrite().save(**self._get_params_as_dict())
 
 
-class SaveDataset(Transformer):
-
+class SaveDataset(SparkNode):
     _attr = {
-        "path": SparkParameter("path_or_buf", str, is_required=True),
-        "index": SparkParameter("index", bool)
+        "path": KeyValueParameter("path_or_buf", str, is_mandatory=True),
+        "index": KeyValueParameter("index", bool)
     }
 
     def __init__(self, spark, **kwargs):
         super(SaveDataset, self).__init__(spark, **kwargs)
 
     def execute(self):
-        self.dataset.toPandas().to_csv(**self._get_attr_as_dict())
+        self.dataset.toPandas().to_csv(**self._get_params_as_dict())

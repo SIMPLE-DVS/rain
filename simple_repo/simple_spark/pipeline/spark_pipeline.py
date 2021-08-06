@@ -4,12 +4,11 @@ from simple_repo.simple_spark.spark_node import Estimator
 
 
 class SparkPipelineNode(Estimator):
-
     _stages = []
 
     def __init__(self, spark, lst, **kwargs):
-        for k in lst:
-            self._stages.append(k)
+        for stage in lst:
+            self._stages.append(stage)
         super(SparkPipelineNode, self).__init__(spark, **kwargs)
 
     def execute(self):
