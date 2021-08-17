@@ -1,0 +1,64 @@
+{
+    "pipeline_uid": "U-54654649815165164849",
+    "pandas": [
+        {
+          "node_id": "loader",
+          "node": "simple_repo.simple_pandas.load_nodes.PandasCSVLoader",
+          "parameters": {
+            "path": "C:/Users/RICCARDO/Desktop/iris_ds.csv"
+          },
+          "then": [
+              {
+                  "send_to": "km",
+                  "dataset": "fit_dataset"
+              },
+              {
+                  "send_to": "km",
+                  "dataset": "predict_dataset"
+              }
+          ]
+        },
+        {
+            "node_id": "addcol",
+            "node": "simple_repo.simple_pandas.transform_nodes.PandasAddColumn",
+            "parameters": {
+                "columns": [
+                    "predictions"
+                ]
+            },
+            "then": [
+                {
+                    "send_to": "save",
+                    "dataset": "dataset"
+                }
+            ]
+        },
+        {
+          "node_id": "save",
+          "node": "simple_repo.simple_pandas.load_nodes.PandasCSVWriter",
+          "parameters": {
+              "path": "C:/Users/RICCARDO/Desktop/iris_ds_elbafasdf.csv",
+              "include_rows": true,
+              "rows_column_label": "id"
+          }
+        }
+    ],
+    "sklearn": [
+        {
+            "node_id": "km",
+            "node": "simple_repo.simple_sklearn.cluster.SimpleKMeans",
+            "parameters": {
+            },
+            "execute": [
+                "fit",
+                "predict"
+            ],
+            "then": [
+                {
+                    "send_to": "addcol",
+                    "predictions": "dataset"
+                }
+            ]
+        }
+    ]
+}

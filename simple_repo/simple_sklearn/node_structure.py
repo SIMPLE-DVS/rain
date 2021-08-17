@@ -100,6 +100,17 @@ class ScorerMixin:
                 self.scores = self.fitted_model.score(self.score_dataset)
 
 
+class TransformerMixin:
+    def __init__(self):
+        self._input_vars["transform_dataset"] = pandas.DataFrame
+        self._output_vars["transformed_dataset"] = List[Tuple]
+        self._methods["transform"] = False
+
+    def transform(self):
+        if self.fitted_model is not None and self.transform_dataset is not None:
+            self.transformed_dataset = self.fitted_model.score(self.transform_dataset)
+
+
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
@@ -107,6 +118,16 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
         PredictorMixin.__init__(self)
         ScorerMixin.__init__(self)
         # self._parameters["target_col"] = KeyValueParameter("target_col", str, is_mandatory=True)
-        # self._input_vars["fit_target"] = pandas.DataFrame
-        # self._input_vars["score_target"] = pandas.DataFrame
+        self._input_vars["fit_target"] = pandas.DataFrame
+        self._input_vars["score_target"] = pandas.DataFrame
         super(SklearnClassifier, self).__init__(estimator_type, execute, **kwargs)
+
+
+class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
+    _estimator_type = "clusterer"
+
+    def __init__(self, estimator_type: type, execute: list, **kwargs):
+        PredictorMixin.__init__(self)
+        ScorerMixin.__init__(self)
+        TransformerMixin.__init__(self)
+        super(SklearnClusterer, self).__init__(estimator_type, execute, **kwargs)

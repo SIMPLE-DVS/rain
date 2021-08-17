@@ -3,24 +3,45 @@
         "pipeline_id": "pandas1",
         "stages": [
             {
+                "id": "loader",
                 "node": "simple_repo.simple_pandas.load_nodes.PandasCSVLoader",
                 "parameters": {
                     "path": "./iris.csv"
-                }
+                },
+                "then": [
+                    {
+                        "send_to": "cselect",
+                        "dataset": "dataset"
+                    },
+                    {
+                        "send_to": "pivot",
+                        "dataset": "dataset"
+                    }
+                ]
             },
             {
+                "id": "cselect",
                 "node": "simple_repo.simple_pandas.transform_nodes.PandasColumnSelector",
                 "parameters": {
                     "columns": [
                         {
-                            "name": "sepal.width",
+                            "name": "sepal width (cm)",
                             "type": "float"
                         },
                         {
-                            "name": "petal.width",
+                            "name": "petal width (cm)",
                             "type": "float"
                         }
                     ]
+                }
+            },
+            {
+                "id": "piv",
+                "node": "simple_repo.simple_pandas.transform_nodes.PandasPivot",
+                "parameters": {
+                    "rows": "sepal lenght (cm)",
+                    "columns": "sepal width (cm)",
+                    "values": "petal width (cm)"
                 }
             }
         ],

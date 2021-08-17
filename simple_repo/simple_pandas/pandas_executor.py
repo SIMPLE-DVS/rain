@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
         node_inst = node_class(**node.get("parameters"))
 
-        stages.append(node_inst)
+        stages.append((node.get("id"), node_inst))
 
     pandas_pipeline = PandasPipeline(stages)
 

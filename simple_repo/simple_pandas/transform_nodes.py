@@ -1,7 +1,8 @@
 import pandas
 
-from node_structure import PandasNode
+from typing import List
 from simple_repo.parameter import KeyValueParameter, StructuredParameterList
+from simple_repo.simple_pandas.node_structure import PandasNode
 
 
 def _filter_column_by_value(dataset, column: str, value):
@@ -91,3 +92,18 @@ class PandasPivot(PandasNode):
     def execute(self):
         param_dict = self._get_params_as_dict()
         self.dataset = pandas.pivot_table(self.dataset, **param_dict)
+
+
+class PandasAddColumn(PandasNode):
+    _parameters = {"columns": KeyValueParameter("col", List, is_mandatory=True)}
+
+    def __init__(self, **kwargs):
+        super(PandasAddColumn, self).__init__(**kwargs)
+
+    def execute(self):
+        cols = self._parameters.get("columns").value
+
+        if not isinstance(self.dataset, pandas.DataFrame):
+            self.dataset = pandas.DataFrame(self.dataset)
+
+        self.dataset.columns = cols

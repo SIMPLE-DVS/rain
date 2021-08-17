@@ -3,6 +3,15 @@ from typing import Any
 from simple_repo.exception import ParameterNotFound, BadParameterStructure
 
 
+class SimpleIO:
+    def __init__(self, io_type: type):
+        self._type = io_type
+
+    @property
+    def type(self):
+        return self._type
+
+
 class SimpleParameter:
     def __init__(self, is_mandatory: bool = False):
         self._is_mandatory = is_mandatory
@@ -17,7 +26,9 @@ class KeyValueParameter(SimpleParameter):
     A KeyValue Parameter contains information about parameters that can be used during the transformation.
     """
 
-    def __init__(self, name: str, p_type: type, value: Any = None, is_mandatory: bool = False):
+    def __init__(
+        self, name: str, p_type: type, value: Any = None, is_mandatory: bool = False
+    ):
         self._name = name
         self._type = p_type
         self._value = value
@@ -62,8 +73,10 @@ class StructuredParameterList(SimpleParameter):
             elif not val:
                 self._optional_keys.append(key)
             else:
-                raise BadParameterStructure("Invalid assignment for parameter structure! Set True if the key is "
-                                            "mandatory, False otherwise.")
+                raise BadParameterStructure(
+                    "Invalid assignment for parameter structure! Set True if the key is "
+                    "mandatory, False otherwise."
+                )
 
         # Save the list of parameters that will be eventually populated via setter
         self._parameters = []
@@ -78,7 +91,10 @@ class StructuredParameterList(SimpleParameter):
                 new_param[key] = param.get(key)
             else:
                 raise ParameterNotFound(
-                    "Required parameter '{}' for class '{}' not found.".format(key, self.__class__.__name__))
+                    "Required parameter '{}' for class '{}' not found.".format(
+                        key, self.__class__.__name__
+                    )
+                )
 
         # if any of the optional keys is present its value is added
         for key in self._optional_keys:

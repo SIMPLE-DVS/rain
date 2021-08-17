@@ -1,6 +1,7 @@
 import importlib
 import json
 from abc import abstractmethod
+from typing import Any
 
 from simple_repo.exception import ParameterNotFound
 from simple_repo.parameter import StructuredParameterList
@@ -82,13 +83,20 @@ class SimpleNode:
                 if isinstance(par, StructuredParameterList):
                     par.add_all_parameters(*value)
                 elif not isinstance(value, par.type):
-                    raise TypeError("Expected type '{}' for parameter '{}' in class '{}', received type '{}'.".format(
-                        par.type, name, self.__class__.__name__, type(value)))
+                    raise TypeError(
+                        "Expected type '{}' for parameter '{}' in class '{}', received type '{}'.".format(
+                            par.type, name, self.__class__.__name__, type(value)
+                        )
+                    )
                 else:
                     par.value = value
 
             except AttributeError:
-                raise ParameterNotFound("Class '{}' has no attribute '{}'".format(self.__class__.__name__, name))
+                raise ParameterNotFound(
+                    "Class '{}' has no attribute '{}'".format(
+                        self.__class__.__name__, name
+                    )
+                )
 
     def _get_params_as_dict(self) -> dict:
         dct = {}
@@ -96,6 +104,12 @@ class SimpleNode:
             dct[val.name] = val.value
 
         return dct
+
+    def set_input_value(self, input_name: str, input_value: Any):
+        vars(self)[input_name] = input_value
+
+    def get_output_value(self, output_name: str):
+        return vars(self).get(output_name)
 
     @abstractmethod
     def execute(self):

@@ -13,10 +13,10 @@ if __name__ == "__main__":
     risultati = {}
 
     (
-        risultati["d1_dt"],
-        risultati["d2_dt"],
-        risultati["d1_trg"],
-        risultati["d2_trg"],
+        risultati["train_dt"],
+        risultati["test_dt"],
+        risultati["train_trg"],
+        risultati["test_trg"],
     ) = train_test_split(x, y, train_size=0.6)
 
     for node in pd_config:
@@ -24,11 +24,11 @@ if __name__ == "__main__":
 
         inst = clazz(node.get("execute"), **node.get("parameters"))
 
-        inst.fit_dataset = risultati.get("d1_dt")
-        inst.fit_target = risultati.get("d1_trg")
+        inst.fit_dataset = risultati.get("train_dt")
+        inst.fit_target = risultati.get("train_trg")
 
-        inst.score_dataset = risultati.get("d2_dt")
-        inst.score_target = risultati.get("d2_trg")
+        inst.score_dataset = risultati.get("test_dt")
+        inst.score_target = risultati.get("test_trg")
 
         inst.execute()
 
