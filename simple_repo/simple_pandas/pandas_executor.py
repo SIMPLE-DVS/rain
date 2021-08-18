@@ -1,4 +1,4 @@
-from node_structure import PandasPipeline
+from node_structure import PandasExecutor
 from simple_repo.base import get_class, load_config
 
 
@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
         stages.append((node.get("id"), node_inst))
 
-    pandas_pipeline = PandasPipeline(stages)
+    pandas_pipeline = PandasExecutor(stages)
 
     print(pd_config)
     print(pandas_pipeline.execute())

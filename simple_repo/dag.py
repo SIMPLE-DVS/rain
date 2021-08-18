@@ -1,7 +1,30 @@
-from base import load_config, Node, get_class
+from typing import List, Tuple
+
+from simple_repo.base import load_config, Node, get_class, Singleton
 import networkx as nx
 from matplotlib import pyplot as plt
 import json
+
+from simple_repo.simple_pandas.node_structure import PandasExecutor
+from simple_repo.simple_sklearn.node_structure import SklearnExecutor
+
+
+def get_nodes(config: dict, engine: str):
+    nodes_types = {}
+    nodes = {}
+    edges = []
+
+    for node in config.get(engine):
+        node_id = node.get("node_id")
+        json_node = Node(node_type=engine, **node)
+        nodes_types[node_id] = engine
+        nodes[node_id] = json_node
+
+        if "then" in node.keys():
+            for nxt in node.get("then"):
+                edges.append((node_id, nxt.get("send_to")))
+
+    return nodes_types, nodes, edges
 
 
 def eseguitutto(subpipelines):
@@ -40,22 +63,15 @@ def eseguitutto(subpipelines):
                 receiver.set_input_value(v, actual_node_output)
 
 
-def get_nodes(config: dict, engine: str):
-    nodes_types = {}
-    nodes = {}
-    edges = []
+class SimplePipeline:
+    executors = {"pandas": PandasExecutor(), "sklearn": SklearnExecutor()}
 
-    for node in config.get(engine):
-        node_id = node.get("node_id")
-        json_node = Node(node_type=engine, **node)
-        nodes_types[node_id] = engine
-        nodes[node_id] = json_node
+    def __init__(self, pipeline: List[Tuple[str, Node]]):
+        self._pipeline = pipeline
 
-        if "then" in node.keys():
-            for nxt in node.get("then"):
-                edges.append((node_id, nxt.get("send_to")))
-
-    return nodes_types, nodes, edges
+    def execute_pipeline(self):
+        for subpipeline in self._pipeline:
+            self.executors.get(subpipeline[0]).execute(subpipeline[1])
 
 
 class SimpleJSONParser:
@@ -99,6 +115,16 @@ class SimpleJSONParser:
 
     def get_sorted_nodes(self):
         if self._is_loaded:
+            sorted_id_list = self.get_sorted_node_ids()
+            sorted_node_list = []
+
+            for node_id in sorted_id_list:
+                sorted_node_list.append(self._nodes.get(node_id))
+
+            return sorted_node_list
+
+    def get_sorted_node_ids(self):
+        if self._is_loaded:
             topologically_ordered_list = list(nx.topological_sort(self._graph))
 
             return topologically_ordered_list
@@ -111,7 +137,7 @@ class SimpleJSONParser:
         subpipeline = []
         subpipeline_type = None
 
-        sorted_node_list = self.get_sorted_nodes()
+        sorted_node_list = self.get_sorted_node_ids()
 
         for i in range(0, len(sorted_node_list)):
             node_type = self._nodes_types.get(sorted_node_list[i])
@@ -150,6 +176,8 @@ if __name__ == "__main__":
 
     sjp.show_dag()
 
-    subpipelines = sjp.get_subpipelines()
+    pipeline = sjp.get_subpipelines()
 
-    eseguitutto(subpipelines)
+    # eseguitutto(subpipelines)
+
+    main_exec = SimplePipeline(pipeline)

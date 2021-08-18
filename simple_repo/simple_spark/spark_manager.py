@@ -1,65 +1,62 @@
 import json
+from collections import OrderedDict
 from typing import List
 
 from pyspark.sql import SparkSession
 
+from simple_repo.dag import SimpleJSONParser
 from simple_repo.simple_spark.spark_node import SparkNode, Transformer, Estimator
-from simple_repo.base import get_class, reset
+from simple_repo.base import get_class, reset, Singleton, Node, SimpleNode
 
 
-class SparkPipeline:
+class SparkExecutor(metaclass=Singleton):
+    def __init__(self):
+        self._spark = None
 
-    def __init__(self, pipeline: List[SparkNode]):
-        self._nodes = pipeline
+    def convert(self, nodes: List[Node]):
+        self._spark = SparkSession.builder.getOrCreate()
+        simple_nodes = OrderedDict()
+        nodes_nexts = {}
 
-    @property
-    def nodes(self):
-        return self._nodes
+        # if len(nodes) == 0:
+        #     return None
 
-    def execute(self):
-        if len(self._nodes) == 0:
-            return None
+        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
+        # mi tengo da parte anche le coppie id-then
+        for node in nodes:
+            cls = get_class(node.node)
+            if cls == get_class(
+                "simple_repo.simple_spark.pipeline.spark_pipeline.SparkPipelineNode"
+            ):
+                stages = []
+                pipe = node.parameters.get("stages")
+                for s in pipe:
+                    c = get_class(s.get("name"))
+                    stage = c(spark=self._spark, **s.get("param"))
+                    stages.append(stage)
+                simple_node = cls(spark=self._spark, lst=stages)
+            else:
+                simple_node = cls(spark=self._spark, **node.parameters)
 
-        for i in range(0, len(self._nodes)):
-            self._nodes[i].execute()
+            simple_nodes[node.node_id] = simple_node
 
-            if i + 1 > len(self._nodes) - 1:
-                break
+            if node.then:
+                nodes_nexts[node.node_id] = node.then
 
-            try:
-                if isinstance(self._nodes[i + 1], Transformer) or isinstance(self._nodes[i + 1], Estimator):
-                    self._nodes[i + 1].dataset = self._nodes[i].dataset
-                elif isinstance(self._nodes[i + 1], SparkNode):
-                    self._nodes[i + 1].model = self._nodes[i].model
-            except Exception as e:
-                print(e)
+        return simple_nodes, nodes_nexts
 
-            reset(self.nodes[i])
+    @staticmethod
+    def execute(simple_node: SimpleNode):
+        simple_node.execute()
 
 
-if __name__ == '__main__':
-    spark = SparkSession.builder.getOrCreate()
-    with open("./spark_conf.json", "r") as f:
-        config = json.load(f)
+if __name__ == "__main__":
+    sjp = SimpleJSONParser()
 
-    spark_nodes = config.get("sparkNode")
-    sp = get_class("pipeline.spark_pipeline.SparkPipelineNode")
-    nodes = []
+    sjp.parse_configuration("simple_spark/spark_conf.json")
 
-    for n in spark_nodes:
-        cls = get_class(n.get("name"))
-        if cls == sp:
-            stages = []
-            pipe = n.get("attr").get("stages")
-            for s in pipe:
-                c = get_class(s.get("name"))
-                stage = c(spark=spark, **s.get("param"))
-                stages.append(stage)
-            node = cls(spark=spark, lst=stages)
-            nodes.append(node)
-        else:
-            node = cls(spark=spark, **n.get("attr"))
-            nodes.append(node)
+    spark_nodes = sjp.get_sorted_nodes()
 
-    p = SparkPipeline(nodes)
-    p.execute()
+    sp = SparkExecutor()
+
+    sp.execute(spark_nodes)

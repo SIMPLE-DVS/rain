@@ -1,21 +1,24 @@
 {
-    "sparkNode": [
+    "spark": [
         {
-            "idd": "load",
-            "name": "load.loader.SparkCSVLoader",
-            "attr": {
-                "path": "spark.csv",
+            "node_id": "load",
+            "node": "simple_repo.simple_spark.load.loader.SparkCSVLoader",
+            "parameters": {
+                "path": "simple_spark/spark.csv",
                 "header": true,
                 "schema": true
             },
             "then": [
-                "filt"
+                {
+                    "send_to": "filter",
+                    "dataset": "dataset"
+                }
             ]
         },
         {
-            "idd": "filter",
-            "name": "transform.data_wrangling.SparkColumnSelector",
-            "attr": {
+            "node_id": "filter",
+            "node": "simple_repo.simple_spark.transform.data_wrangling.SparkColumnSelector",
+            "parameters": {
                 "features": [
                     {
                         "col": "id",
@@ -31,41 +34,47 @@
                 ]
             },
             "then": [
-                "split"
+                {
+                    "send_to": "split",
+                    "dataset": "dataset"
+                }
             ]
         },
         {
-            "idd": "split",
-            "name": "transform.data_wrangling.SparkSplitDataset",
-            "attr": {
+            "node_id": "split",
+            "node": "simple_repo.simple_spark.transform.data_wrangling.SparkSplitDataset",
+            "parameters": {
                 "train": 0.7,
                 "test": 0.3
             },
             "then": [
-                "pipeline"
+                {
+                    "send_to": "pipeline",
+                    "dataset": "dataset"
+                }
             ]
         },
         {
-            "idd": "pipeline",
-            "name": "pipeline.spark_pipeline.SparkPipelineNode",
-            "attr": {
+            "node_id": "pipeline",
+            "node": "simple_repo.simple_spark.pipeline.spark_pipeline.SparkPipelineNode",
+            "parameters": {
                 "stages": [
                     {
-                        "name": "pipeline.stages.Tokenizer",
+                        "name": "simple_repo.simple_spark.pipeline.stages.Tokenizer",
                         "param": {
                             "inCol": "text",
                             "outCol": "words"
                         }
                     },
                     {
-                        "name": "pipeline.stages.HashingTF",
+                        "name": "simple_repo.simple_spark.pipeline.stages.HashingTF",
                         "param": {
                             "inCol": "words",
                             "outCol": "features"
                         }
                     },
                     {
-                        "name": "pipeline.stages.LogisticRegression",
+                        "name": "simple_repo.simple_spark.pipeline.stages.LogisticRegression",
                         "param": {
                             "maxIter": 10,
                             "regParam": 0.001
@@ -74,16 +83,18 @@
                 ]
             },
             "then": [
-                "out"
+                {
+                    "send_to": "output",
+                    "model": "model"
+                }
             ]
         },
         {
-            "idd": "output",
-            "name": "output.output_step.SaveModel",
-            "attr": {
-                "path": "model"
-            },
-            "then": []
+            "node_id": "output",
+            "node": "simple_repo.simple_spark.output.output_step.SaveModel",
+            "parameters": {
+                "path": "simple_spark/model"
+            }
         }
     ]
 }

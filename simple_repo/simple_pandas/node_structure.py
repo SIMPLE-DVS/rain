@@ -1,9 +1,17 @@
 from abc import abstractmethod
+from collections import OrderedDict
+
 import pandas as pd
 from typing import List
 
-from simple_repo.base import SimpleNode
+from simple_repo.base import SimpleNode, Singleton, Node, get_class
 from simple_repo.parameter import SimpleIO
+
+
+def reset(simple_node):
+    dic = vars(simple_node)
+    for i in dic.keys():
+        dic[i] = None
 
 
 class PandasNode(SimpleNode):
@@ -27,37 +35,29 @@ class PandasNode(SimpleNode):
         return "{}".format(self._get_params_as_dict())
 
 
-class PandasPipeline:
-    """
-    PandasPipeline represents a sequence of transformation of a pandas dataframe.
-    The nodes to use for the transformation are sent in a list of stages.
-    The method transform is used to start the computation.
-    """
+class PandasExecutor(metaclass=Singleton):
+    def __init__(self):
+        pass
 
-    def __init__(self, stages: List[PandasNode]):
-        self._stages = stages
+    @staticmethod
+    def convert(nodes: List[Node]):
+        simple_nodes = OrderedDict()
+        nodes_nexts = {}
 
-    @property
-    def stages(self):
-        return self._stages
+        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
+        # mi tengo da parte anche le coppie id-then
+        for node in nodes:
+            node_class = get_class(node.node)
 
-    def append_stage(self, stage: PandasNode):
-        self._stages.append(stage)
+            s_node = node_class(**node.parameters)
 
-    def execute(self):
-        if len(self._stages) == 0:
-            return None
+            simple_nodes[node.node_id] = s_node
 
-        for i in range(0, len(self._stages)):
-            self._stages[i][1].execute()
+            if node.then:
+                nodes_nexts[node.node_id] = node.then
 
-            if i + 1 > len(self._stages) - 1:
-                break
+        return simple_nodes, nodes_nexts
 
-            try:
-                self._stages[i + 1].dataset = self._stages[i].dataset
-                self._stages[i].dataset = None
-            except Exception as e:
-                print(e)
-
-        return self._stages[len(self._stages) - 1].dataset
+    @staticmethod
+    def execute(simple_node: SimpleNode):
+        simple_node.execute()
