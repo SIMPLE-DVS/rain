@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 
 from simple_repo.parameter import StructuredParameterList, KeyValueParameter
-from simple_repo.simple_spark.spark_node import Transformer
+from simple_repo.simple_spark.node_structure import Transformer
 
 
 class SparkColumnSelector(Transformer):

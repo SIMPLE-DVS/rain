@@ -2,7 +2,7 @@ from pyspark.ml import PipelineModel
 from pyspark.sql import DataFrame
 
 from simple_repo.parameter import KeyValueParameter
-from simple_repo.simple_spark.spark_node import SparkNode
+from simple_repo.simple_spark.node_structure import SparkNode
 
 
 class SaveModel(SparkNode):

@@ -1,5 +1,5 @@
 from simple_repo.parameter import KeyValueParameter
-from simple_repo.simple_spark.spark_node import Transformer, Estimator
+from simple_repo.simple_spark.node_structure import Transformer, Estimator
 from pyspark.ml.classification import LogisticRegression as Lr
 from pyspark.ml.feature import HashingTF as Htf, Tokenizer as Tk
 

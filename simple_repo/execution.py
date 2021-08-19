@@ -1,17 +1,121 @@
+from abc import abstractmethod
 from collections import OrderedDict
-from typing import List, Tuple
+from typing import List
 
-from simple_repo.base import Singleton, Node
+from pyspark.sql import SparkSession
+
+from simple_repo.base import Node, Singleton, get_class, SimpleNode
 from simple_repo.dag import SimpleJSONParser
-from simple_repo.simple_pandas.node_structure import PandasExecutor
-from simple_repo.simple_sklearn.node_structure import SklearnExecutor
-from simple_repo.simple_spark.spark_manager import SparkExecutor
 
 
 def reset(simple_node):
     dic = vars(simple_node)
     for i in dic.keys():
         dic[i] = None
+
+
+class SimpleExecutor(metaclass=Singleton):
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def convert(nodes: List[Node]):
+        pass
+
+    @staticmethod
+    def execute(simple_node: SimpleNode):
+        simple_node.execute()
+
+
+class PandasExecutor(SimpleExecutor):
+    def __init__(self):
+        super(PandasExecutor, self).__init__()
+
+    @staticmethod
+    def convert(nodes: List[Node]):
+        simple_nodes = OrderedDict()
+        nodes_nexts = {}
+
+        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
+        # mi tengo da parte anche le coppie id-then
+        for node in nodes:
+            node_class = get_class(node.node)
+
+            s_node = node_class(**node.parameters)
+
+            simple_nodes[node.node_id] = s_node
+
+            if node.then:
+                nodes_nexts[node.node_id] = node.then
+
+        return simple_nodes, nodes_nexts
+
+
+class SklearnExecutor(SimpleExecutor):
+    def __init__(self):
+        super(SklearnExecutor, self).__init__()
+
+    @staticmethod
+    def convert(nodes: List[Node]):
+        simple_nodes = OrderedDict()
+        nodes_nexts = {}
+
+        # if len(nodes) == 0:
+        #     return None
+
+        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
+        # mi tengo da parte anche le coppie id-then
+        for node in nodes:
+            node_class = get_class(node.node)
+
+            s_node = node_class(node.execute, **node.parameters)
+
+            simple_nodes[node.node_id] = s_node
+
+            if node.then:
+                nodes_nexts[node.node_id] = node.then
+
+        return simple_nodes, nodes_nexts
+
+
+class SparkExecutor(SimpleExecutor):
+    def __init__(self):
+        super(SparkExecutor, self).__init__()
+        self._spark = None
+
+    def convert(self, nodes: List[Node]):
+        self._spark = SparkSession.builder.getOrCreate()
+        simple_nodes = OrderedDict()
+        nodes_nexts = {}
+
+        # if len(nodes) == 0:
+        #     return None
+
+        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
+        # mi tengo da parte anche le coppie id-then
+        for node in nodes:
+            cls = get_class(node.node)
+            if cls == get_class(
+                "simple_repo.simple_spark.pipeline.spark_pipeline.SparkPipelineNode"
+            ):
+                stages = []
+                pipe = node.parameters.get("stages")
+                for s in pipe:
+                    c = get_class(s.get("name"))
+                    stage = c(spark=self._spark, **s.get("param"))
+                    stages.append(stage)
+                simple_node = cls(spark=self._spark, lst=stages)
+            else:
+                simple_node = cls(spark=self._spark, **node.parameters)
+
+            simple_nodes[node.node_id] = simple_node
+
+            if node.then:
+                nodes_nexts[node.node_id] = node.then
+
+        return simple_nodes, nodes_nexts
 
 
 class SimpleSubPipeline:
@@ -118,7 +222,7 @@ if __name__ == "__main__":
 
     # sjp.show_dag()
 
-    pipeline = sjp.get_subpipelines()
+    pipeline = sjp.get_sub_pipelines()
 
     executors = {
         "pandas": PandasExecutor(),

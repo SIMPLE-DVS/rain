@@ -54,7 +54,7 @@ class KeyValueParameter(SimpleParameter):
         return "{{{}: {}}}".format(self._name, self._value)
 
     def __repr__(self):
-        return "{{{}, {}, {}}}".format(self.value, self.type.__name__, self.is_required)
+        return "{{{}, {}, {}}}".format(self.value, self.type.__name__, self.is_mandatory)
 
 
 class StructuredParameterList(SimpleParameter):
@@ -114,5 +114,5 @@ class StructuredParameterList(SimpleParameter):
 
 
 class SimpleHyperParameter(SimpleParameter):
-    def __init__(self, is_mandatory: bool = False, **kwargs):
-        super(SimpleHyperParameter, self).__init__(is_mandatory, **kwargs)
+    def __init__(self, is_mandatory: bool = False):
+        super(SimpleHyperParameter, self).__init__(is_mandatory)

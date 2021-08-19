@@ -23,3 +23,14 @@ model.write().overwrite().save('model')
 # model = PipelineModel.load("model")
 
 print("OK")
+
+if __name__ == "__main__":
+    sjp = SimpleJSONParser()
+
+    sjp.parse_configuration("simple_spark/spark_conf.json")
+
+    spark_nodes = sjp.get_sorted_nodes()
+
+    sp = SparkExecutor()
+
+    sp.execute(spark_nodes)

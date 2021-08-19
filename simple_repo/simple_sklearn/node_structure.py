@@ -1,17 +1,9 @@
-from collections import OrderedDict
 from typing import List, Tuple
 
 import pandas
 import sklearn.base
 
-from simple_repo.base import SimpleNode, Singleton, Node, get_class
-from simple_repo.parameter import KeyValueParameter
-
-
-def reset(simple_node):
-    dic = vars(simple_node)
-    for i in dic.keys():
-        dic[i] = None
+from simple_repo.base import SimpleNode
 
 
 class SklearnMethod:
@@ -138,34 +130,3 @@ class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, Transforme
         ScorerMixin.__init__(self)
         TransformerMixin.__init__(self)
         super(SklearnClusterer, self).__init__(estimator_type, execute, **kwargs)
-
-
-class SklearnExecutor(metaclass=Singleton):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def convert(nodes: List[Node]):
-        simple_nodes = OrderedDict()
-        nodes_nexts = {}
-
-        # if len(nodes) == 0:
-        #     return None
-
-        # carico le istanze dei SimpleNode a partire dai Node mantenendo l'ordinamento
-        # mi tengo da parte anche le coppie id-then
-        for node in nodes:
-            node_class = get_class(node.node)
-
-            s_node = node_class(node.execute, **node.parameters)
-
-            simple_nodes[node.node_id] = s_node
-
-            if node.then:
-                nodes_nexts[node.node_id] = node.then
-
-        return simple_nodes, nodes_nexts
-
-    @staticmethod
-    def execute(simple_node: SimpleNode):
-        simple_node.execute()

@@ -1,12 +1,6 @@
-from typing import List, Tuple
-
-from simple_repo.base import load_config, Node, get_class, Singleton
+from simple_repo.base import load_config, Node
 import networkx as nx
 from matplotlib import pyplot as plt
-import json
-
-from simple_repo.simple_pandas.node_structure import PandasExecutor
-from simple_repo.simple_sklearn.node_structure import SklearnExecutor
 
 
 def get_nodes(config: dict, engine: str):
@@ -25,53 +19,6 @@ def get_nodes(config: dict, engine: str):
                 edges.append((node_id, nxt.get("send_to")))
 
     return nodes_types, nodes, edges
-
-
-def eseguitutto(subpipelines):
-    nodes_insts = {}
-    nodes_nexts = {}
-
-    for node_tp, node_lst in subpipelines:
-        for node in node_lst:
-            node_class = get_class(node.node)
-            if node_tp == "sklearn":
-                node_inst = node_class(node.execute, **node.parameters)
-            else:
-                node_inst = node_class(**node.parameters)
-
-            nodes_insts[node.node_id] = node_inst
-
-            if node.then:
-                nodes_nexts[node.node_id] = node.then
-
-    for node_name, node_inst in nodes_insts.items():
-        node_inst.execute()
-
-        if node_name not in nodes_nexts.keys():
-            continue
-
-        for nxt in nodes_nexts.get(node_name):
-            receiver_id = nxt.get("send_to")
-
-            receiver = nodes_insts.get(receiver_id)
-
-            for k, v in nxt.items():
-                if k == "send_to":
-                    continue
-
-                actual_node_output = node_inst.get_output_value(k)
-                receiver.set_input_value(v, actual_node_output)
-
-
-class SimplePipeline:
-    executors = {"pandas": PandasExecutor(), "sklearn": SklearnExecutor()}
-
-    def __init__(self, pipeline: List[Tuple[str, Node]]):
-        self._pipeline = pipeline
-
-    def execute_pipeline(self):
-        for subpipeline in self._pipeline:
-            self.executors.get(subpipeline[0]).execute(subpipeline[1])
 
 
 class SimpleJSONParser:
@@ -129,13 +76,13 @@ class SimpleJSONParser:
 
             return topologically_ordered_list
 
-    def get_subpipelines(self):
+    def get_sub_pipelines(self):
         if not self._is_loaded:
             return None
 
-        subpipelines = []
-        subpipeline = []
-        subpipeline_type = None
+        sub_pipelines = []
+        sub_pipeline = []
+        sub_pipeline_type = None
 
         sorted_node_list = self.get_sorted_node_ids()
 
@@ -145,23 +92,23 @@ class SimpleJSONParser:
 
             # il primo lo aggiungo a prescindere nella sottopipeline e setto il tipo
             if i == 0:
-                subpipeline.append(node)
-                subpipeline_type = node_type
+                sub_pipeline.append(node)
+                sub_pipeline_type = node_type
                 continue
 
             # Se il tipo del nodo è uguale a quello dell subpipeline lo aggiungo ad essa
             # Altrimenti aggiungo una tupla (tipo subpipeline, subpipeline) alla lista di subpipeline,
             # e resetto le variabili considerando il nuovo nodo.
-            if node_type == subpipeline_type:
-                subpipeline.append(node)
+            if node_type == sub_pipeline_type:
+                sub_pipeline.append(node)
             else:
-                subpipelines.append((subpipeline_type, subpipeline))
-                subpipeline = [node]
-                subpipeline_type = node_type
+                sub_pipelines.append((sub_pipeline_type, sub_pipeline))
+                sub_pipeline = [node]
+                sub_pipeline_type = node_type
 
-        subpipelines.append((subpipeline_type, subpipeline))
+        sub_pipelines.append((sub_pipeline_type, sub_pipeline))
 
-        return subpipelines
+        return sub_pipelines
 
     # dato che il dag viene creato leggendo solamente gli id ed i then,
     # aggiungere un controllo che si assicuri che tutti gli id presenti
@@ -176,8 +123,4 @@ if __name__ == "__main__":
 
     sjp.show_dag()
 
-    pipeline = sjp.get_subpipelines()
-
-    # eseguitutto(subpipelines)
-
-    main_exec = SimplePipeline(pipeline)
+    pipeline = sjp.get_sub_pipelines()

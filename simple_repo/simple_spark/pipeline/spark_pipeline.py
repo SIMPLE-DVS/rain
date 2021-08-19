@@ -1,6 +1,6 @@
 from pyspark.ml import Pipeline
 
-from simple_repo.simple_spark.spark_node import Estimator
+from simple_repo.simple_spark.node_structure import Estimator
 
 
 class SparkPipelineNode(Estimator):
