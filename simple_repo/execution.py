@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from collections import OrderedDict
-from typing import List
+from typing import List, Any
 
 from pyspark.sql import SparkSession
 
@@ -15,7 +15,6 @@ def reset(simple_node):
 
 
 class SimpleExecutor(metaclass=Singleton):
-
     def __init__(self):
         pass
 
@@ -118,12 +117,32 @@ class SparkExecutor(SimpleExecutor):
         return simple_nodes, nodes_nexts
 
 
+class ExecutionResult:
+    """Mantains subpipelines execution results."""
+
+    def __init__(self, receiver_id: str, receiver_field: str, data: Any):
+        self._receiver_id = receiver_id
+        self._receiver_field = receiver_field
+        self._data = data
+
+    @property
+    def receiver_id(self):
+        return self._receiver_id
+
+    @property
+    def receiver_field(self):
+        return self._receiver_field
+
+    @property
+    def data(self):
+        return self._data
+
+
 class SimpleSubPipeline:
     def __init__(self, s_type, nodes: List[Node], executor):
         self._type = s_type
         self._nodes = OrderedDict()
         self._nexts = {}
-        self._foreign_nexts = {}
         self._executor = executor
 
         s_nodes, nxts = self._executor.convert(nodes)
@@ -134,36 +153,65 @@ class SimpleSubPipeline:
             self._nexts.update(nxts)
 
     def execute_subpipeline(self):
+        results = []
+
+        # per ogni nodo della sottopipeline
         for node_name, node in self._nodes.items():
+            # esegui il nodo
             self._executor.execute(node)
 
+            # se il nodo non ha next prosegui
             if node_name not in self._nexts.keys():
                 continue
 
-            f_nexts = []
-
+            # altrimenti per ogni next del nodo
             for nxt in self._nexts.get(node_name):
+                # prendo id del ricevente
                 receiver_id = nxt.get("send_to")
 
-                receiver = self._nodes.get(receiver_id)
-
-                if receiver is None:
-                    f_nexts.append(nxt)
-                    continue
-
+                # prendo rispettivamente i field del nodo e del ricevente
                 for k, v in nxt.items():
+                    # il campo send_to non è considerato un field
                     if k == "send_to":
                         continue
 
-                    actual_node_output = node.get_output_value(k)
-                    receiver.set_input_value(v, actual_node_output)
+                    # prendo l'output generato dal nodo
+                    node_output = node.get_output_value(k)
 
-            if f_nexts:
-                self._foreign_nexts[node_name] = f_nexts
+                    # creo un result
+                    result = ExecutionResult(receiver_id, v, node_output)
+
+                    # provo ad aggiornare il nodo ricevente con l'output
+                    is_received = self.update_node_data(result)
+
+                    # se l'output non è stato ricevuto allora il
+                    # ricevente non fa parte di questa sottopipeline
+                    if not is_received:
+                        # allora aggiungo il risultato alla lista da ritornare
+                        results.append(result)
+
+        return results
 
     def reset(self):
         for s_node in self._nodes.values():
             reset(s_node)
+
+    def get_node(self, node_id: str):
+        return self._nodes.get(node_id)
+
+    def update_node_data(self, data: ExecutionResult):
+        # prendo il nodo da aggiornare
+        receiver = self.get_node(data.receiver_id)
+
+        # se non è presente nella sottopipeline ritorno False
+        # per indicare che l'aggiornamento non è andato a buon fine
+        if receiver is None:
+            return False
+
+        # aggiorno il nodo
+        receiver.set_input_value(data.receiver_field, data.data)
+
+        return True
 
     @property
     def executor(self):
@@ -173,10 +221,6 @@ class SimpleSubPipeline:
     def nodes(self):
         return self._nodes
 
-    @property
-    def foreign_nexts(self):
-        return self._foreign_nexts
-
 
 class SimplePipeline:
     def __init__(self):
@@ -185,29 +229,28 @@ class SimplePipeline:
 
     def add_subpipeline(self, subpipeline: SimpleSubPipeline):
         self._subpipelines.append(subpipeline)
-        self._nodes.update(subpipeline.nodes)
+
+        for node in subpipeline.nodes.keys():
+            self._nodes[node] = subpipeline
 
     def execute(self):
+        # per ogni sottopipeline
         for subpip in self._subpipelines:
-            subpip.execute_subpipeline()
+            # eseguo la sottopipeline
+            results = subpip.execute_subpipeline()
 
-            if not subpip.foreign_nexts:
+            # se non ha prodotto risultati da propagare allora proseguo
+            if not results:
                 continue
 
-            for node_name, nxts in subpip.foreign_nexts.items():
-                node = self._nodes.get(node_name)
-                for nxt in nxts:
-                    receiver_id = nxt.get("send_to")
+            # altrimenti per ogni risultato
+            for result in results:
+                # prendo la sottopipeline a cui appartiene il nodo ricevente
+                next_sub_pipeline = self._nodes.get(result.receiver_id)
+                # mando il risultato alla sottopipeline che aggiornerà il nodo
+                next_sub_pipeline.update_node_data(result)
 
-                    receiver = self._nodes.get(receiver_id)
-
-                    for k, v in nxt.items():
-                        if k == "send_to":
-                            continue
-
-                        actual_node_output = node.get_output_value(k)
-                        receiver.set_input_value(v, actual_node_output)
-
+            # resetto le variabili dell'intera pipeline
             subpip.reset()
 
     @property
