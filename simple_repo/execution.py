@@ -7,6 +7,8 @@ from pyspark.sql import SparkSession
 from simple_repo.base import Node, Singleton, get_class, SimpleNode
 from simple_repo.dag import SimpleJSONParser
 
+import pickle
+
 
 def reset(simple_node):
     dic = vars(simple_node)
@@ -261,7 +263,7 @@ class SimplePipeline:
 if __name__ == "__main__":
     sjp = SimpleJSONParser()
 
-    sjp.parse_configuration("simple_spark/spark_conf.json")
+    sjp.parse_configuration("pandas_sklearn2.json")
 
     # sjp.show_dag()
 
@@ -280,4 +282,4 @@ if __name__ == "__main__":
             SimpleSubPipeline(subpip_type, subpip_node_list, executors.get(subpip_type))
         )
 
-    pippo.execute()
+    print(pickle.dumps(pippo))
