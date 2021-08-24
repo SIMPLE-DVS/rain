@@ -1,4 +1,4 @@
-from node_structure import SklearnFunction
+from simple_repo.simple_sklearn.node_structure import SklearnFunction
 
 
 class SimpleSplitTrainTest(SklearnFunction):
