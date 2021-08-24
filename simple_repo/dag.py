@@ -1,4 +1,4 @@
-from simple_repo.base import load_config, Node
+from simple_repo.base import load_config, Node, load_yaml_config
 import networkx as nx
 from matplotlib import pyplot as plt
 
@@ -37,7 +37,8 @@ class SimpleJSONParser:
 
     def parse_configuration(self, config_file_path: str):
 
-        config = load_config(config_file_path)
+        # config = load_config(config_file_path)
+        config = load_yaml_config(config_file_path)
 
         edges = []
 

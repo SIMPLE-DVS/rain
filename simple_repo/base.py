@@ -6,6 +6,8 @@ from typing import Any
 from simple_repo.exception import ParameterNotFound
 from simple_repo.parameter import StructuredParameterList
 
+import yaml
+
 
 def get_class(fullname: str):
     """
@@ -31,6 +33,15 @@ def load_config(config_file) -> dict:
     """
     with open(config_file, "r") as f:
         config = json.load(f)
+        return config
+
+
+def load_yaml_config(config_file) -> dict:
+    """
+    Utility function that given a path, returns the yaml file representing the configuration of the pipeline.
+    """
+    with open(config_file, "r") as y:
+        config = yaml.load(y, Loader=yaml.FullLoader)
         return config
 
 

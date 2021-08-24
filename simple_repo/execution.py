@@ -261,25 +261,14 @@ class SimplePipeline:
 
 
 if __name__ == "__main__":
+    import os
+
     sjp = SimpleJSONParser()
 
-    sjp.parse_configuration("pandas_sklearn2.json")
+    sjp.parse_configuration("pandas_sklearn.yaml")
 
     # sjp.show_dag()
 
     pipeline = sjp.get_sub_pipelines()
 
-    executors = {
-        "pandas": PandasExecutor(),
-        "sklearn": SklearnExecutor(),
-        "spark": SparkExecutor(),
-    }
-
-    pippo = SimplePipeline()
-
-    for subpip_type, subpip_node_list in pipeline:
-        pippo.add_subpipeline(
-            SimpleSubPipeline(subpip_type, subpip_node_list, executors.get(subpip_type))
-        )
-
-    print(pickle.dumps(pippo))
+    pickle.dump(pipeline, open("C:/Users/{}/Desktop/pipe.pkl".format(os.getlogin()), "wb"))
