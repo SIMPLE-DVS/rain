@@ -82,6 +82,14 @@ class StructuredParameterList(SimpleParameter):
         self._parameters = []
         super(StructuredParameterList, self).__init__(is_mandatory)
 
+    def get_params_structure(self):
+        param = []
+        for k in self._mandatory_keys:
+            param.append({"name": k, "type": str, "is_mandatory": True})
+        for k in self._optional_keys:
+            param.append({"name": k, "type": str, "is_mandatory": False})
+        return param
+
     def add_parameter(self, **param):
         new_param = {}
 
@@ -116,3 +124,9 @@ class StructuredParameterList(SimpleParameter):
 class SimpleHyperParameter(SimpleParameter):
     def __init__(self, is_mandatory: bool = False):
         super(SimpleHyperParameter, self).__init__(is_mandatory)
+
+
+if __name__ == '__main__':
+
+    p = StructuredParameterList(col=True, value=False, pippo=True)
+    print(p.get_params_structure())
