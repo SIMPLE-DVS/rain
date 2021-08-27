@@ -3,7 +3,6 @@ from abc import abstractmethod
 import pandas as pd
 
 from simple_repo.base import SimpleNode
-from simple_repo.parameter import SimpleIO
 
 
 class PandasNode(SimpleNode):
@@ -12,7 +11,7 @@ class PandasNode(SimpleNode):
     applies a tansformation and returns a pandas DataFrame as output.
     """
 
-    _input_vars = {"dataset": SimpleIO(pd.DataFrame)}
+    _input_vars = {"dataset": pd.DataFrame}
     _parameters = {}
     _output_vars = {"dataset": pd.DataFrame}
 
