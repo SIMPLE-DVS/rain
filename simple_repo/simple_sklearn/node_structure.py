@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import pandas
 import sklearn.base
 
@@ -86,7 +84,7 @@ class PredictorMixin:
 class ScorerMixin:
     def __init__(self):
         self._input_vars["score_dataset"] = pandas.DataFrame
-        self._output_vars["scores"] = List[Tuple]
+        self._output_vars["scores"] = list
         self._methods["score"] = False
 
     def score(self):
@@ -102,7 +100,7 @@ class ScorerMixin:
 class TransformerMixin:
     def __init__(self):
         self._input_vars["transform_dataset"] = pandas.DataFrame
-        self._output_vars["transformed_dataset"] = List[Tuple]
+        self._output_vars["transformed_dataset"] = list
         self._methods["transform"] = False
 
     def transform(self):

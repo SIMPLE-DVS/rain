@@ -127,7 +127,6 @@ class SimpleHyperParameter(SimpleParameter):
 
 
 if __name__ == '__main__':
-
     p = StructuredParameterList(col=True, value=False, pippo=True)
-    p2 = KeyValueParameter("pippo", str, True)
     print(p.get_params_structure())
+

@@ -1,7 +1,6 @@
 import pandas
 import pandas as pd
 
-from typing import List
 from simple_repo.parameter import KeyValueParameter
 from simple_repo.simple_pandas.node_structure import PandasNode
 
@@ -49,7 +48,7 @@ class PandasCSVWriter(PandasNode):
         "include_rows": KeyValueParameter("index", bool, value=True),
         "rows_column_label": KeyValueParameter("index_label", str),
         "include_columns": KeyValueParameter("header", bool, value=True),
-        "columns": KeyValueParameter("columns", List),
+        "columns": KeyValueParameter("columns", list),
     }
 
     def __init__(self, **kwargs):
