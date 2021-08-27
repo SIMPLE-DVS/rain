@@ -33,7 +33,7 @@ class SparkModelLoader(SparkNode):
     }
 
     def __init__(self, spark, **kwargs):
-        super(SparkCSVLoader, self).__init__(spark, **kwargs)
+        super(SparkModelLoader, self).__init__(spark, **kwargs)
 
     def execute(self):
         self.model = PipelineModel.load(self._parameters.get("path").value)
