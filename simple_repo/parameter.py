@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Any
 
 from simple_repo.exception import ParameterNotFound, BadParameterStructure
@@ -20,6 +21,10 @@ class SimpleParameter:
     def is_mandatory(self):
         return self._is_mandatory
 
+    @abstractmethod
+    def get_structure(self):
+        pass
+
 
 class KeyValueParameter(SimpleParameter):
     """
@@ -33,6 +38,14 @@ class KeyValueParameter(SimpleParameter):
         self._type = p_type
         self._value = value
         super(KeyValueParameter, self).__init__(is_mandatory)
+
+    def get_structure(self):
+        struct = dict()
+
+        struct["name"] = self._name
+        struct["type"] = self._type.__name__
+        struct["is_mandatory"] = self._is_mandatory
+        return struct
 
     @property
     def name(self):
@@ -54,7 +67,9 @@ class KeyValueParameter(SimpleParameter):
         return "{{{}: {}}}".format(self._name, self._value)
 
     def __repr__(self):
-        return "{{{}, {}, {}}}".format(self.value, self.type.__name__, self.is_mandatory)
+        return "{{{}, {}, {}}}".format(
+            self.value, self.type.__name__, self.is_mandatory
+        )
 
 
 class StructuredParameterList(SimpleParameter):
@@ -82,12 +97,21 @@ class StructuredParameterList(SimpleParameter):
         self._parameters = []
         super(StructuredParameterList, self).__init__(is_mandatory)
 
-    def get_params_structure(self):
+    def get_structure(self):
         param = []
+        param_struct = {}
         for k in self._mandatory_keys:
-            param.append({"name": k, "type": str.__name__, "is_mandatory": True})
+            param_struct["name"] = k
+            param_struct["type"] = str.__name__
+            param_struct["is_mandatory"] = True
+            param.append(param_struct)
+            param_struct = {}
         for k in self._optional_keys:
-            param.append({"name": k, "type": str.__name__, "is_mandatory": False})
+            param_struct["name"] = k
+            param_struct["type"] = str.__name__
+            param_struct["is_mandatory"] = False
+            param.append(param_struct)
+            param_struct = {}
         return param
 
     def add_parameter(self, **param):
@@ -125,8 +149,25 @@ class SimpleHyperParameter(SimpleParameter):
     def __init__(self, is_mandatory: bool = False):
         super(SimpleHyperParameter, self).__init__(is_mandatory)
 
+    def get_structure(self):
+        pass
 
-if __name__ == '__main__':
-    p = StructuredParameterList(col=True, value=False, pippo=True)
-    print(p.get_params_structure())
 
+if __name__ == "__main__":
+    """
+    [
+        {
+            col: ...
+            pippo: ...
+        },
+        {
+            col: ...
+            alfio: ...
+        }
+    ]
+    """
+    p = StructuredParameterList(col=True, alfio=False, pippo=True)
+    print(p.get_structure())
+
+    k = KeyValueParameter("path", str)
+    print(k.get_structure())
