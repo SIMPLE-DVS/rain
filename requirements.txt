@@ -11,3 +11,5 @@ networkx~=2.6.2
 matplotlib~=3.4.2
 
 PyYAML~=5.4.1
+
+Jinja2~=3.0.1
