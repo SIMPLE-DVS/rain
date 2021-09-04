@@ -68,7 +68,20 @@ def reset(simple_node):
         dic[i] = None
 
 
-class SimpleNode:
+class Meta(type):
+    def __new__(mcs, clsname, bases, dct):
+        class_ = super().__new__(mcs, clsname, bases, dct)
+        if class_.__bases__:
+            for base in class_.__bases__:
+                if hasattr(base, "_input_vars"):
+                    getattr(class_, "_input_vars").update(base._input_vars)
+                if hasattr(base, "_output_vars"):
+                    getattr(class_, "_output_vars").update(base._output_vars)
+
+        return class_
+
+
+class SimpleNode(metaclass=Meta):
     _input_vars = {}
     _parameters = {}
     _output_vars = {}
