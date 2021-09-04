@@ -71,6 +71,9 @@ conf = {
 
 def check_parameters(clazz, config_params: dict):
     clazz_params = clazz._parameters
+    if not isinstance(config_params, dict):
+        raise BadSimpleParameterType("Config Paramters are not dict")
+
     for key, value in config_params.items():
         if key not in clazz_params.keys():
             raise BadSimpleParameterName("Parameter {} is not available for class {}".format(key, clazz.__name__))
@@ -135,10 +138,12 @@ def check_then(id_class: dict, id_then: dict):
                 raise Exception("Key 'send_to' is missing in 'then' field for node with id {}".format(idd))
             if then["send_to"] not in id_class.keys():
                 raise Exception("Node {} is not not a valid ID to send the result".format(then["send_to"]))
+            if len(then) < 2:
+                raise Exception("Each 'then' field should contains the items 'output_sender_var': 'input_receiver_var'")
             for sender_var, receiver_var in then.items():
                 if sender_var == "send_to":
                     continue
-                keys = list(id_class.get(idd)._output_vars.keys())  # TODO serve l'oggetto, non la classe
+                keys = list(id_class.get(idd)._output_vars.keys())
                 if sender_var not in keys:
                     raise Exception("Variable {} is not present in class {}".format(
                         sender_var, id_class.get(idd).__name__))
@@ -158,25 +163,33 @@ class ConfigurationParser:
         nodes_id_then = {}
 
         for key in self.config:
-            if key not in ["pandas", "sklearn", "spark"]:
+            if key not in ["pandas", "sklearn", "spark", "pipeline_uid"]:
+                raise Exception("Unexpected key {} in config file".format(key))
+            if key == "pipeline_uid":
                 continue
+            if not isinstance(self.config[key], list):
+                raise Exception("Bad '{}' field, should be a 'list'".format(key))
 
             for node in self.config[key]:
                 if not all(k in node.keys() for k in ['node', 'node_id', 'parameters']):
                     raise MissingSimpleNodeKey("Mandatory Key 'node' or 'node_id' or 'parameters' are missing in one "
                                                "{} node".format(key))
-
+                if not isinstance(node["node_id"], str):
+                    raise BadSimpleParameterType("'node_id' field should be a string")
+                if not isinstance(node["node"], str):
+                    raise BadSimpleParameterType("'node' field should be a string in node {}".format(node["node_id"]))
                 cls = check_node(node["node"])
                 check_parameters(cls, node["parameters"])
                 nodes_id_class[node["node_id"]] = cls
                 if "then" in node:
+                    if not isinstance(node["then"], list):
+                        raise BadSimpleParameterType("'then' field should be a list in node {}".format(node["node_id"]))
                     nodes_id_then[node["node_id"]] = node["then"]
                 # check_sklearn_execute
-        # check_then(nodes_id_class, nodes_id_then)
+        check_then(nodes_id_class, nodes_id_then)
 
 
 if __name__ == '__main__':
-
     c = ConfigurationParser(conf)
     c.parser()
     print("ok")

@@ -71,9 +71,16 @@ class SklearnEstimator(SklearnNode):
 
 
 class PredictorMixin:
+
+    _input_vars = {
+        "predict_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "predictions": pandas.DataFrame
+    }
+
     def __init__(self):
-        self._input_vars["predict_dataset"] = pandas.DataFrame
-        self._output_vars["predictions"] = pandas.DataFrame
         self._methods["predict"] = False
 
     def predict(self):
@@ -82,9 +89,16 @@ class PredictorMixin:
 
 
 class ScorerMixin:
+
+    _input_vars = {
+        "score_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "scores": list
+    }
+
     def __init__(self):
-        self._input_vars["score_dataset"] = pandas.DataFrame
-        self._output_vars["scores"] = list
         self._methods["score"] = False
 
     def score(self):
@@ -98,9 +112,16 @@ class ScorerMixin:
 
 
 class TransformerMixin:
+
+    _input_vars = {
+        "transform_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "transformed_dataset": list
+    }
+
     def __init__(self):
-        self._input_vars["transform_dataset"] = pandas.DataFrame
-        self._output_vars["transformed_dataset"] = list
         self._methods["transform"] = False
 
     def transform(self):
