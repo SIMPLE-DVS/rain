@@ -80,8 +80,12 @@ class PredictorMixin:
         "predictions": pandas.DataFrame
     }
 
+    _methods = {
+        "predict": False
+    }
+
     def __init__(self):
-        self._methods["predict"] = False
+        pass
 
     def predict(self):
         if self.fitted_model is not None and self.predict_dataset is not None:
@@ -98,8 +102,12 @@ class ScorerMixin:
         "scores": list
     }
 
+    _methods = {
+        "score": False
+    }
+
     def __init__(self):
-        self._methods["score"] = False
+        pass
 
     def score(self):
         if self.fitted_model is not None and self.score_dataset is not None:
@@ -121,8 +129,12 @@ class TransformerMixin:
         "transformed_dataset": list
     }
 
+    _methods = {
+        "transform": False
+    }
+
     def __init__(self):
-        self._methods["transform"] = False
+        pass
 
     def transform(self):
         if self.fitted_model is not None and self.transform_dataset is not None:

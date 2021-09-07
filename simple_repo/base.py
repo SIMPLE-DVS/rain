@@ -77,6 +77,8 @@ class Meta(type):
                     getattr(class_, "_input_vars").update(base._input_vars)
                 if hasattr(base, "_output_vars"):
                     getattr(class_, "_output_vars").update(base._output_vars)
+                if hasattr(base, "_methods"):
+                    getattr(class_, "_methods").update(base._methods)
 
         return class_
 
