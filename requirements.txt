@@ -11,3 +11,5 @@ networkx~=2.6.2
 matplotlib~=3.4.2
 
 PyYAML~=5.4.1
+
+pymongo~=3.12.0

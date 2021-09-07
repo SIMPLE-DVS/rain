@@ -13,19 +13,14 @@ class BadSimpleNodeClass(Exception):
         super(BadSimpleNodeClass, self).__init__(msg)
 
 
-class BadSimpleModule(Exception):
+class BadSimpleParameter(Exception):
     def __init__(self, msg: str):
-        super(BadSimpleModule, self).__init__(msg)
+        super(BadSimpleParameter, self).__init__(msg)
 
 
-class BadSimpleParameterName(Exception):
+class BadConfigurationKeyType(Exception):
     def __init__(self, msg: str):
-        super(BadSimpleParameterName, self).__init__(msg)
-
-
-class BadSimpleParameterType(Exception):
-    def __init__(self, msg: str):
-        super(BadSimpleParameterType, self).__init__(msg)
+        super(BadConfigurationKeyType, self).__init__(msg)
 
 
 class MissingMandatoryParameter(Exception):
@@ -41,3 +36,8 @@ class UnexpectedParameter(Exception):
 class MissingSimpleNodeKey(Exception):
     def __init__(self, msg: str):
         super(MissingSimpleNodeKey, self).__init__(msg)
+
+
+class UnexpectedKey(Exception):
+    def __init__(self, msg: str):
+        super(UnexpectedKey, self).__init__(msg)
