@@ -1,6 +1,6 @@
 import importlib
 
-from simple_repo.exception import BadSimpleNodeClass, BadSimpleModule, BadSimpleParameterType, BadSimpleParameterName, \
+from simple_repo.exception import BadSimpleNodeClass, BadConfigurationKeyType, BadSimpleParameter, \
     MissingMandatoryParameter, UnexpectedParameter, MissingSimpleNodeKey
 from simple_repo.parameter import KeyValueParameter, StructuredParameterList, SimpleHyperParameter
 
@@ -72,21 +72,21 @@ conf = {
 def check_parameters(clazz, config_params: dict):
     clazz_params = clazz._parameters
     if not isinstance(config_params, dict):
-        raise BadSimpleParameterType("Config Paramters are not dict")
+        raise BadConfigurationKeyType("The structure of the configuration file is not a 'dict'")
 
     for key, value in config_params.items():
         if key not in clazz_params.keys():
-            raise BadSimpleParameterName("Parameter {} is not available for class {}".format(key, clazz.__name__))
+            raise BadSimpleParameter("Parameter {} is not available for class {}".format(key, clazz.__name__))
 
         param = clazz_params.get(key)
         if isinstance(param, KeyValueParameter):
             if not isinstance(value, param.type):
-                raise BadSimpleParameterType(
+                raise BadConfigurationKeyType(
                     "Wrong type {} for parameter {} in class {}".format(type(value), key, clazz.__name__))
 
         elif isinstance(param, StructuredParameterList):
             if not isinstance(value, list):
-                raise BadSimpleParameterType(
+                raise BadConfigurationKeyType(
                     "Wrong type {} for parameter {} in class {}".format(type(value), key, clazz.__name__))
 
             param_list = clazz_params.get(key).get_structure()
@@ -101,7 +101,7 @@ def check_parameters(clazz, config_params: dict):
                         raise MissingMandatoryParameter(
                             "Mandatory parameter '{}' is missing in class {}".format(name, clazz.__name__))
                     if not type(parameter.get(name)).__name__ == p_type:
-                        raise BadSimpleParameterType(
+                        raise BadConfigurationKeyType(
                             "Wrong type {} for parameter '{}' in class {}".format(type(parameter.get(name)), name,
                                                                                   clazz.__name__))
                 for name, p_type in parameter.items():
@@ -110,7 +110,7 @@ def check_parameters(clazz, config_params: dict):
                     if name not in optional_keys.keys():
                         raise UnexpectedParameter("Unexpected parameter '{}' in class {}".format(name, clazz.__name__))
                     if not type(parameter.get(name)).__name__ == optional_keys.get(name):
-                        raise BadSimpleParameterType(
+                        raise BadConfigurationKeyType(
                             "Wrong type {} for parameter '{}' in class {}".format(type(parameter.get(name)), name,
                                                                                   clazz.__name__))
         elif isinstance(value, SimpleHyperParameter):
@@ -127,7 +127,7 @@ def check_node(node: str):
     except AttributeError:
         raise BadSimpleNodeClass("Class {} does not exist in module {}".format(class_name, package_name))
     except ModuleNotFoundError:
-        raise BadSimpleModule("Module {} does not exist in simple library".format(package_name))
+        raise BadSimpleNodeClass("Module {} does not exist in simple library".format(package_name))
     return clazz
 
 
@@ -170,26 +170,38 @@ class ConfigurationParser:
             if not isinstance(self.config[key], list):
                 raise Exception("Bad '{}' field, should be a 'list'".format(key))
 
+            mand_keys = ['node', 'node_id', 'parameters', 'execute'] if key == "sklearn" else ['node', 'node_id',
+                                                                                               'parameters']
+            all_keys = mand_keys + ["then"]
             for node in self.config[key]:
-                if not all(k in node.keys() for k in ['node', 'node_id', 'parameters']):
-                    raise MissingSimpleNodeKey("Mandatory Key 'node' or 'node_id' or 'parameters' are missing in one "
-                                               "{} node".format(key))
+                for k in mand_keys:
+                    if k not in node.keys():
+                        raise MissingSimpleNodeKey("Mandatory Key {} is missing in one {} node".format(k, key))
+                for k in node.keys():
+                    if k not in all_keys:
+                        raise Exception("Unexpected key {} in node {}".format(k, node["node_id"]))
+
                 if not isinstance(node["node_id"], str):
-                    raise BadSimpleParameterType("'node_id' field should be a string")
+                    raise BadConfigurationKeyType("'node_id' field should be a string")
                 if not isinstance(node["node"], str):
-                    raise BadSimpleParameterType("'node' field should be a string in node {}".format(node["node_id"]))
+                    raise BadConfigurationKeyType("'node' field should be a string in node {}".format(node["node_id"]))
+                if "then" in node:
+                    if not isinstance(node["then"], list):
+                        raise BadConfigurationKeyType("'then' field should be a list in node {}".format(node["node_id"]))
+                    nodes_id_then[node["node_id"]] = node["then"]
+
                 cls = check_node(node["node"])
                 check_parameters(cls, node["parameters"])
                 nodes_id_class[node["node_id"]] = cls
-                if "then" in node:
-                    if not isinstance(node["then"], list):
-                        raise BadSimpleParameterType("'then' field should be a list in node {}".format(node["node_id"]))
-                    nodes_id_then[node["node_id"]] = node["then"]
                 # check_sklearn_execute
         check_then(nodes_id_class, nodes_id_then)
 
 
 if __name__ == '__main__':
+    from datetime import datetime
     c = ConfigurationParser(conf)
-    c.parser()
-    print("ok")
+    start_time = datetime.now()
+    for i in range(10000):
+        c.parser()
+    end_time = datetime.now()
+    print("Duration: {}".format(end_time - start_time))

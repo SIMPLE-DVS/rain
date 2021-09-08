@@ -77,7 +77,8 @@ all_nodes_structure = list(node_info_collection.find({}))
 def check_parameters(clazz, config_params: dict):
     clazz_params = clazz.get("node_parameter")
     if not isinstance(config_params, dict):
-        raise BadConfigurationKeyType("The structure of the configuration file is not a 'dict'")
+        raise BadConfigurationKeyType(
+            "The structure of the 'parameters' is not a 'dict' in node {}".format(clazz.get("node_class")))
 
     for key, value in config_params.items():
         if key not in clazz_params.keys():
@@ -234,6 +235,7 @@ class ConfigurationParser:
 
 if __name__ == '__main__':
     from datetime import datetime
+
     c = ConfigurationParser(conf)
     start_time = datetime.now()
     c.parse_configuration()
