@@ -2,11 +2,18 @@ import importlib
 import inspect
 import re
 from dataclasses import dataclass
+from enum import Enum
+
+
+class ImportType(Enum):
+    INTERNAL = "Internal"
+    EXTERNAL = "External"
 
 
 @dataclass
 class ImportInfo:
     import_string: str
+    import_type: ImportType
     from_string: str = ""
     alias: str = ""
 
@@ -16,6 +23,9 @@ class ImportInfo:
             "import {}".format(self.import_string),
             " as {}".format(self.alias) if self.alias != "" else "",
         )
+
+    def __repr__(self):
+        return "{} import: {}".format(self.import_type.value, self.__str__())
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -50,8 +60,14 @@ def create_import_info(import_string):  # noqa W605
     )
     import_string = match_from.group("import_string")
     alias = match_from.group("alias") if match_from.group("alias") else ""
+    is_internal = (
+        ImportType.INTERNAL
+        if from_string.startswith("simple_repo")
+        or import_string.startswith("simple_repo")
+        else ImportType.EXTERNAL
+    )
 
-    return ImportInfo(import_string, from_string=from_string, alias=alias)
+    return ImportInfo(import_string, is_internal, from_string=from_string, alias=alias)
 
 
 def get_module_imports(mod):
@@ -73,3 +89,9 @@ def extract_imports(obj_class):
     mod = importlib.import_module(mod)
     imps = get_module_imports(mod)
     return [create_import_info(imp) for imp in imps]
+
+
+if __name__ == "__main__":
+    from simple_repo.base import SimpleNode
+
+    print(extract_imports(SimpleNode))
