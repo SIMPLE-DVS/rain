@@ -220,10 +220,10 @@ class ConfigurationParser:
             check_main_key(key, self.config)
             if key == "pipeline_uid":
                 continue
-            mand_keys = ['node', 'node_id', 'parameters', 'execute'] if key == "sklearn" else ['node', 'node_id',
-                                                                                               'parameters']
+            mandatory_keys = ['node', 'node_id', 'parameters', 'execute'] if key == "sklearn" else ['node', 'node_id',
+                                                                                                    'parameters']
             for node in self.config[key]:
-                check_node_keys(key, mand_keys, node)
+                check_node_keys(key, mandatory_keys, node)
                 check_node_key_type(node, self.nodes_id_then)
                 cls = check_node_class(node["node"])
                 check_parameters(cls, node["parameters"])
@@ -234,26 +234,6 @@ class ConfigurationParser:
 
 
 if __name__ == '__main__':
-    from datetime import datetime
-
     c = ConfigurationParser(conf)
-    start_time = datetime.now()
     c.parse_configuration()
-    end_time = datetime.now()
-    print("Duration: {}".format(end_time - start_time))
-
-    # pippo = {
-    #     "parameter": {
-    #         "columns": [
-    #             {
-    #                 "namee": "pippo",
-    #                 "type": "x"
-    #             },
-    #             {
-    #                 "name": "km"
-    #             }
-    #         ]
-    #     }
-    # }
-    # z = col.find_one({"node_class": "PandasColumnSelector"})
-    # check_parameters(z, pippo.get("parameter"))
+    print("Configuration ok")
