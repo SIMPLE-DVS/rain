@@ -1,31 +1,18 @@
-import inspect
-from queue import SimpleQueue
-
-
-def extract_parents(child_class, excluding=[]):
+def extract_parents(child_class):
     """
-    Gets all the parents of the given class excluding the ones specified.
+    Gets a set containing all the internal parents of the given class.
+
+    With internal parents we refer to those parents that are defined
+    in the library (not builtin or from external libraries).
+
+    If the class does not have internal parents it returns an empty set.
     """
-    to_eval = SimpleQueue()
+    parents = set()
+
     [
-        to_eval.put(parent)
-        for parent in child_class.__bases__
-        if parent is not object and parent not in excluding
+        parents.add(base)
+        for base in child_class.__bases__
+        if base.__module__.startswith("simple_repo")
     ]
-    parents = list()
-
-    while not to_eval.empty():
-        curr_class = to_eval.get()
-        [
-            to_eval.put(parent)
-            for parent in curr_class.__bases__
-            if parent is not object
-            and parent not in excluding
-            and parent.__module__.startswith("simple_repo")
-        ]
-        if curr_class.__module__.startswith("simple_repo"):
-            parents.append(curr_class)
-
-    parents.reverse()
 
     return parents
