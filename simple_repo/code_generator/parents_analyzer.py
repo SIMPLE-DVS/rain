@@ -9,10 +9,11 @@ def extract_parents(child_class):
     """
     parents = set()
 
-    [
-        parents.add(base)
-        for base in child_class.__bases__
-        if base.__module__.startswith("simple_repo")
-    ]
+    if hasattr(child_class, "bases") and child_class.__bases__:
+        [
+            parents.add(base)
+            for base in child_class.__bases__
+            if base.__module__.startswith("simple_repo")
+        ]
 
     return parents

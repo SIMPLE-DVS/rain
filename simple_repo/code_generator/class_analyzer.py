@@ -18,6 +18,14 @@ def get_all_internal_classes(imported_module):
     ]
 
 
+def get_all_internal_callables(imported_module):
+    return [
+        m
+        for m in inspect.getmembers(imported_module, callable)
+        if m[1].__module__ == imported_module.__name__
+    ]
+
+
 def get_class_from_imported_module(imported_module, classname):
     classes = get_all_classes(imported_module)
 
@@ -33,6 +41,14 @@ def get_code(class_):
     return inspect.getsource(class_)
 
 
+def get_str_import_to_check(imp):
+    if imp.has_alias():
+        to_check = imp.alias
+    else:
+        to_check = imp.import_string
+    return to_check
+
+
 def check_import_usage(imp, cls):
     class_code = get_code(cls)
 
@@ -44,12 +60,26 @@ def check_import_usage(imp, cls):
     return is_present
 
 
-def get_str_import_to_check(imp):
-    if imp.has_alias():
-        to_check = imp.alias
-    else:
-        to_check = imp.import_string
-    return to_check
+def check_internal_callable_usage(callable_string, cls):
+    class_code = get_code(cls)
+
+    regex = r"(?:{}(?:\.\S+)?)".format(callable_string)
+    is_present = True if re.search(regex, class_code) is not None else False
+
+    return is_present
+
+
+def extract_internal_callables(cls):
+    calls = set()
+
+    mod = inspect.getmodule(cls)
+    module_callables = get_all_internal_callables(mod)
+
+    for calname, call in module_callables:
+        if calname != cls.__name__ and check_internal_callable_usage(calname, cls):
+            calls.add(call)
+
+    return calls
 
 
 def get_callables(imp, cls):
@@ -62,7 +92,9 @@ def get_callables(imp, cls):
     if inspect.ismodule(attr):
         code = get_code(cls)
         to_check = get_str_import_to_check(imp)
-        matches = re.finditer(r"(?:{}\.(?P<str_name>[a-zA-Z.]+))".format(to_check), code, re.MULTILINE)
+        matches = re.finditer(
+            r"(?:{}\.(?P<str_name>[a-zA-Z.]+))".format(to_check), code, re.MULTILINE
+        )
         for match in matches:
             m = match.group("str_name")
             clazz = getattr(attr, m)
@@ -74,7 +106,9 @@ def get_callables(imp, cls):
 
 
 def get_package_module_name(imp):
-    full_name_parts = imp.from_string.split(".")  # TODO gestire caso from simple_repo import Class
+    full_name_parts = imp.from_string.split(
+        "."
+    )  # TODO gestire caso from simple_repo import Class
     if len(full_name_parts) == 1:
         package_name = ""
         module_name = imp.from_string
@@ -100,12 +134,16 @@ def get_class_dependencies(cls: type):
             continue
 
     calls.update(extract_parents(cls))
+    calls.update(extract_internal_callables(cls))
 
     return ext_imports, calls
 
 
-if __name__ == '__main__':
-    from simple_repo.simple_pandas.load_nodes import PandasCSVWriter
+if __name__ == "__main__":
+    from simple_repo.simple_pandas.transform_nodes import (
+        PandasColumnSelector,
+        _filter_feature,
+    )
 
-    imports, callables = get_class_dependencies(PandasCSVWriter)
+    d = get_class_dependencies(_filter_feature)
     print("ok")
