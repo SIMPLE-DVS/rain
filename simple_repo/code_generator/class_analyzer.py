@@ -63,7 +63,7 @@ def check_import_usage(imp, cls):
 def check_internal_callable_usage(callable_string, cls):
     class_code = get_code(cls)
 
-    regex = r"(?:{}(?:\.\S+)?)".format(callable_string)
+    regex = r"(?<![a-zA-Z])(?:{}(?:\.\S+)?)".format(callable_string)
     is_present = True if re.search(regex, class_code) is not None else False
 
     return is_present
@@ -136,13 +136,3 @@ def get_class_dependencies(cls: type):
     calls.update(extract_internal_callables(cls))
 
     return ext_imports, calls
-
-
-if __name__ == "__main__":
-    from simple_repo.simple_pandas.transform_nodes import (
-        PandasColumnSelector,
-        _filter_feature,
-    )
-
-    d = get_class_dependencies(_filter_feature)
-    print("ok")
