@@ -9,7 +9,7 @@ def extract_parents(child_class):
     """
     parents = set()
 
-    if hasattr(child_class, "bases") and child_class.__bases__:
+    if hasattr(child_class, "__bases__") and child_class.__bases__:
         [
             parents.add(base)
             for base in child_class.__bases__
