@@ -106,9 +106,8 @@ def get_callables(imp, cls):
 
 
 def get_package_module_name(imp):
-    full_name_parts = imp.from_string.split(
-        "."
-    )  # TODO gestire caso from simple_repo import Class
+    # TODO gestire caso from simple_repo import Class
+    full_name_parts = imp.from_string.split(".")
     if len(full_name_parts) == 1:
         package_name = ""
         module_name = imp.from_string
