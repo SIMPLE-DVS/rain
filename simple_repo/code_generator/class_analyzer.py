@@ -1,4 +1,9 @@
+import importlib
 import inspect
+import re
+
+from simple_repo.code_generator.imports_analyzer import extract_imports, ImportType
+from simple_repo.code_generator.parents_analyzer import extract_parents
 
 
 def get_all_classes(imported_module):
@@ -26,3 +31,81 @@ def get_class_from_imported_module(imported_module, classname):
 
 def get_code(class_):
     return inspect.getsource(class_)
+
+
+def check_import_usage(imp, cls):
+    class_code = get_code(cls)
+
+    to_check = get_str_import_to_check(imp)
+
+    regex = r"(?:{}(?:\.\S+)?)".format(to_check)
+    is_present = True if re.search(regex, class_code) is not None else False
+
+    return is_present
+
+
+def get_str_import_to_check(imp):
+    if imp.has_alias():
+        to_check = imp.alias
+    else:
+        to_check = imp.import_string
+    return to_check
+
+
+def get_callables(imp, cls):
+    calls = set()
+
+    module_name, package_name = get_package_module_name(imp)
+    mod = importlib.import_module(module_name, package_name)
+    attr = getattr(mod, imp.import_string)
+
+    if inspect.ismodule(attr):
+        code = get_code(cls)
+        to_check = get_str_import_to_check(imp)
+        matches = re.finditer(r"(?:{}\.(?P<str_name>[a-zA-Z.]+))".format(to_check), code, re.MULTILINE)
+        for match in matches:
+            m = match.group("str_name")
+            clazz = getattr(attr, m)
+            calls.add(clazz)
+    else:
+        calls.add(attr)
+
+    return calls
+
+
+def get_package_module_name(imp):
+    full_name_parts = imp.from_string.split(".")  # TODO gestire caso from simple_repo import Class
+    if len(full_name_parts) == 1:
+        package_name = ""
+        module_name = imp.from_string
+    else:
+        package_name = ".".join(full_name_parts[:-1])
+        module_name = "." + full_name_parts[-1]
+    return module_name, package_name
+
+
+def get_class_dependencies(cls: type):
+    ext_imports = set()
+    calls = set()
+
+    all_imports = extract_imports(cls)
+
+    for imp in all_imports:
+        if check_import_usage(imp, cls):
+            if imp.import_type == ImportType.EXTERNAL:
+                ext_imports.add(imp)
+            else:
+                calls.update(get_callables(imp, cls))
+        else:
+            continue
+
+    calls.update(extract_parents(cls))
+
+    return ext_imports, calls
+
+
+if __name__ == '__main__':
+    from simple_repo.simple_pandas.load_nodes import PandasCSVWriter
+
+    imports, callables = get_class_dependencies(PandasCSVWriter)
+    print("ok")

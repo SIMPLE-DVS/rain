@@ -13,9 +13,12 @@ class ImportType(Enum):
 @dataclass
 class ImportInfo:
     import_string: str
-    import_type: ImportType
+    import_type: ImportType  # TODO use a boolean variable is_external
     from_string: str = ""
     alias: str = ""
+
+    def has_alias(self):
+        return True if self.alias != "" else False
 
     def __str__(self):
         return "{}{}{}".format(
