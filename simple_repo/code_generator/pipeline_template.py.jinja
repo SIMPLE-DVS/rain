@@ -1,9 +1,10 @@
-# for imp in imports:
+{% for imp in imports -%}
 {{ imp }}
-# endfor
+{% endfor %}
 
-# for node in nodes:
+{% for node in nodes -%}
 {{ node }}
-# endfor
+
+{% endfor -%}
 
 if __name__ == "__main__":
