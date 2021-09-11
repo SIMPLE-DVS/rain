@@ -31,7 +31,7 @@ class ImportInfo:
         return "{} import: {}".format(self.import_type.value, self.__str__())
 
     def __hash__(self) -> int:
-        return super().__hash__()
+        return hash(self.__str__())
 
 
 def create_import_info(import_string):  # noqa W605
