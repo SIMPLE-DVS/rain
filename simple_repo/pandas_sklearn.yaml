@@ -4,7 +4,7 @@ pandas:
     -   node_id: loader
         node: simple_repo.simple_pandas.load_nodes.PandasCSVLoader
         parameters:
-            path: C:/Users/Marco/Desktop/iris_ds.csv
+            path: ./iris_ds.csv
         then:
             -   send_to: km
                 dataset: fit_dataset
@@ -21,7 +21,7 @@ pandas:
     -   node_id: save
         node: simple_repo.simple_pandas.load_nodes.PandasCSVWriter
         parameters:
-            path: C:/Users/Marco/Desktop/iris_km_predictions.csv
+            path: ./iris_km_predictions.csv
             include_rows: true
             rows_column_label: id
 sklearn:

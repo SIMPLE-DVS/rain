@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import Any
 
-from simple_repo.exception import ParameterNotFound, BadParameterStructure
+from simple_repo.exception import ParameterNotFound
+from simple_repo.exception import BadParameterStructure
 
 
 class SimpleIO:

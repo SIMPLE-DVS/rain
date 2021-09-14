@@ -1,0 +1,48 @@
+{% for imp in imports -%}
+{{ imp }}
+{% endfor %}
+
+{% for node in nodes -%}
+{{ node }}
+
+{% endfor -%}
+
+{% for executor in executors -%}
+{{ executor }}
+
+{% endfor -%}
+
+executors = {
+    "pandas": PandasExecutor(),
+    "sklearn": SklearnExecutor(),
+    "spark": SparkExecutor()
+}
+
+if __name__ == "__main__":
+
+{% for subpipeline in subpipelines %}
+    t{{loop.index0}} = ('{{subpipeline[0]}}', [
+    {% for node in subpipeline[1] -%}
+    {% if loop.last %}
+        {{node.node_instantiation_str()}}
+    {% else %}
+        {{node.node_instantiation_str()}},
+    {% endif %}
+    {% endfor -%}
+    ])
+{% endfor %}
+
+    subpipelines = []
+
+{%- for k in range(subpipelines|count) %}
+    subpipelines.append(t{{k}})
+{%- endfor %}
+
+    pipeline = SimplePipeline()
+
+    for subpip_type, subpip_node_list in subpipelines:
+        pipeline.add_subpipeline(
+            SimpleSubPipeline(subpip_type, subpip_node_list, executors.get(subpip_type))
+        )
+
+    pipeline.execute()
