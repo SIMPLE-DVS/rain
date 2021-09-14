@@ -1,10 +1,14 @@
 from abc import abstractmethod
 from collections import OrderedDict
-from typing import List, Any
+from typing import List
+from typing import Any
 
 from pyspark.sql import SparkSession
 
-from simple_repo.base import Node, Singleton, get_class, SimpleNode
+from simple_repo.base import Node
+from simple_repo.base import Singleton
+from simple_repo.base import get_class
+from simple_repo.base import SimpleNode
 from simple_repo.dag import SimpleJSONParser
 
 import pickle
@@ -271,4 +275,6 @@ if __name__ == "__main__":
 
     pipeline = sjp.get_sub_pipelines()
 
-    pickle.dump(pipeline, open("C:/Users/{}/Desktop/pipe.pkl".format(os.getlogin()), "wb"))
+    pickle.dump(
+        pipeline, open("C:/Users/{}/Desktop/pipe.pkl".format(os.getlogin()), "wb")
+    )

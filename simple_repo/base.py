@@ -21,7 +21,10 @@ def get_class(fullname: str):
     module_name = full_name_parts[-2]
     class_name = full_name_parts[-1]
 
-    module = importlib.import_module("." + module_name, package_name)
+    if package_name != "":
+        module = importlib.import_module("." + module_name, package_name)
+    else:
+        module = importlib.import_module(module_name)
     class_ = getattr(module, class_name)
 
     return class_
@@ -134,14 +137,14 @@ class Node(object):
         Parameters
         ----------
 
-        idd : string
+        node_id : string
             The unique identifier that each node must have.
 
-        name : string
+        node : string
             The full-name formed by \textit{package + module + class}, useful to dynamically import the
             module and to return the wanted class representing one step of the pipeline
 
-        attr : dict
+        parameters : dict
             List of features that characterizes each step of the pipeline. Obviously, depending on the node,
             we have a different structure of the list with different number of features.
 
@@ -189,6 +192,20 @@ class Node(object):
     @property
     def then(self):
         return self._then
+
+    def node_instantiation_str(self):
+        """Returns a string representing the instantiation of this node object.
+
+        Example: Node(node_id='loader', node='pkg.mod.Class', parameters={...}, (execute=[])?, (then={...})?)
+        """
+        return "{}(node_id='{}', node='{}', node_type='alfredino', parameters={},{}{})".format(
+            self.__class__.__name__,
+            self._node_id,
+            "__main__.{}".format(self._node.split(".")[-1]),
+            self._parameters,
+            " execute={},".format(self._execute) if self._execute is not None else "",
+            " then={}".format(self._then) if self._then is not None else "",
+        )
 
 
 class Singleton(type):
