@@ -71,10 +71,21 @@ class SklearnEstimator(SklearnNode):
 
 
 class PredictorMixin:
+
+    _input_vars = {
+        "predict_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "predictions": pandas.DataFrame
+    }
+
+    _methods = {
+        "predict": False
+    }
+
     def __init__(self):
-        self._input_vars["predict_dataset"] = pandas.DataFrame
-        self._output_vars["predictions"] = pandas.DataFrame
-        self._methods["predict"] = False
+        pass
 
     def predict(self):
         if self.fitted_model is not None and self.predict_dataset is not None:
@@ -82,10 +93,21 @@ class PredictorMixin:
 
 
 class ScorerMixin:
+
+    _input_vars = {
+        "score_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "scores": list
+    }
+
+    _methods = {
+        "score": False
+    }
+
     def __init__(self):
-        self._input_vars["score_dataset"] = pandas.DataFrame
-        self._output_vars["scores"] = list
-        self._methods["score"] = False
+        pass
 
     def score(self):
         if self.fitted_model is not None and self.score_dataset is not None:
@@ -98,10 +120,21 @@ class ScorerMixin:
 
 
 class TransformerMixin:
+
+    _input_vars = {
+        "transform_dataset": pandas.DataFrame
+    }
+
+    _output_vars = {
+        "transformed_dataset": list
+    }
+
+    _methods = {
+        "transform": False
+    }
+
     def __init__(self):
-        self._input_vars["transform_dataset"] = pandas.DataFrame
-        self._output_vars["transformed_dataset"] = list
-        self._methods["transform"] = False
+        pass
 
     def transform(self):
         if self.fitted_model is not None and self.transform_dataset is not None:
