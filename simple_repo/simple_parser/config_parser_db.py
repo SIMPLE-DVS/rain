@@ -250,4 +250,5 @@ if __name__ == '__main__':
 
     generator = ScriptGenerator(pipe)
     script = generator.generate_script()
+
     print("Configuration ok, script generated")

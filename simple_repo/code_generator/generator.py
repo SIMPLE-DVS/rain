@@ -1,7 +1,6 @@
-import os
 from builtins import set
 from queue import SimpleQueue
-from jinja2 import FileSystemLoader, Environment
+from jinja2 import Template
 from enum import Enum
 import networkx as nx
 from matplotlib import pyplot as plt
@@ -13,6 +12,57 @@ from simple_repo.code_generator.class_analyzer import (
     get_all_internal_callables,
 )
 from simple_repo.dag import DagCreator
+
+template = """
+{% for imp in imports -%}
+{{ imp }}
+{% endfor %}
+
+{% for node in nodes -%}
+{{ node }}
+
+{% endfor -%}
+
+{% for executor in executors -%}
+{{ executor }}
+
+{% endfor -%}
+
+executors = {
+    "pandas": PandasExecutor(),
+    "sklearn": SklearnExecutor(),
+    "spark": SparkExecutor()
+}
+
+if __name__ == "__main__":
+
+{% for subpipeline in subpipelines %}
+    t{{loop.index0}} = ('{{subpipeline[0]}}', [
+    {% for node in subpipeline[1] -%}
+    {% if loop.last %}
+        {{node.node_instantiation_str()}}
+    {% else %}
+        {{node.node_instantiation_str()}},
+    {% endif %}
+    {% endfor -%}
+    ])
+{% endfor %}
+
+    subpipelines = []
+
+{%- for k in range(subpipelines|count) %}
+    subpipelines.append(t{{k}})
+{%- endfor %}
+
+    pipeline = SimplePipeline()
+
+    for subpip_type, subpip_node_list in subpipelines:
+        pipeline.add_subpipeline(
+            SimpleSubPipeline(subpip_type, subpip_node_list, executors.get(subpip_type))
+        )
+
+    pipeline.execute()
+"""
 
 
 def get_obj_info(obj_set, obj_name):
@@ -85,17 +135,17 @@ def generate_sub_pipelines_code(sub_pipelines):
         yield i, sub_pip[0], node_list_str
 
 
-def write_file(imports, callables, graph, sub_pipelines):
+def get_code_as_string(imports, callables, graph, sub_pipelines):
     print_order = list(nx.topological_sort(graph))
-
     print(print_order)
 
-    temp_file = FileSystemLoader("./")
+    # temp_file = FileSystemLoader("./")
     # line_statement_prefix="#",
-    temp = Environment(loader=temp_file).get_template(
-        name="./code_generator/pipeline_template.py.jinja"
-    )
+    # temp = Environment(loader=temp_file).get_template(
+    #    name=template
+    # )
 
+    jinja_template = Template(template)
     jinja_vars = {
         "imports": imports,
         "nodes": code_generator(callables, print_order),
@@ -104,14 +154,13 @@ def write_file(imports, callables, graph, sub_pipelines):
     }
 
     # print(temp.render(parameters=parameters(), nodes_parents=[get_code(par) for par in pars]))
+    # temp_stream = temp.stream(**jinja_vars)
+    # temp_stream.dump("./code_generator/pipeline.py")
+    # os.system("black ./code_generator/pipeline.py")
 
-    temp_stream = temp.stream(**jinja_vars)
+    temp_stream = jinja_template.render(jinja_vars)
 
     return temp_stream
-
-    # temp_stream.dump("./code_generator/pipeline.py")
-
-    # os.system("black ./code_generator/pipeline.py")
 
 
 def show_dag(dag):
@@ -133,7 +182,7 @@ class ScriptGenerator:
 
         calls = [cal for _, cal in generate_executor_callables()] + self.classes
         imports, callables, graph = generate_code(calls)
-        script = write_file(imports, callables, graph, self.pipeline)
+        script = get_code_as_string(imports, callables, graph, self.pipeline)
         return script
 
 
@@ -158,6 +207,6 @@ if __name__ == "__main__":
 
     # show_dag(graph)
 
-    write_file(imp, cal, gr, pipe)
+    get_code_as_string(imp, cal, gr, pipe)
 
     print([cd for cd in get_nodes_instantiation_str(pipe[0][1])])
