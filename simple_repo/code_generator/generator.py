@@ -13,7 +13,7 @@ from simple_repo.code_generator.class_analyzer import (
     get_class_dependencies,
     get_all_internal_callables,
 )
-from simple_repo.dag import SimpleJSONParser
+from simple_repo.dag import DagCreator
 
 
 def get_obj_info(obj_set, obj_name):
@@ -122,9 +122,9 @@ if __name__ == "__main__":
     from simple_repo.simple_pandas.load_nodes import PandasCSVLoader
     from simple_repo.simple_pandas.transform_nodes import PandasColumnSelector
 
-    sjp = SimpleJSONParser()
+    sjp = DagCreator()
 
-    sjp.parse_configuration("./pandas_sklearn.yaml")
+    sjp.create_dag("./pandas_sklearn.yaml")
 
     # sjp.show_dag()
 

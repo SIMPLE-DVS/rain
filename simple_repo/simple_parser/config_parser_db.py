@@ -1,6 +1,7 @@
 import pymongo
 
 from simple_repo.base import Node
+from simple_repo.dag import DagCreator
 from simple_repo.exception import BadSimpleNodeClass, BadConfigurationKeyType, BadSimpleParameter, \
     MissingMandatoryParameter, UnexpectedParameter, MissingSimpleNodeKey, UnexpectedKey
 
@@ -232,11 +233,16 @@ class ConfigurationParser:
                 if key == "sklearn":
                     check_execute(node, self.nodes_id_class[node["node_id"]])
                 self.nodes[node["node_id"]] = Node(node_type=key, **node)
+
         check_then(self.nodes_id_class, self.nodes_id_then)
         return self.nodes
 
 
 if __name__ == '__main__':
-    c = ConfigurationParser(conf)
-    n = c.parse_configuration()
-    print("Configuration ok")
+    parser = ConfigurationParser(conf)
+    nodes = parser.parse_configuration()
+    dag = DagCreator()
+    dag.create_dag(nodes)
+    dag.show_dag()
+    pipe = dag.get_sub_pipelines()
+    print("Configuration ok, script generated")

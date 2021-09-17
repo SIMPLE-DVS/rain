@@ -9,7 +9,7 @@ from simple_repo.base import Node
 from simple_repo.base import Singleton
 from simple_repo.base import get_class
 from simple_repo.base import SimpleNode
-from simple_repo.dag import SimpleJSONParser
+from simple_repo.dag import DagCreator
 
 import pickle
 
@@ -267,9 +267,9 @@ class SimplePipeline:
 if __name__ == "__main__":
     import os
 
-    sjp = SimpleJSONParser()
+    sjp = DagCreator()
 
-    sjp.parse_configuration("pandas_sklearn.yaml")
+    sjp.create_dag("pandas_sklearn.yaml")
 
     # sjp.show_dag()
 
