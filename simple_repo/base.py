@@ -2,6 +2,7 @@ import importlib
 import json
 from abc import abstractmethod
 from typing import Any
+import copy
 
 from simple_repo.exception import ParameterNotFound
 from simple_repo.parameter import StructuredParameterList
@@ -73,17 +74,52 @@ def reset(simple_node):
 
 class Meta(type):
     def __new__(mcs, clsname, bases, dct):
-        class_ = super().__new__(mcs, clsname, bases, dct)
-        if class_.__bases__:
-            for base in class_.__bases__:
-                if hasattr(base, "_input_vars"):
-                    getattr(class_, "_input_vars").update(base._input_vars)
-                if hasattr(base, "_output_vars"):
-                    getattr(class_, "_output_vars").update(base._output_vars)
-                if hasattr(base, "_methods"):
-                    getattr(class_, "_methods").update(base._methods)
+        input_vars_string = "_input_vars"
+        output_vars_string = "_output_vars"
+        methods_vars_string = "_methods"
 
-        return class_
+        def get_new_input_vars():
+            new_in_vars = {}
+            new_in_vars = copy.deepcopy(bases[0]._input_vars)
+            if len(bases) > 1:
+                for index in range(1, len(bases)):
+                    new_in_vars.update(bases[index]._input_vars)
+            if dct.get(input_vars_string):
+                new_in_vars.update(dct.get(input_vars_string))
+            return new_in_vars
+
+        def get_new_output_vars():
+            new_out_vars = {}
+            new_out_vars = copy.deepcopy(bases[0]._output_vars)
+            if len(bases) > 1:
+                for index in range(1, len(bases)):
+                    new_out_vars.update(bases[index]._output_vars)
+            if dct.get(output_vars_string):
+                new_out_vars.update(dct.get(output_vars_string))
+            return new_out_vars
+
+        def get_new_methods():
+            new_methods = {}
+            new_methods = copy.deepcopy(bases[0]._methods)
+            if len(bases) > 1:
+                for index in range(1, len(bases)):
+                    new_methods.update(bases[index]._methods)
+            if dct.get(methods_vars_string):
+                new_methods.update(dct.get(methods_vars_string))
+            return new_methods
+
+        if bases:
+            if hasattr(bases[0], input_vars_string):
+                in_vars = get_new_input_vars()
+                dct.update({input_vars_string: in_vars})
+            if hasattr(bases[0], output_vars_string):
+                out_vars = get_new_output_vars()
+                dct.update({output_vars_string: out_vars})
+            if hasattr(bases[0], methods_vars_string):
+                methods = get_new_methods()
+                dct.update({methods_vars_string: methods})
+
+        return super().__new__(mcs, clsname, bases, dct)
 
 
 class SimpleNode(metaclass=Meta):

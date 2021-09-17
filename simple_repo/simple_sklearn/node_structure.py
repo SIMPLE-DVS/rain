@@ -72,17 +72,11 @@ class SklearnEstimator(SklearnNode):
 
 class PredictorMixin:
 
-    _input_vars = {
-        "predict_dataset": pandas.DataFrame
-    }
+    _input_vars = {"predict_dataset": pandas.DataFrame}
 
-    _output_vars = {
-        "predictions": pandas.DataFrame
-    }
+    _output_vars = {"predictions": pandas.DataFrame}
 
-    _methods = {
-        "predict": False
-    }
+    _methods = {"predict": False}
 
     def __init__(self):
         pass
@@ -94,17 +88,11 @@ class PredictorMixin:
 
 class ScorerMixin:
 
-    _input_vars = {
-        "score_dataset": pandas.DataFrame
-    }
+    _input_vars = {"score_dataset": pandas.DataFrame}
 
-    _output_vars = {
-        "scores": list
-    }
+    _output_vars = {"scores": list}
 
-    _methods = {
-        "score": False
-    }
+    _methods = {"score": False}
 
     def __init__(self):
         pass
@@ -121,17 +109,11 @@ class ScorerMixin:
 
 class TransformerMixin:
 
-    _input_vars = {
-        "transform_dataset": pandas.DataFrame
-    }
+    _input_vars = {"transform_dataset": pandas.DataFrame}
 
-    _output_vars = {
-        "transformed_dataset": list
-    }
+    _output_vars = {"transformed_dataset": list}
 
-    _methods = {
-        "transform": False
-    }
+    _methods = {"transform": False}
 
     def __init__(self):
         pass
@@ -145,11 +127,6 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
     def __init__(self, estimator_type: type, execute: list, **kwargs):
-        PredictorMixin.__init__(self)
-        ScorerMixin.__init__(self)
-        # self._parameters["target_col"] = KeyValueParameter("target_col", str, is_mandatory=True)
-        self._input_vars["fit_target"] = pandas.DataFrame
-        self._input_vars["score_target"] = pandas.DataFrame
         super(SklearnClassifier, self).__init__(estimator_type, execute, **kwargs)
 
 
@@ -157,7 +134,4 @@ class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, Transforme
     _estimator_type = "clusterer"
 
     def __init__(self, estimator_type: type, execute: list, **kwargs):
-        PredictorMixin.__init__(self)
-        ScorerMixin.__init__(self)
-        TransformerMixin.__init__(self)
         super(SklearnClusterer, self).__init__(estimator_type, execute, **kwargs)
