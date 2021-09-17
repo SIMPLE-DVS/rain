@@ -1,57 +1,34 @@
-from simple_repo.base import load_config, Node, load_yaml_config
+from typing import List
+
+from simple_repo.base import Node
 import networkx as nx
 from matplotlib import pyplot as plt
 
 
-def get_nodes(config: dict, engine: str):
-    nodes_types = {}
-    nodes = {}
+def get_edges(node_list):
     edges = []
-
-    for node in config.get(engine):
-        node_id = node.get("node_id")
-        json_node = Node(node_type=engine, **node)
-        nodes_types[node_id] = engine
-        nodes[node_id] = json_node
-
-        if "then" in node.keys():
-            for nxt in node.get("then"):
-                edges.append((node_id, nxt.get("send_to")))
-
-    return nodes_types, nodes, edges
+    for node in node_list.values():
+        if node.then is not None:
+            for nxt in node.then:
+                edges.append((node.node_id, nxt.get("send_to")))
+    return edges
 
 
-class SimpleJSONParser:
+class DagCreator:
     """
-    Takes a json and parse it to a DAG.
+    Takes a list of Node and parse it to a DAG.
     """
-
-    engines = ["pandas", "sklearn", "spark"]
 
     def __init__(self):
         self._graph = nx.DiGraph()
         self._is_loaded = False
-        self._nodes_types = {}
         self._nodes = {}
         self._sorted_nodes = None
 
-    def parse_configuration(self, config_file_path: str):
-
-        # config = load_config(config_file_path)
-        config = load_yaml_config(config_file_path)
-
-        edges = []
-
-        for tp in self.engines:
-            if tp in config.keys():
-                nodes_types_app, nodes_app, edges_app = get_nodes(config, tp)
-
-                self._nodes_types.update(nodes_types_app)
-                self._nodes.update(nodes_app)
-                edges.extend(edges_app)
-
+    def create_dag(self, node_list: dict):
+        edges = get_edges(node_list)
+        self._nodes.update(node_list)
         self._graph.add_edges_from(edges)
-
         self._is_loaded = True
 
     def show_dag(self):
@@ -61,7 +38,7 @@ class SimpleJSONParser:
             plt.show()
             plt.clf()
 
-    def get_sorted_nodes(self):
+    def get_sorted_nodes(self) -> List[Node]:
         if self._is_loaded:
             sorted_id_list = self.get_sorted_node_ids()
             sorted_node_list = []
@@ -71,7 +48,7 @@ class SimpleJSONParser:
 
             return sorted_node_list
 
-    def get_sorted_node_ids(self):
+    def get_sorted_node_ids(self) -> List[str]:
         if self._is_loaded:
             topologically_ordered_list = list(nx.topological_sort(self._graph))
 
@@ -85,11 +62,11 @@ class SimpleJSONParser:
         sub_pipeline = []
         sub_pipeline_type = None
 
-        sorted_node_list = self.get_sorted_node_ids()
+        sorted_node_list = self.get_sorted_nodes()
 
         for i in range(0, len(sorted_node_list)):
-            node_type = self._nodes_types.get(sorted_node_list[i])
-            node = self._nodes.get(sorted_node_list[i])
+            node_type = sorted_node_list[i].node_type
+            node = sorted_node_list[i]
 
             # il primo lo aggiungo a prescindere nella sottopipeline e setto il tipo
             if i == 0:
@@ -111,16 +88,11 @@ class SimpleJSONParser:
 
         return sub_pipelines
 
-    # dato che il dag viene creato leggendo solamente gli id ed i then,
-    # aggiungere un controllo che si assicuri che tutti gli id presenti
-    # nel dag siano effettivamente dei nodi. Infatti potrei scrivere nel
-    # then di un nodo un id che poi non è mai presente nel json.
-
 
 if __name__ == "__main__":
-    sjp = SimpleJSONParser()
+    sjp = DagCreator()
 
-    sjp.parse_configuration("pandas_sklearn2.json")
+    sjp.create_dag("pandas_sklearn2.json")
 
     sjp.show_dag()
 
