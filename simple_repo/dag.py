@@ -25,7 +25,7 @@ class DagCreator:
         self._nodes = {}
         self._sorted_nodes = None
 
-    def create_dag(self, node_list: list):
+    def create_dag(self, node_list: dict):
         edges = get_edges(node_list)
         self._nodes.update(node_list)
         self._graph.add_edges_from(edges)
