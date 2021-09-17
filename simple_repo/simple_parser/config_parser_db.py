@@ -1,8 +1,8 @@
 import pymongo
 
+from simple_repo.base import Node
 from simple_repo.exception import BadSimpleNodeClass, BadConfigurationKeyType, BadSimpleParameter, \
     MissingMandatoryParameter, UnexpectedParameter, MissingSimpleNodeKey, UnexpectedKey
-from simple_repo.simple_sklearn.node_structure import SklearnEstimator
 
 conf = {
     "pipeline_uid": "U-54654649",
@@ -70,7 +70,7 @@ conf = {
 
 client = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority")
 simple_db = client["simple"]
-node_info_collection = simple_db["nodes_info"]
+node_info_collection = simple_db["nodes"]
 all_nodes_structure = list(node_info_collection.find({}))
 
 
@@ -200,11 +200,11 @@ def check_node_class(node: str):
     return node_info[0]
 
 
-def check_execute(node):
+def check_execute(node, clazz):
     if not isinstance(node["execute"], list):
         raise BadConfigurationKeyType("'execute' key should be a list in node {}".format(node["node_id"]))
     for method in node["execute"]:
-        if method not in SklearnEstimator._methods.keys():
+        if method not in clazz.get("node_methods"):
             raise UnexpectedParameter("Unexpected method '{}' in node {}".format(method, node["node_id"]))
 
 
@@ -214,6 +214,7 @@ class ConfigurationParser:
         self.config = config
         self.nodes_id_class = {}
         self.nodes_id_then = {}
+        self.nodes = {}
 
     def parse_configuration(self):
         for key in self.config:
@@ -229,11 +230,13 @@ class ConfigurationParser:
                 check_parameters(cls, node["parameters"])
                 self.nodes_id_class[node["node_id"]] = cls
                 if key == "sklearn":
-                    check_execute(node)
+                    check_execute(node, self.nodes_id_class[node["node_id"]])
+                self.nodes[node["node_id"]] = Node(node_type=key, **node)
         check_then(self.nodes_id_class, self.nodes_id_then)
+        return self.nodes
 
 
 if __name__ == '__main__':
     c = ConfigurationParser(conf)
-    c.parse_configuration()
+    n = c.parse_configuration()
     print("Configuration ok")
