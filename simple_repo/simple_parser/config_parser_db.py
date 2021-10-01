@@ -70,7 +70,8 @@ conf = {
     ]
 }
 
-client = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority",
+                             ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
 simple_db = client["simple"]
 node_info_collection = simple_db["nodes"]
 all_nodes_structure = list(node_info_collection.find({}))
