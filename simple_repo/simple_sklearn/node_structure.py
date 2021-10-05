@@ -16,8 +16,8 @@ class SklearnMethod:
 class SklearnNode(SimpleNode):
     _methods = {}
 
-    def __init__(self, **kwargs):
-        super(SklearnNode, self).__init__(**kwargs)
+    def __init__(self):
+        super(SklearnNode, self).__init__()
 
     def execute(self):
         pass
@@ -25,17 +25,16 @@ class SklearnNode(SimpleNode):
 
 class SklearnFunction(SklearnNode):
     def __init__(self, **kwargs):
-        super(SklearnFunction, self).__init__(**kwargs)
+        super(SklearnFunction, self).__init__()
 
 
 class SklearnEstimator(SklearnNode):
     _input_vars = {"fit_dataset": pandas.DataFrame}
-    _parameters = {}
     _methods = {"fit": False}
     _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
 
-    def __init__(self, estimator_class: type, execute: list, **kwargs):
-        super(SklearnEstimator, self).__init__(**kwargs)
+    def __init__(self, estimator_class: type, execute: list):
+        super(SklearnEstimator, self).__init__()
         self._estimator = estimator_class(**self._get_params_as_dict())
 
         for method in execute:
@@ -78,9 +77,6 @@ class PredictorMixin:
 
     _methods = {"predict": False}
 
-    def __init__(self):
-        pass
-
     def predict(self):
         if self.fitted_model is not None and self.predict_dataset is not None:
             self.predictions = self.fitted_model.predict(self.predict_dataset)
@@ -93,9 +89,6 @@ class ScorerMixin:
     _output_vars = {"scores": list}
 
     _methods = {"score": False}
-
-    def __init__(self):
-        pass
 
     def score(self):
         if self.fitted_model is not None and self.score_dataset is not None:
@@ -115,9 +108,6 @@ class TransformerMixin:
 
     _methods = {"transform": False}
 
-    def __init__(self):
-        pass
-
     def transform(self):
         if self.fitted_model is not None and self.transform_dataset is not None:
             self.transformed_dataset = self.fitted_model.score(self.transform_dataset)
@@ -126,12 +116,12 @@ class TransformerMixin:
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
-    def __init__(self, estimator_type: type, execute: list, **kwargs):
-        super(SklearnClassifier, self).__init__(estimator_type, execute, **kwargs)
+    def __init__(self, estimator_type: type, execute: list):
+        super(SklearnClassifier, self).__init__(estimator_type, execute)
 
 
 class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
     _estimator_type = "clusterer"
 
-    def __init__(self, estimator_type: type, execute: list, **kwargs):
-        super(SklearnClusterer, self).__init__(estimator_type, execute, **kwargs)
+    def __init__(self, estimator_type: type, execute: list):
+        super(SklearnClusterer, self).__init__(estimator_type, execute)
