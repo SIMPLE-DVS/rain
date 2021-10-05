@@ -124,10 +124,9 @@ class Meta(type):
 
 class SimpleNode(metaclass=Meta):
     _input_vars = {}
-    _parameters = {}
     _output_vars = {}
 
-    def __init__(self, **kwargs):
+    def __init__(self):
 
         # Set every input as an attribute
         for key in self._input_vars.keys():
@@ -137,38 +136,6 @@ class SimpleNode(metaclass=Meta):
         for key in self._output_vars.keys():
             if key not in self._input_vars:
                 setattr(self, key, None)
-
-        # check the parameter passed and set their values
-        for name, value in kwargs.items():
-            try:
-                # retrieve the parameter from its name
-                par = self._parameters.get(name)
-
-                # if it is a parameter list add all the values inside, otherwise set the value of the parameter.
-                if isinstance(par, StructuredParameterList):
-                    par.add_all_parameters(*value)
-                elif not isinstance(value, par.type):
-                    raise TypeError(
-                        "Expected type '{}' for parameter '{}' in class '{}', received type '{}'.".format(
-                            par.type, name, self.__class__.__name__, type(value)
-                        )
-                    )
-                else:
-                    par.value = value
-
-            except AttributeError:
-                raise ParameterNotFound(
-                    "Class '{}' has no attribute '{}'".format(
-                        self.__class__.__name__, name
-                    )
-                )
-
-    def _get_params_as_dict(self) -> dict:
-        dct = {}
-        for val in self._parameters.values():
-            dct[val.name] = val.value
-
-        return dct
 
     def set_input_value(self, input_name: str, input_value: Any):
         vars(self)[input_name] = input_value
