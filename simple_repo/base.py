@@ -120,25 +120,63 @@ class Meta(type):
 
 
 class SimpleNode(metaclass=Meta):
-    _input_vars = {}
+
+    def __init__(self):
+        super(SimpleNode, self).__init__()
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class InputMixin:
     _output_vars = {}
 
     def __init__(self):
-
-        # Set every input as an attribute
-        for key in self._input_vars.keys():
-            setattr(self, key, None)
-
         # Set every output as an attribute if not already set
         for key in self._output_vars.keys():
-            if key not in self._input_vars:
+            if not hasattr(self, key):
+                setattr(self, key, None)
+
+    def get_output_value(self, output_name: str):
+        return vars(self).get(output_name)
+
+
+class OutputMixin:
+    _input_vars = {}
+
+    def __init__(self):
+        # Set every input as an attribute
+        for key in self._input_vars.keys():
+            if not hasattr(self, key):
                 setattr(self, key, None)
 
     def set_input_value(self, input_name: str, input_value: Any):
         vars(self)[input_name] = input_value
 
-    def get_output_value(self, output_name: str):
-        return vars(self).get(output_name)
+
+class InputNode(SimpleNode, InputMixin):
+    def __init__(self):
+        super(InputNode, self).__init__()
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
+
+    def __init__(self):
+        super(ComputationalNode, self).__init__()
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class OutputNode(SimpleNode, OutputMixin):
+    def __init__(self):
+        super(OutputNode, self).__init__()
 
     @abstractmethod
     def execute(self):
@@ -152,3 +190,7 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+if __name__ == '__main__':
+    pass

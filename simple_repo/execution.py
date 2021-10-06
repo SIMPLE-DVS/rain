@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession
 
 from simple_repo.base import Singleton
 from simple_repo.base import get_class
-from simple_repo.base import SimpleNode
+from simple_repo.base import ComputationalNode
 
 
 def reset(simple_node):
@@ -26,7 +26,7 @@ class SimpleExecutor(metaclass=Singleton):
         pass
 
     @staticmethod
-    def execute(simple_node: SimpleNode):
+    def execute(simple_node: ComputationalNode):
         simple_node.execute()
 
 

@@ -17,10 +17,10 @@ class SparkPipelineNode(Estimator):
 
     _stages = []
 
-    def __init__(self, spark, stages: List[SparkNode]):
+    def __init__(self, stages: List[SparkNode]):
         for stage in stages:
             self._stages.append(stage)
-        super(SparkPipelineNode, self).__init__(spark)
+        super(SparkPipelineNode, self).__init__()
 
     def execute(self):
         pipeline_stages = []

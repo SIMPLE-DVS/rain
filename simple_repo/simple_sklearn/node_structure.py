@@ -1,7 +1,7 @@
 import pandas
 import sklearn.base
 
-from simple_repo.base import SimpleNode
+from simple_repo.base import ComputationalNode
 
 
 class SklearnMethod:
@@ -13,7 +13,7 @@ class SklearnMethod:
         return self._method_name
 
 
-class SklearnNode(SimpleNode):
+class SklearnNode(ComputationalNode):
     _methods = {}
 
     def __init__(self):

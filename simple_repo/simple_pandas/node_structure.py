@@ -2,10 +2,10 @@ from abc import abstractmethod
 
 import pandas as pd
 
-from simple_repo.base import SimpleNode
+from simple_repo.base import ComputationalNode
 
 
-class PandasNode(SimpleNode):
+class PandasNode(ComputationalNode):
     """
     Every PandasNode takes a pandas DataFrame as input,
     applies a tansformation and returns a pandas DataFrame as output.
