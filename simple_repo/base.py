@@ -119,7 +119,7 @@ class Meta(type):
                 methods = get_new_methods()
                 dct.update({methods_vars_string: methods})
 
-        return super().__new__(mcs, clsname, bases, dct)
+        return super(Meta, mcs).__new__(mcs, clsname, bases, dct)
 
 
 class SimpleNode(metaclass=Meta):
