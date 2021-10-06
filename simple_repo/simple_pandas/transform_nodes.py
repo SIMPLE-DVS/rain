@@ -1,6 +1,6 @@
 import pandas
 
-from simple_repo.parameter import KeyValueParameter, StructuredParameterList
+from simple_repo.parameter import KeyValueParameter, StructuredParameterList, Parameters
 from simple_repo.simple_pandas.node_structure import PandasNode
 
 
@@ -44,21 +44,35 @@ def _filter_feature(dataset, feature):
 
 
 class PandasColumnSelector(PandasNode):
-    _parameters = {
-        # A variable number of columns can be passed, but all of them must have the same structure specified here.
-        # A keyword represent the keyword that can be written in the json, the value True or False tells if it is
-        # mandatory or not.
-        "columns": StructuredParameterList(name=True, type=False)
-    }
+    """PandasColumnSelector manages filtering of rows, columns and values.
 
-    def __init__(self, **kwargs):
-        super(PandasColumnSelector, self).__init__(**kwargs)
+    Parameters
+    ----------
+    columns : list[dict]
+        Every dictionary in the list must be of the form:
+            {
+                name: str (Mandatory)
+                type: str (Optional)
+            }
+    """
+
+    def __init__(self, columns: list):
+        self.parameters = Parameters(
+            # A variable number of columns can be passed, but all of them must have the same structure specified here.
+            # A keyword represent the keyword that can be written in the json, the value True or False tells if it is
+            # mandatory or not.
+            columns=StructuredParameterList(name=True, type=False)
+        )
+
+        self.parameters.columns.add_all_parameters(columns)
+
+        super(PandasColumnSelector, self).__init__()
 
     def _filter(self):
         """
         Method used to apply the feature preprocessing to the given dataset.
         """
-        features = self._parameters.get("columns").parameters
+        features = self.parameters.columns.parameters
         if "*" in [x["name"] for x in features]:
             for feature in features:
                 self.dataset = _filter_feature(self.dataset, feature)
@@ -75,32 +89,68 @@ class PandasColumnSelector(PandasNode):
 
 
 class PandasPivot(PandasNode):
-    _parameters = {
-        "rows": KeyValueParameter("index", str, is_mandatory=True),
-        "columns": KeyValueParameter("columns", str, is_mandatory=True),
-        "values": KeyValueParameter("values", str, is_mandatory=True),
-        "aggfunc": KeyValueParameter("aggfunc", str, value="mean"),
-        "fill_value": KeyValueParameter("fill_value", int, value=0),
-        "dropna": KeyValueParameter("dropna", bool, value=True),
-        "sort": KeyValueParameter("sort", bool, value=True),
-    }
+    """Transforms a DataFrame into a Pivot from the given rows, columns and values.
 
-    def __init__(self, **kwargs):
-        super(PandasPivot, self).__init__(**kwargs)
+    Parameters
+    ----------
+    rows : str
+        Name of the column whose values will be the rows of the pivot.
+    columns : str
+        Name of the column whose values will be the columns of the pivot.
+    values: str
+        Name of the column whose values will be the values of the pivot.
+    aggfunc: str = "mean"
+        Function to use for the aggregation.
+    fill_value: int = 0
+        Value to replace missing values with.
+    dropna: bool = True
+        Do not include columns whose entries are all NaN.
+    sort: bool = True
+        Specifies if the result should be sorted.
+    """
+
+    def __init__(
+        self,
+        rows: str,
+        columns: str,
+        values: str,
+        aggfunc: str = "mean",
+        fill_value: int = 0,
+        dropna: bool = True,
+        sort: bool = True,
+    ):
+        self.parameters = Parameters(
+            rows=KeyValueParameter("index", str, rows),
+            columns=KeyValueParameter("columns", str, columns),
+            values=KeyValueParameter("values", str, values),
+            aggfunc=KeyValueParameter("aggfunc", str, aggfunc),
+            fill_value=KeyValueParameter("fill_value", int, fill_value),
+            dropna=KeyValueParameter("dropna", bool, dropna),
+            sort=KeyValueParameter("sort", bool, sort),
+        )
+        super(PandasPivot, self).__init__()
 
     def execute(self):
-        param_dict = self._get_params_as_dict()
+        param_dict = self.parameters.get_dict()
         self.dataset = pandas.pivot_table(self.dataset, **param_dict)
 
 
-class PandasAddColumn(PandasNode):
-    _parameters = {"columns": KeyValueParameter("col", list, is_mandatory=True)}
+class PandasRenameColumn(PandasNode):
+    """Sets column names for a pandas DataFrame.
 
-    def __init__(self, **kwargs):
-        super(PandasAddColumn, self).__init__(**kwargs)
+    Parameters
+    ----------
+    columns : list[str]
+        Column names to assign to the DataFrame.
+        The order is relevant.
+    """
+
+    def __init__(self, columns: list):
+        self.parameters = Parameters(columns=KeyValueParameter("col", list, columns))
+        super(PandasRenameColumn, self).__init__()
 
     def execute(self):
-        cols = self._parameters.get("columns").value
+        cols = self.parameters.columns.value
 
         if not isinstance(self.dataset, pandas.DataFrame):
             self.dataset = pandas.DataFrame(self.dataset)

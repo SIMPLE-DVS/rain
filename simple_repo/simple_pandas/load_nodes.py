@@ -1,7 +1,7 @@
 import pandas
 import pandas as pd
 
-from simple_repo.parameter import KeyValueParameter
+from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_pandas.node_structure import PandasNode
 
 
@@ -17,16 +17,18 @@ class PandasCSVLoader(PandasNode):
     # encoding_errors='strict', dialect=None, error_bad_lines=None, warn_bad_lines=None, on_bad_lines=None,
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
-    _parameters = {
-        "path": KeyValueParameter("filepath_or_buffer", str, is_mandatory=True),
-        "delim": KeyValueParameter("delimiter", str),
-    }
+    def __init__(self, path: str, delim: str = ","):
+        self.parameters = Parameters(
+            path=KeyValueParameter("filepath_or_buffer", str, path),
+            delim=KeyValueParameter("delimiter", str, delim),
+        )
 
-    def __init__(self, **kwargs):
-        super(PandasCSVLoader, self).__init__(**kwargs)
+        self.parameters.group_all("read_csv")
+
+        super(PandasCSVLoader, self).__init__()
 
     def execute(self):
-        param_dict = self._get_params_as_dict()
+        param_dict = self.parameters.get_dict_from_group("read_csv")
         self.dataset = pandas.read_csv(**param_dict)
 
 
@@ -42,32 +44,32 @@ class PandasCSVWriter(PandasNode):
     # encoding_errors='strict', dialect=None, error_bad_lines=None, warn_bad_lines=None, on_bad_lines=None,
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
-    _parameters = {
-        "path": KeyValueParameter("path_or_buf", str, is_mandatory=True),
-        "delim": KeyValueParameter("sep", str, value=","),
-        "include_rows": KeyValueParameter("index", bool, value=True),
-        "rows_column_label": KeyValueParameter("index_label", str),
-        "include_columns": KeyValueParameter("header", bool, value=True),
-        "columns": KeyValueParameter("columns", list),
-    }
+    def __init__(
+        self,
+        path: str,
+        delim: str = ",",
+        include_rows: bool = True,
+        rows_column_label: str = None,
+        include_columns: bool = True,
+        columns: list = None,
+    ):
+        self.parameters = Parameters(
+            path=KeyValueParameter("path_or_buf", str, path),
+            delim=KeyValueParameter("sep", str, delim),
+            include_rows=KeyValueParameter("index", bool, include_rows),
+            rows_column_label=KeyValueParameter("index_label", str, rows_column_label),
+            include_columns=KeyValueParameter("header", bool, include_columns),
+            columns=KeyValueParameter("columns", list, columns),
+        )
 
-    def __init__(self, **kwargs):
-        super(PandasCSVWriter, self).__init__(**kwargs)
+        self.parameters.group_all("write_csv")
+
+        super(PandasCSVWriter, self).__init__()
 
     def execute(self):
-        param_dict = self._get_params_as_dict()
+        param_dict = self.parameters.get_dict_from_group("write_csv")
 
         if not isinstance(self.dataset, pd.DataFrame):
             self.dataset = pd.DataFrame(self.dataset)
 
         self.dataset.to_csv(**param_dict)
-
-
-if __name__ == "__main__":
-    loader = PandasCSVLoader(path="C:/Users/RICCARDO/Desktop/iris_ds.csv")
-    loader.execute()
-    print(loader.dataset)
-
-    alfredino = eval("loader.dataset")
-
-    print(alfredino)
