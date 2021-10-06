@@ -1,43 +1,71 @@
-from simple_repo.parameter import KeyValueParameter
+from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_spark.node_structure import Transformer, Estimator
 from pyspark.ml.classification import LogisticRegression as Lr
 from pyspark.ml.feature import HashingTF as Htf, Tokenizer as Tk
 
 
 class Tokenizer(Transformer):
-    _parameters = {
-        "inCol": KeyValueParameter("inputCol", str, is_mandatory=True),
-        "outCol": KeyValueParameter("outputCol", str, is_mandatory=True)
-    }
+    """ Represent a Spark Tokenizer used to split text in individual term.
 
-    def __init__(self, spark, **kwargs):
-        super(Tokenizer, self).__init__(spark, **kwargs)
+    Parameters
+    ----------
+    in_col: str
+        The name of the input column
+
+    out_col: str
+        The name of the output column
+    """
+
+    def __init__(self, spark, in_col: str, out_col: str):
+        self.parameters = Parameters(
+            inCol=KeyValueParameter("inputCol", str, in_col),
+            outCol=KeyValueParameter("outputCol", str, out_col)
+        )
+        super(Tokenizer, self).__init__(spark)
 
     def execute(self):
-        return Tk(**self._get_params_as_dict())
+        return Tk(**self.parameters.get_dict())
 
 
 class HashingTF(Transformer):
-    _parameters = {
-        "inCol": KeyValueParameter("inputCol", str, is_mandatory=True),
-        "outCol": KeyValueParameter("outputCol", str, is_mandatory=True)
-    }
+    """ Represent a Spark HashingTF that maps a sequence of terms to their term frequencies using the hashing trick.
 
-    def __init__(self, spark, **kwargs):
-        super(HashingTF, self).__init__(spark, **kwargs)
+    Parameters
+    ----------
+    in_col: str
+        The name of the input column
+
+    out_col: str
+        The name of the output column
+    """
+
+    def __init__(self, spark, in_col: str, out_col: str):
+        self.parameters = Parameters(
+            inCol=KeyValueParameter("inputCol", str, in_col),
+            outCol=KeyValueParameter("outputCol", str, out_col)
+        )
+        super(HashingTF, self).__init__(spark)
 
     def execute(self):
-        return Htf(**self._get_params_as_dict())
+        return Htf(**self.parameters.get_dict())
 
 
 class LogisticRegression(Estimator):
-    _parameters = {
-        "maxIter": KeyValueParameter("maxIter", int, is_mandatory=True),
-        "regParam": KeyValueParameter("regParam", float, is_mandatory=True)
-    }
+    """ Represent a SparkNode that supports fitting traditional logistic regression model.
 
-    def __init__(self, spark, **kwargs):
-        super(LogisticRegression, self).__init__(spark, **kwargs)
+    Parameters
+    ----------
+    max_iter: int
+
+    reg_param: float
+    """
+
+    def __init__(self, spark, max_iter: int, reg_param: float):
+        self.parameters = Parameters(
+            max_iter=KeyValueParameter("maxIter", int, max_iter),
+            reg_param=KeyValueParameter("regParam", float, reg_param)
+        )
+        super(LogisticRegression, self).__init__(spark)
 
     def execute(self):
-        return Lr(**self._get_params_as_dict())
+        return Lr(**self.parameters.get_dict())

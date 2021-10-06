@@ -1,42 +1,63 @@
 from pyspark.sql import DataFrame
 
-from simple_repo.parameter import StructuredParameterList, KeyValueParameter
+from simple_repo.parameter import StructuredParameterList, KeyValueParameter, Parameters
 from simple_repo.simple_spark.node_structure import Transformer
 
 
 class SparkColumnSelector(Transformer):
-    _parameters = {
-        "features": StructuredParameterList(col=True, value=False)
-    }
+    """SparkColumnSelector manages filtering of rows, columns and values
+    for a Spark DataFrame.
 
-    def __init__(self, spark, **kwargs):
-        super(SparkColumnSelector, self).__init__(spark, **kwargs)
+    Parameters
+    ----------
+    features : list[dict]
+        Every dictionary in the list must be of the form:
+            {
+                col: str (Mandatory)
+                value: str (Optional)
+            }
+    """
+
+    def __init__(self, spark, features: list):
+        self.parameters = Parameters(
+            features=StructuredParameterList(col=True, value=False)
+        )
+        self.parameters.features.add_all_parameters(features)
+        super(SparkColumnSelector, self).__init__(spark)
 
     def execute(self):
-        columns = [c["col"] for c in self._parameters.get("features").parameters]
+        columns = [c["col"] for c in self.parameters.features.parameters]
         self.dataset = self.dataset.select(columns)
-        conditions = [c["value"] for c in self._parameters.get("features").parameters if "value" in c]
+        conditions = [
+            c["value"] for c in self.parameters.features.parameters if "value" in c
+        ]
         for c in conditions:
             self.dataset = self.dataset.filter(c)
         self.dataset.show()
 
 
 class SparkSplitDataset(Transformer):
-    _parameters = {
-        "train": KeyValueParameter("train", float, is_mandatory=True),
-        "test": KeyValueParameter("test", float, is_mandatory=True)
-    }
+    """Splits a Spark DataFrame in two DataFrames, train and test.
 
-    _output_vars = {
-        "train_dataset": DataFrame,
-        "test_dataset": DataFrame
-    }
+    Parameters
+    ----------
+    train : float
+        Percentage of the dataset to split into a train dataset.
+    test : float
+        Percentage of the dataset to split into a test dataset.
+    """
 
-    def __init__(self, spark, **kwargs):
-        super(SparkSplitDataset, self).__init__(spark, **kwargs)
+    _output_vars = {"train_dataset": DataFrame, "test_dataset": DataFrame}
+
+    def __init__(self, spark, train: float, test: float):
+        self.parameters = Parameters(
+            train=KeyValueParameter("train", float, train),
+            test=KeyValueParameter("test", float, test),
+        )
+        super(SparkSplitDataset, self).__init__(spark)
 
     def execute(self):
-        values = list(self._get_params_as_dict().values())
+        values = list(self.parameters.get_dict().values())
         self.train_dataset, self.test_dataset = self.dataset.randomSplit(values)
         self.train_dataset.show()
         self.test_dataset.show()

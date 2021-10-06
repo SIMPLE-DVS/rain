@@ -1,38 +1,50 @@
 from pyspark.ml import PipelineModel
 from pyspark.sql import DataFrame
 
-from simple_repo.parameter import KeyValueParameter
+from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_spark.node_structure import SparkNode
 
 
 class SaveModel(SparkNode):
-    _input_vars = {
-        "model": PipelineModel
-    }
+    """ Save a trained PipelineModel
 
-    _parameters = {
-        "path": KeyValueParameter("path", str, is_mandatory=True)
-    }
+    Parameters
+    ----------
+    path: str
+        String representing the path where to save the model
 
-    def __init__(self, spark, **kwargs):
-        super(SaveModel, self).__init__(spark, **kwargs)
+    """
+
+    _input_vars = {"model": PipelineModel}
+
+    def __init__(self, spark, path: str):
+        self.parameters = Parameters(path=KeyValueParameter("path", str, path))
+        super(SaveModel, self).__init__(spark)
 
     def execute(self):
-        self.model.write().overwrite().save(**self._get_params_as_dict())
+        self.model.write().overwrite().save(**self.parameters.get_dict())
 
 
 class SaveDataset(SparkNode):
-    _input_vars = {
-        "dataset": DataFrame
-    }
+    """ Save a Spark Dataframe in a .csv format
 
-    _attr = {
-        "path": KeyValueParameter("path_or_buf", str, is_mandatory=True),
-        "index": KeyValueParameter("index", bool)
-    }
+    Parameters
+    ----------
+    path: str
+        String representing the path where to save the dataset
 
-    def __init__(self, spark, **kwargs):
-        super(SaveDataset, self).__init__(spark, **kwargs)
+    index: bool = True
+        String representing the path where to save the dataset
+    """
+
+    _input_vars = {"dataset": DataFrame}
+
+    def __init__(self, spark, path: str, index: bool = True):
+        self.parameters = Parameters(
+            path=KeyValueParameter("path_or_buf", str, path),
+            index=KeyValueParameter("index", bool, index)
+        )
+        super(SaveDataset, self).__init__(spark)
 
     def execute(self):
-        self.dataset.toPandas().to_csv(**self._get_params_as_dict())
+        self.dataset.toPandas().to_csv(**self.parameters.get_dict())

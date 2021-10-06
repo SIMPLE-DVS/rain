@@ -8,12 +8,10 @@ from simple_repo.base import SimpleNode
 
 
 class SparkNode(SimpleNode):
-    _input_vars = {
-        "spark": SparkSession
-    }
+    _input_vars = {"spark": SparkSession}
 
-    def __init__(self, spark, **kwargs):
-        super(SparkNode, self).__init__(**kwargs)
+    def __init__(self, spark):
+        super(SparkNode, self).__init__()
         self.spark = spark
 
     @abstractmethod
@@ -22,13 +20,11 @@ class SparkNode(SimpleNode):
 
 
 class Transformer(SparkNode):
-    _output_vars = {
-        "dataset": DataFrame
-    }
+    _output_vars = {"dataset": DataFrame}
 
-    def __init__(self, spark, **kwargs):
+    def __init__(self, spark):
         self._input_vars["dataset"] = DataFrame
-        super(Transformer, self).__init__(spark, **kwargs)
+        super(Transformer, self).__init__(spark)
 
     @abstractmethod
     def execute(self):
@@ -36,13 +32,11 @@ class Transformer(SparkNode):
 
 
 class Estimator(SparkNode):
-    _output_vars = {
-        "model": PipelineModel
-    }
+    _output_vars = {"model": PipelineModel}
 
-    def __init__(self, spark, **kwargs):
+    def __init__(self, spark):
         self._input_vars["dataset"] = DataFrame
-        super(Estimator, self).__init__(spark, **kwargs)
+        super(Estimator, self).__init__(spark)
 
     @abstractmethod
     def execute(self):
