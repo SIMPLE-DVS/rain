@@ -7,11 +7,13 @@ from pyspark.sql import SparkSession
 from simple_repo.base import ComputationalNode, InputNode, OutputNode
 
 
-class SparkNode:
+class SparkNodeSession:
+    """Mixin class to share the spark session among different kinds of spark nodes."""
+
     spark: SparkSession = None
 
 
-class Transformer(ComputationalNode, SparkNode):
+class Transformer(ComputationalNode, SparkNodeSession):
     _input_vars = {"dataset": DataFrame}
 
     _output_vars = {"dataset": DataFrame}
@@ -24,7 +26,7 @@ class Transformer(ComputationalNode, SparkNode):
         pass
 
 
-class Estimator(ComputationalNode, SparkNode):
+class Estimator(ComputationalNode, SparkNodeSession):
     _input_vars = {"dataset": DataFrame}
 
     _output_vars = {"model": PipelineModel}
@@ -37,7 +39,7 @@ class Estimator(ComputationalNode, SparkNode):
         pass
 
 
-class SparkInputNode(InputNode, SparkNode):
+class SparkInputNode(InputNode, SparkNodeSession):
     def __init__(self):
         pass
 
@@ -46,7 +48,7 @@ class SparkInputNode(InputNode, SparkNode):
         pass
 
 
-class SparkOutputNode(OutputNode, SparkNode):
+class SparkOutputNode(OutputNode, SparkNodeSession):
     def __init__(self):
         pass
 

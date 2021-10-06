@@ -2,11 +2,11 @@ from typing import List
 
 from pyspark.ml import Pipeline
 
-from simple_repo.simple_spark.node_structure import Estimator, SparkNode
+from simple_repo.simple_spark.node_structure import Estimator, SparkNodeSession
 
 
 class SparkPipelineNode(Estimator):
-    """ Represent a Spark Pipeline consisting of SparkNode (stages)
+    """Represent a Spark Pipeline consisting of SparkNode (stages)
 
     Parameters
     ----------
@@ -17,7 +17,7 @@ class SparkPipelineNode(Estimator):
 
     _stages = []
 
-    def __init__(self, stages: List[SparkNode]):
+    def __init__(self, stages: List[SparkNodeSession]):
         for stage in stages:
             self._stages.append(stage)
         super(SparkPipelineNode, self).__init__()
