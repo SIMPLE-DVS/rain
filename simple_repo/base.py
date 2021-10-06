@@ -4,9 +4,6 @@ from abc import abstractmethod
 from typing import Any
 import copy
 
-from simple_repo.exception import ParameterNotFound
-from simple_repo.parameter import StructuredParameterList
-
 import yaml
 
 
@@ -146,84 +143,6 @@ class SimpleNode(metaclass=Meta):
     @abstractmethod
     def execute(self):
         pass
-
-
-class Node(object):
-    """
-    Class to represent, as a Python object, the configuration file.
-
-        Parameters
-        ----------
-
-        node_id : string
-            The unique identifier that each node must have.
-
-        node : string
-            The full-name formed by \textit{package + module + class}, useful to dynamically import the
-            module and to return the wanted class representing one step of the pipeline
-
-        parameters : dict
-            List of features that characterizes each step of the pipeline. Obviously, depending on the node,
-            we have a different structure of the list with different number of features.
-
-        then : list
-            List of idd representing the node(s) that are directly linked with the current node.
-
-    """
-
-    def __init__(
-        self,
-        node_id: str,
-        node: str,
-        node_type: str,
-        parameters: dict,
-        then: list = None,
-        execute: list = None,
-    ):
-        self._node_id = node_id
-        self._node = node
-        self._node_type = node_type
-        self._parameters = parameters
-        self._execute = execute
-        self._then = then
-
-    @property
-    def node_id(self):
-        return self._node_id
-
-    @property
-    def node(self):
-        return self._node
-
-    @property
-    def node_type(self):
-        return self._node_type
-
-    @property
-    def parameters(self):
-        return self._parameters
-
-    @property
-    def execute(self):
-        return self._execute
-
-    @property
-    def then(self):
-        return self._then
-
-    def node_instantiation_str(self):
-        """Returns a string representing the instantiation of this node object.
-
-        Example: Node(node_id='loader', node='pkg.mod.Class', parameters={...}, (execute=[])?, (then={...})?)
-        """
-        return "{}(node_id='{}', node='{}', node_type='alfredino', parameters={},{}{})".format(
-            self.__class__.__name__,
-            self._node_id,
-            "__main__.{}".format(self._node.split(".")[-1]),
-            self._parameters,
-            " execute={},".format(self._execute) if self._execute is not None else "",
-            " then={}".format(self._then) if self._then is not None else "",
-        )
 
 
 class Singleton(type):

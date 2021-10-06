@@ -6,7 +6,7 @@ from simple_repo.simple_spark.node_structure import SparkNode
 
 
 class SaveModel(SparkNode):
-    """ Save a trained PipelineModel
+    """Save a trained PipelineModel
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ class SaveModel(SparkNode):
 
 
 class SaveDataset(SparkNode):
-    """ Save a Spark Dataframe in a .csv format
+    """Save a Spark Dataframe in a .csv format
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ class SaveDataset(SparkNode):
     def __init__(self, spark, path: str, index: bool = True):
         self.parameters = Parameters(
             path=KeyValueParameter("path_or_buf", str, path),
-            index=KeyValueParameter("index", bool, index)
+            index=KeyValueParameter("index", bool, index),
         )
         super(SaveDataset, self).__init__(spark)
 

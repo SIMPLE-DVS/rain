@@ -5,13 +5,9 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from simple_repo.base import Node
 from simple_repo.base import Singleton
 from simple_repo.base import get_class
 from simple_repo.base import SimpleNode
-from simple_repo.dag import DagCreator
-
-import pickle
 
 
 def reset(simple_node):
@@ -26,7 +22,7 @@ class SimpleExecutor(metaclass=Singleton):
 
     @staticmethod
     @abstractmethod
-    def convert(nodes: List[Node]):
+    def convert(nodes):
         pass
 
     @staticmethod
@@ -39,7 +35,7 @@ class PandasExecutor(SimpleExecutor):
         super(PandasExecutor, self).__init__()
 
     @staticmethod
-    def convert(nodes: List[Node]):
+    def convert(nodes):
         simple_nodes = OrderedDict()
         nodes_nexts = {}
 
@@ -63,7 +59,7 @@ class SklearnExecutor(SimpleExecutor):
         super(SklearnExecutor, self).__init__()
 
     @staticmethod
-    def convert(nodes: List[Node]):
+    def convert(nodes):
         simple_nodes = OrderedDict()
         nodes_nexts = {}
 
@@ -90,7 +86,7 @@ class SparkExecutor(SimpleExecutor):
         super(SparkExecutor, self).__init__()
         self._spark = None
 
-    def convert(self, nodes: List[Node]):
+    def convert(self, nodes):
         self._spark = SparkSession.builder.getOrCreate()
         simple_nodes = OrderedDict()
         nodes_nexts = {}
@@ -145,7 +141,7 @@ class ExecutionResult:
 
 
 class SimpleSubPipeline:
-    def __init__(self, s_type, nodes: List[Node], executor):
+    def __init__(self, s_type, nodes, executor):
         self._type = s_type
         self._nodes = OrderedDict()
         self._nexts = {}
@@ -262,19 +258,3 @@ class SimplePipeline:
     @property
     def subpipelines(self):
         return self._subpipelines
-
-
-if __name__ == "__main__":
-    import os
-
-    sjp = DagCreator()
-
-    sjp.create_dag("pandas_sklearn.yaml")
-
-    # sjp.show_dag()
-
-    pipeline = sjp.get_sub_pipelines()
-
-    pickle.dump(
-        pipeline, open("C:/Users/{}/Desktop/pipe.pkl".format(os.getlogin()), "wb")
-    )
