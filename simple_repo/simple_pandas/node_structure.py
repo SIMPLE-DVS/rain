@@ -12,15 +12,11 @@ class PandasNode(ComputationalNode):
     """
 
     _input_vars = {"dataset": pd.DataFrame}
-    _parameters = {}
     _output_vars = {"dataset": pd.DataFrame}
 
-    def __init__(self, **kwargs):
-        super(PandasNode, self).__init__(**kwargs)
+    def __init__(self):
+        super(PandasNode, self).__init__()
 
     @abstractmethod
     def execute(self):
         pass
-
-    def __str__(self):
-        return "{}".format(self._get_params_as_dict())
