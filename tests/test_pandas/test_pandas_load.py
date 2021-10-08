@@ -2,7 +2,7 @@ import pytest
 from sklearn.datasets import load_iris
 
 from simple_repo.exception import ParameterNotFound
-from simple_repo.simple_pandas.load_nodes import PandasCSVLoader, PandasCSVWriter
+from simple_repo import PandasCSVLoader, PandasCSVWriter
 
 
 def check_class_integrity(class_):

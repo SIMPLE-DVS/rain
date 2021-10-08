@@ -1,10 +1,8 @@
-import copy
-
 import pytest
 from sklearn.datasets import load_iris
 
 from simple_repo.exception import ParameterNotFound
-from simple_repo.simple_pandas.transform_nodes import (
+from simple_repo import (
     PandasColumnSelector,
     PandasPivot,
     PandasRenameColumn,
