@@ -21,10 +21,11 @@ class Tokenizer(Transformer):
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col)
         )
+        self.computational_instance = Tk(**self.parameters.get_dict())
         super(Tokenizer, self).__init__()
 
     def execute(self):
-        return Tk(**self.parameters.get_dict())
+        self.dataset = self.computational_instance.transform(self.dataset)
 
 
 class HashingTF(Transformer):
@@ -44,10 +45,11 @@ class HashingTF(Transformer):
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col)
         )
+        self.computational_instance = Htf(**self.parameters.get_dict())
         super(HashingTF, self).__init__()
 
     def execute(self):
-        return Htf(**self.parameters.get_dict())
+        self.dataset = self.computational_instance.transform(self.dataset)
 
 
 class LogisticRegression(Estimator):
@@ -65,7 +67,8 @@ class LogisticRegression(Estimator):
             max_iter=KeyValueParameter("maxIter", int, max_iter),
             reg_param=KeyValueParameter("regParam", float, reg_param)
         )
+        self.computational_instance = Lr(**self.parameters.get_dict())
         super(LogisticRegression, self).__init__()
 
     def execute(self):
-        return Lr(**self.parameters.get_dict())
+        self.model = self.computational_instance.fit(self.dataset)

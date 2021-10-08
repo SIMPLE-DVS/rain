@@ -13,8 +13,36 @@ class SparkNodeSession:
     spark: SparkSession = None
 
 
-class Transformer(ComputationalNode, SparkNodeSession):
+class SparkStageMixin:
+    def __init__(self):
+        self._computational_instance = None
+
+    @property
+    def computational_instance(self):
+        if self._computational_instance is None:
+            raise Exception("The computational instance is not instantiated yet")
+        return self._computational_instance
+
+    @computational_instance.setter
+    def computational_instance(self, inst):
+        self._computational_instance = inst
+
+
+class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
+    """Class representing a Spark ComputationalNode, it could be either a Transformer or Estimator."""
+
     _input_vars = {"dataset": DataFrame}
+
+    def __init__(self):
+        super(SparkNode, self).__init__()
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class Transformer(SparkNode):
+    """Class representing a Spark Transformer, it manipulates a given dataset and returns a modified version of it."""
 
     _output_vars = {"dataset": DataFrame}
 
@@ -26,8 +54,8 @@ class Transformer(ComputationalNode, SparkNodeSession):
         pass
 
 
-class Estimator(ComputationalNode, SparkNodeSession):
-    _input_vars = {"dataset": DataFrame}
+class Estimator(SparkNode):
+    """Class representing a Spark Estimator, it takes a dataset and returns a trained model."""
 
     _output_vars = {"model": PipelineModel}
 
@@ -40,6 +68,7 @@ class Estimator(ComputationalNode, SparkNodeSession):
 
 
 class SparkInputNode(InputNode, SparkNodeSession):
+    """Class representing a Spark InputNode, it loads and returns an object/file."""
     def __init__(self):
         pass
 
@@ -49,6 +78,7 @@ class SparkInputNode(InputNode, SparkNodeSession):
 
 
 class SparkOutputNode(OutputNode, SparkNodeSession):
+    """Class representing a Spark OutputNode, it save a given object/file."""
     def __init__(self):
         pass
 
