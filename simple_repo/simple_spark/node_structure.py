@@ -4,15 +4,37 @@ from pyspark.sql import DataFrame
 from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
 
-from simple_repo.base import SimpleNode
+from simple_repo.base import ComputationalNode, InputNode, OutputNode
 
 
-class SparkNode(SimpleNode):
-    _input_vars = {"spark": SparkSession}
+class SparkNodeSession:
+    """Mixin class to share the spark session among different kinds of spark nodes."""
 
-    def __init__(self, spark):
+    spark: SparkSession = None
+
+
+class SparkStageMixin:
+    def __init__(self):
+        self._computational_instance = None
+
+    @property
+    def computational_instance(self):
+        if self._computational_instance is None:
+            raise Exception("The computational instance is not instantiated yet")
+        return self._computational_instance
+
+    @computational_instance.setter
+    def computational_instance(self, inst):
+        self._computational_instance = inst
+
+
+class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
+    """Class representing a Spark ComputationalNode, it could be either a Transformer or Estimator."""
+
+    _input_vars = {"dataset": DataFrame}
+
+    def __init__(self):
         super(SparkNode, self).__init__()
-        self.spark = spark
 
     @abstractmethod
     def execute(self):
@@ -20,11 +42,12 @@ class SparkNode(SimpleNode):
 
 
 class Transformer(SparkNode):
+    """Class representing a Spark Transformer, it manipulates a given dataset and returns a modified version of it."""
+
     _output_vars = {"dataset": DataFrame}
 
-    def __init__(self, spark):
-        self._input_vars["dataset"] = DataFrame
-        super(Transformer, self).__init__(spark)
+    def __init__(self):
+        super(Transformer, self).__init__()
 
     @abstractmethod
     def execute(self):
@@ -32,11 +55,32 @@ class Transformer(SparkNode):
 
 
 class Estimator(SparkNode):
+    """Class representing a Spark Estimator, it takes a dataset and returns a trained model."""
+
     _output_vars = {"model": PipelineModel}
 
-    def __init__(self, spark):
-        self._input_vars["dataset"] = DataFrame
-        super(Estimator, self).__init__(spark)
+    def __init__(self):
+        super(Estimator, self).__init__()
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class SparkInputNode(InputNode, SparkNodeSession):
+    """Class representing a Spark InputNode, it loads and returns an object/file."""
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class SparkOutputNode(OutputNode, SparkNodeSession):
+    """Class representing a Spark OutputNode, it save a given object/file."""
+    def __init__(self):
+        pass
 
     @abstractmethod
     def execute(self):

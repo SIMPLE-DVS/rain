@@ -16,15 +16,16 @@ class Tokenizer(Transformer):
         The name of the output column
     """
 
-    def __init__(self, spark, in_col: str, out_col: str):
+    def __init__(self, in_col: str, out_col: str):
         self.parameters = Parameters(
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col)
         )
-        super(Tokenizer, self).__init__(spark)
+        self.computational_instance = Tk(**self.parameters.get_dict())
+        super(Tokenizer, self).__init__()
 
     def execute(self):
-        return Tk(**self.parameters.get_dict())
+        self.dataset = self.computational_instance.transform(self.dataset)
 
 
 class HashingTF(Transformer):
@@ -39,15 +40,16 @@ class HashingTF(Transformer):
         The name of the output column
     """
 
-    def __init__(self, spark, in_col: str, out_col: str):
+    def __init__(self, in_col: str, out_col: str):
         self.parameters = Parameters(
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col)
         )
-        super(HashingTF, self).__init__(spark)
+        self.computational_instance = Htf(**self.parameters.get_dict())
+        super(HashingTF, self).__init__()
 
     def execute(self):
-        return Htf(**self.parameters.get_dict())
+        self.dataset = self.computational_instance.transform(self.dataset)
 
 
 class LogisticRegression(Estimator):
@@ -60,12 +62,13 @@ class LogisticRegression(Estimator):
     reg_param: float
     """
 
-    def __init__(self, spark, max_iter: int, reg_param: float):
+    def __init__(self, max_iter: int, reg_param: float):
         self.parameters = Parameters(
             max_iter=KeyValueParameter("maxIter", int, max_iter),
             reg_param=KeyValueParameter("regParam", float, reg_param)
         )
-        super(LogisticRegression, self).__init__(spark)
+        self.computational_instance = Lr(**self.parameters.get_dict())
+        super(LogisticRegression, self).__init__()
 
     def execute(self):
-        return Lr(**self.parameters.get_dict())
+        self.model = self.computational_instance.fit(self.dataset)

@@ -1,11 +1,39 @@
+from abc import abstractmethod
+
 import pandas
 import pandas as pd
 
+from simple_repo.base import InputNode, OutputNode
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_pandas.node_structure import PandasNode
 
 
-class PandasCSVLoader(PandasNode):
+class PandasInputNode(InputNode):
+    _output_vars = {"dataset": pandas.DataFrame}
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class PandasOutputNode(OutputNode):
+    _input_vars = {"dataset": pandas.DataFrame}
+
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class PandasCSVLoader(PandasInputNode):
+    """Loads a pandas DataFrame from a CSV file.
+
+    Parameters
+    ----------
+    path : str
+        Of the CSV file.
+    delim : str
+        Delimiter symbol of the CSV file.
+    """
+
     # _parameters = { "filepath_or_buffer": PandasParameter("filepath_or_buffer", str, is_mandatory=True),
     # sep=<no_default>, delimiter=None, header='infer', names=<no_default>, index_col=None, usecols=None,
     # squeeze=False, prefix=<no_default>, mangle_dupe_cols=True, dtype=None, engine=None, converters=None,
@@ -32,7 +60,26 @@ class PandasCSVLoader(PandasNode):
         self.dataset = pandas.read_csv(**param_dict)
 
 
-class PandasCSVWriter(PandasNode):
+class PandasCSVWriter(PandasOutputNode):
+    """Writes a pandas DataFrame into a CSV file.
+
+    Parameters
+    ----------
+    path : str
+        Of the CSV file.
+    delim : str
+        Delimiter symbol of the CSV file.
+    include_rows : bool
+        Whether to include rows indexes.
+    rows_column_label : str
+        If rows indexes must be included you can give a name to its column.
+    include_columns : bool
+        Whether to include column names.
+    columns : list
+        If column names must be included you can give names to them.
+        The order is relevant.
+    """
+
     # _parameters = { "filepath_or_buffer": PandasParameter("filepath_or_buffer", str, is_mandatory=True),
     # sep=<no_default>, delimiter=None, header='infer', names=<no_default>, index_col=None, usecols=None,
     # squeeze=False, prefix=<no_default>, mangle_dupe_cols=True, dtype=None, engine=None, converters=None,

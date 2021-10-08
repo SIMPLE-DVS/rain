@@ -2,10 +2,10 @@ from pyspark.ml import PipelineModel
 from pyspark.sql import DataFrame
 
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_spark.node_structure import SparkNode
+from simple_repo.simple_spark.node_structure import SparkInputNode
 
 
-class SparkCSVLoader(SparkNode):
+class SparkCSVLoader(SparkInputNode):
     """Loads a CSV file as a Spark DataFrame.
 
     Parameters
@@ -35,7 +35,7 @@ class SparkCSVLoader(SparkNode):
         self.dataset = self.spark.read.csv(**self.parameters.get_dict())
 
 
-class SparkModelLoader(SparkNode):
+class SparkModelLoader(SparkInputNode):
     """Loads a file as a Spark Model.
 
     Parameters
