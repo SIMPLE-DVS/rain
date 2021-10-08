@@ -17,8 +17,6 @@ requirements = [
     "sklearn==0.0",
     "scikit-learn==0.24.2",
     "pyspark==3.1.2",
-    "networkx==2.6.2",
-    "matplotlib==3.4.2",
 ]
 
 test_requirements = [
@@ -26,8 +24,8 @@ test_requirements = [
 ]
 
 setup(
-    author="Riccardo Coltrinari",
-    author_email="riccardo.coltrinari@studenti.unicam.it",
+    author="Alessandro Antinori, Riccardo Coltrinari, Marco Scarpetta",
+    author_email="alessandro.antinori@studenti.unicam.it, riccardo.coltrinari@studenti.unicam.it, marco.scarpetta@studenti.unicam.it",
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
