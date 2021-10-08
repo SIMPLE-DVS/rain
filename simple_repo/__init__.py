@@ -8,6 +8,7 @@ from . import _version
 
 __version__ = _version.get_versions()["version"]
 
+from simple_repo.simple_io import *
 from simple_repo.simple_pandas import *
 from simple_repo.simple_sklearn import *
 from simple_repo.simple_spark import *
