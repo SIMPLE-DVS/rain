@@ -8,3 +8,4 @@ from simple_repo.simple_spark.pipeline.stages import (
     Tokenizer,
     LogisticRegression,
 )
+from simple_repo.simple_spark.pipeline import *

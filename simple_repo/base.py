@@ -1,10 +1,7 @@
 import importlib
-import json
 from abc import abstractmethod
 from typing import Any
 import copy
-
-import yaml
 
 
 def get_class(fullname: str):
@@ -28,41 +25,6 @@ def get_class(fullname: str):
     return class_
 
 
-def load_config(config_file) -> dict:
-    """
-    Utility function that given a path, returns the json file representing the configuration of the pipeline.
-    """
-    with open(config_file, "r") as f:
-        config = json.load(f)
-        return config
-
-
-def load_yaml_config(config_file) -> dict:
-    """
-    Utility function that given a path, returns the yaml file representing the configuration of the pipeline.
-    """
-    with open(config_file, "r") as y:
-        config = yaml.load(y, Loader=yaml.FullLoader)
-        return config
-
-
-def get_step(step_id: str, step_list: list):
-    """
-    Utility function that given a step id and the list of steps, returns the step instance with the corresponding id.
-    """
-    # get all the nodes with the request id
-    corr_steps = [step for step in step_list if step.step_id == step_id]
-
-    if len(corr_steps) > 1:
-        raise Exception(
-            "Error! There are duplicated nodes with same id '{}'.".format(step_id)
-        )
-    elif len(corr_steps) < 1:
-        raise Exception("Error! There aren't nodes with id '{}'.".format(step_id))
-
-    return corr_steps[0]
-
-
 def reset(simple_node):
     dic = vars(simple_node)
     for i in dic.keys():
@@ -75,52 +37,70 @@ class Meta(type):
         output_vars_string = "_output_vars"
         methods_vars_string = "_methods"
 
-        def get_new_input_vars():
-            new_in_vars = {}
-            new_in_vars = copy.deepcopy(bases[0]._input_vars)
-            if len(bases) > 1:
-                for index in range(1, len(bases)):
-                    new_in_vars.update(bases[index]._input_vars)
-            if dct.get(input_vars_string):
-                new_in_vars.update(dct.get(input_vars_string))
-            return new_in_vars
+        # dct[input_vars_string] = union between dct["_input_vars"] if exist
+        # and all the _input_vars those parents that have it.
 
-        def get_new_output_vars():
-            new_out_vars = {}
-            new_out_vars = copy.deepcopy(bases[0]._output_vars)
-            if len(bases) > 1:
-                for index in range(1, len(bases)):
-                    new_out_vars.update(bases[index]._output_vars)
-            if dct.get(output_vars_string):
-                new_out_vars.update(dct.get(output_vars_string))
-            return new_out_vars
+        bases_w_in_vars = list(
+            filter(lambda base: hasattr(base, input_vars_string), bases)
+        )
 
-        def get_new_methods():
-            new_methods = {}
-            new_methods = copy.deepcopy(bases[0]._methods)
-            if len(bases) > 1:
-                for index in range(1, len(bases)):
-                    new_methods.update(bases[index]._methods)
-            if dct.get(methods_vars_string):
-                new_methods.update(dct.get(methods_vars_string))
-            return new_methods
+        has_input = bool(bases_w_in_vars)  # check if bases_w_meth_vars is empty
 
-        if bases:
-            if hasattr(bases[0], input_vars_string):
-                in_vars = get_new_input_vars()
-                dct.update({input_vars_string: in_vars})
-            if hasattr(bases[0], output_vars_string):
-                out_vars = get_new_output_vars()
-                dct.update({output_vars_string: out_vars})
-            if hasattr(bases[0], methods_vars_string):
-                methods = get_new_methods()
-                dct.update({methods_vars_string: methods})
+        new_in_vars_dct = {}
+        for base in bases_w_in_vars:
+            new_in_vars_dct.update(copy.deepcopy(base._input_vars))
 
-        return super(Meta, mcs).__new__(mcs, clsname, bases, dct)
+        if input_vars_string in dct.keys():
+            new_in_vars_dct.update(copy.deepcopy(dct.get(input_vars_string)))
+            has_input = True
+
+        if has_input:
+            dct[input_vars_string] = new_in_vars_dct
+
+        # dct[output_vars_string] = union between dct["_output_vars"] if exist
+        # and all the _output_vars those parents that have it.
+
+        bases_w_out_vars = list(
+            filter(lambda base: hasattr(base, output_vars_string), bases)
+        )
+
+        has_output = bool(bases_w_out_vars)  # check if bases_w_meth_vars is empty
+
+        new_out_vars_dct = {}
+        for base in bases_w_out_vars:
+            new_out_vars_dct.update(copy.deepcopy(base._output_vars))
+
+        if output_vars_string in dct.keys():
+            new_out_vars_dct.update(copy.deepcopy(dct.get(output_vars_string)))
+            has_output = True
+
+        if has_output:
+            dct[output_vars_string] = new_out_vars_dct
+
+        # dct[methods_vars_string] = union between dct["_methods"] if exist
+        # and all the _methods those parents that have it.
+
+        bases_w_meth_vars = list(
+            filter(lambda base: hasattr(base, methods_vars_string), bases)
+        )
+
+        has_methods = bool(bases_w_meth_vars)  # check if bases_w_meth_vars is empty
+
+        new_meth_vars_dct = {}
+        for base in bases_w_meth_vars:
+            new_meth_vars_dct.update(copy.deepcopy(base._methods))
+
+        if methods_vars_string in dct.keys():
+            new_meth_vars_dct.update(copy.deepcopy(dct.get(methods_vars_string)))
+            has_methods = True
+
+        if has_methods:
+            dct[methods_vars_string] = new_meth_vars_dct
+
+        return super().__new__(mcs, clsname, bases, dct)
 
 
 class SimpleNode(metaclass=Meta):
-
     def __init__(self):
         super(SimpleNode, self).__init__()
 
@@ -165,7 +145,6 @@ class InputNode(SimpleNode, InputMixin):
 
 
 class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
-
     def __init__(self):
         super(ComputationalNode, self).__init__()
 
