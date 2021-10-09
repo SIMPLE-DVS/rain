@@ -18,11 +18,13 @@ class SparkPipelineNode(Estimator):
     _stages = []
 
     def __init__(self, stages: List[SparkNode]):
+        super(SparkPipelineNode, self).__init__()
         for stage in stages:
             if stage.computational_instance is None:
-                raise Exception("{} is not a valid stage".format(stage.__class__.__name__))
+                raise Exception(
+                    "{} is not a valid stage".format(stage.__class__.__name__)
+                )
             self._stages.append(stage)
-        super(SparkPipelineNode, self).__init__()
 
     def execute(self):
         pipeline_stages = []
