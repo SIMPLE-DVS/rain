@@ -18,12 +18,12 @@ class SparkColumnSelector(Transformer):
             }
     """
 
-    def __init__(self, features: list):
+    def __init__(self, node_id: str, features: list):
+        super(SparkColumnSelector, self).__init__(node_id)
         self.parameters = Parameters(
             features=StructuredParameterList(col=True, value=False)
         )
         self.parameters.features.add_all_parameters(features)
-        super(SparkColumnSelector, self).__init__()
 
     def execute(self):
         columns = [c["col"] for c in self.parameters.features.parameters]
@@ -49,12 +49,12 @@ class SparkSplitDataset(Transformer):
 
     _output_vars = {"train_dataset": DataFrame, "test_dataset": DataFrame}
 
-    def __init__(self, train: float, test: float):
+    def __init__(self, node_id: str, train: float, test: float):
+        super(SparkSplitDataset, self).__init__(node_id)
         self.parameters = Parameters(
             train=KeyValueParameter("train", float, train),
             test=KeyValueParameter("test", float, test),
         )
-        super(SparkSplitDataset, self).__init__()
 
     def execute(self):
         values = list(self.parameters.get_dict().values())

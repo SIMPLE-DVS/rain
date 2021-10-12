@@ -33,8 +33,8 @@ class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
 
     _input_vars = {"dataset": DataFrame}
 
-    def __init__(self):
-        super(SparkNode, self).__init__()
+    def __init__(self, node_id):
+        super(SparkNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -46,8 +46,8 @@ class Transformer(SparkNode):
 
     _output_vars = {"dataset": DataFrame}
 
-    def __init__(self):
-        super(Transformer, self).__init__()
+    def __init__(self, node_id: str):
+        super(Transformer, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -59,8 +59,8 @@ class Estimator(SparkNode):
 
     _output_vars = {"model": PipelineModel}
 
-    def __init__(self):
-        super(Estimator, self).__init__()
+    def __init__(self, node_id: str):
+        super(Estimator, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -69,8 +69,6 @@ class Estimator(SparkNode):
 
 class SparkInputNode(InputNode, SparkNodeSession):
     """Class representing a Spark InputNode, it loads and returns an object/file."""
-    def __init__(self):
-        pass
 
     @abstractmethod
     def execute(self):
@@ -79,8 +77,6 @@ class SparkInputNode(InputNode, SparkNodeSession):
 
 class SparkOutputNode(OutputNode, SparkNodeSession):
     """Class representing a Spark OutputNode, it save a given object/file."""
-    def __init__(self):
-        pass
 
     @abstractmethod
     def execute(self):

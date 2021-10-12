@@ -45,15 +45,15 @@ class PandasCSVLoader(PandasInputNode):
     # encoding_errors='strict', dialect=None, error_bad_lines=None, warn_bad_lines=None, on_bad_lines=None,
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
-    def __init__(self, path: str, delim: str = ","):
+    def __init__(self, node_id: str, path: str, delim: str = ","):
+        super(PandasCSVLoader, self).__init__(node_id)
+
         self.parameters = Parameters(
             path=KeyValueParameter("filepath_or_buffer", str, path),
             delim=KeyValueParameter("delimiter", str, delim),
         )
 
         self.parameters.group_all("read_csv")
-
-        super(PandasCSVLoader, self).__init__()
 
     def execute(self):
         param_dict = self.parameters.get_dict_from_group("read_csv")
@@ -93,6 +93,7 @@ class PandasCSVWriter(PandasOutputNode):
 
     def __init__(
         self,
+        node_id: str,
         path: str,
         delim: str = ",",
         include_rows: bool = True,
@@ -100,6 +101,7 @@ class PandasCSVWriter(PandasOutputNode):
         include_columns: bool = True,
         columns: list = None,
     ):
+        super(PandasCSVWriter, self).__init__(node_id)
         self.parameters = Parameters(
             path=KeyValueParameter("path_or_buf", str, path),
             delim=KeyValueParameter("sep", str, delim),
@@ -110,8 +112,6 @@ class PandasCSVWriter(PandasOutputNode):
         )
 
         self.parameters.group_all("write_csv")
-
-        super(PandasCSVWriter, self).__init__()
 
     def execute(self):
         param_dict = self.parameters.get_dict_from_group("write_csv")

@@ -17,9 +17,9 @@ class SaveModel(SparkOutputNode):
 
     _input_vars = {"model": PipelineModel}
 
-    def __init__(self, path: str):
+    def __init__(self, node_id: str, path: str):
         self.parameters = Parameters(path=KeyValueParameter("path", str, path))
-        super(SaveModel, self).__init__()
+        super(SaveModel, self).__init__(node_id)
 
     def execute(self):
         self.model.write().overwrite().save(**self.parameters.get_dict())
@@ -39,12 +39,12 @@ class SaveDataset(SparkOutputNode):
 
     _input_vars = {"dataset": DataFrame}
 
-    def __init__(self, path: str, index: bool = True):
+    def __init__(self, node_id: str, path: str, index: bool = True):
         self.parameters = Parameters(
             path=KeyValueParameter("path_or_buf", str, path),
             index=KeyValueParameter("index", bool, index),
         )
-        super(SaveDataset, self).__init__()
+        super(SaveDataset, self).__init__(node_id)
 
     def execute(self):
         self.dataset.toPandas().to_csv(**self.parameters.get_dict())

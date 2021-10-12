@@ -7,6 +7,7 @@ from simple_repo.simple_sklearn.node_structure import SklearnClassifier
 class SklearnLinearSVC(SklearnClassifier):
     def __init__(
         self,
+        node_id: str,
         execute: list,
         penalty: str = "l2",
         loss: str = "squared_hinge",
@@ -37,4 +38,4 @@ class SklearnLinearSVC(SklearnClassifier):
             random_state=KeyValueParameter("random_state", str, random_state),
             max_iter=KeyValueParameter("max_iter", int, max_iter),
         )
-        super(SklearnLinearSVC, self).__init__(LinearSVC, execute)
+        super(SklearnLinearSVC, self).__init__(node_id, LinearSVC, execute)

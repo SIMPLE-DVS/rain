@@ -101,8 +101,9 @@ class Meta(type):
 
 
 class SimpleNode(metaclass=Meta):
-    def __init__(self):
+    def __init__(self, node_id: str):
         super(SimpleNode, self).__init__()
+        self.node_id = node_id
 
     @abstractmethod
     def execute(self):
@@ -136,8 +137,8 @@ class OutputMixin:
 
 
 class InputNode(SimpleNode, InputMixin):
-    def __init__(self):
-        super(InputNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(InputNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -145,8 +146,8 @@ class InputNode(SimpleNode, InputMixin):
 
 
 class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
-    def __init__(self):
-        super(ComputationalNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(ComputationalNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -154,8 +155,8 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
 
 
 class OutputNode(SimpleNode, OutputMixin):
-    def __init__(self):
-        super(OutputNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(OutputNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):

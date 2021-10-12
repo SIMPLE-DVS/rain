@@ -14,8 +14,8 @@ class PandasNode(ComputationalNode):
     _input_vars = {"dataset": pd.DataFrame}
     _output_vars = {"dataset": pd.DataFrame}
 
-    def __init__(self):
-        super(PandasNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(PandasNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):

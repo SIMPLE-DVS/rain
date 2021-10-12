@@ -56,7 +56,8 @@ class PandasColumnSelector(PandasNode):
             }
     """
 
-    def __init__(self, columns: list):
+    def __init__(self, node_id: str, columns: list):
+        super(PandasColumnSelector, self).__init__(node_id)
         self.parameters = Parameters(
             # A variable number of columns can be passed, but all of them must have the same structure specified here.
             # A keyword represent the keyword that can be written in the json, the value True or False tells if it is
@@ -65,8 +66,6 @@ class PandasColumnSelector(PandasNode):
         )
 
         self.parameters.columns.add_all_parameters(columns)
-
-        super(PandasColumnSelector, self).__init__()
 
     def _filter(self):
         """
@@ -111,6 +110,7 @@ class PandasPivot(PandasNode):
 
     def __init__(
         self,
+        node_id: str,
         rows: str,
         columns: str,
         values: str,
@@ -119,6 +119,7 @@ class PandasPivot(PandasNode):
         dropna: bool = True,
         sort: bool = True,
     ):
+        super(PandasPivot, self).__init__(node_id)
         self.parameters = Parameters(
             rows=KeyValueParameter("index", str, rows),
             columns=KeyValueParameter("columns", str, columns),
@@ -128,7 +129,6 @@ class PandasPivot(PandasNode):
             dropna=KeyValueParameter("dropna", bool, dropna),
             sort=KeyValueParameter("sort", bool, sort),
         )
-        super(PandasPivot, self).__init__()
 
     def execute(self):
         param_dict = self.parameters.get_dict()
@@ -145,9 +145,9 @@ class PandasRenameColumn(PandasNode):
         The order is relevant.
     """
 
-    def __init__(self, columns: list):
+    def __init__(self, node_id: str, columns: list):
+        super(PandasRenameColumn, self).__init__(node_id)
         self.parameters = Parameters(columns=KeyValueParameter("col", list, columns))
-        super(PandasRenameColumn, self).__init__()
 
     def execute(self):
         cols = self.parameters.columns.value
