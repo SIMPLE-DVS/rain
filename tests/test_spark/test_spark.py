@@ -2,12 +2,13 @@ from pyspark.sql import DataFrame
 import pytest
 from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 from sklearn.datasets import load_iris
 
 import simple_repo as sr
 from simple_repo.simple_spark.node_structure import SparkNode, SparkNodeSession
-from pyspark.ml.feature import Tokenizer
-
+from pyspark.ml.feature import Tokenizer, HashingTF
+from pyspark.sql.functions import lit
 
 computational_spark_nodes = [
     sr.SparkPipelineNode,
@@ -89,25 +90,80 @@ class TestSparkModelLoader:
         assert isinstance(loader.model.stages[0], Tokenizer)
 
 
-class TestTestSaveModel:
-    pass
+class TestSaveModel:
+    def test_spark_save_model(self, tmpdir):
+        model = PipelineModel([Tokenizer()])
+        tmpmod = tmpdir / "tmp_model.pkl"
+        sm = sr.SaveModel(path=tmpmod.__str__())
+        sm.model = model
+        assert not tmpmod.exists()
+        sm.execute()
+        assert tmpmod.exists()
 
 
 class TestSaveDataset:
-    pass
+    def test_spark_save_dataset(self, tmpdir, iris_data):
+        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        tmpcsv = tmpdir / "tmp_csv.pkl"
+        sd = sr.SaveDataset(path=tmpcsv.__str__())
+        sd.dataset = iris
+        assert not tmpcsv.exists()
+        sd.execute()
+        assert tmpcsv.exists()
 
 
 class TestTokenizer:
-    pass
+    def test_spark_tokenizer(self, iris_data):
+        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = iris.select(col("sepal length (cm)").cast("string"))
+        tk = sr.Tokenizer("sepal length (cm)", "sl")
+        tk.dataset = iris
+        assert tk.computational_instance is not None
+        tk.execute()
+        assert tk.dataset.columns.__contains__("sl")
 
 
 class TestHashingTf:
-    pass
+    def test_spark_hashing_tf(self, iris_data):
+        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
+            iris.select(col("sepal length (cm)").cast("string"))
+        )
+        htf = sr.HashingTF("sl", "hsl")
+        htf.dataset = iris
+        assert htf.computational_instance is not None
+        htf.execute()
+        assert htf.dataset.columns.__contains__("hsl")
 
 
 class TestLogisticRegression:
-    pass
+    def test_spark_log_reg(self, iris_data):
+        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = HashingTF(inputCol="sl", outputCol="features").transform(
+            Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
+                iris.select(col("sepal length (cm)").cast("string"))
+            )
+        )
+        iris = iris.withColumn("label", lit(10))
+        lr = sr.LogisticRegression(10, 0.01)
+        lr.dataset = iris
+        assert lr.computational_instance is not None
+        lr.execute()
+        assert lr.model is not None
 
 
 class TestSparkPipeline:
-    pass
+    def test_spark_pipeline(self, iris_data):
+        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = iris.select(col("sepal length (cm)").cast("string"))
+        iris = iris.withColumn("label", lit(10))
+        stages = [
+            sr.Tokenizer("sepal length (cm)", "sl"),
+            sr.HashingTF("sl", "features"),
+            sr.LogisticRegression(10, 0.01),
+        ]
+        pipe = sr.SparkPipelineNode(stages)
+        pipe.dataset = iris
+        pipe.execute()
+        assert pipe.model is not None
+        assert pipe.computational_instance is None
