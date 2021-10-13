@@ -3,6 +3,9 @@ from abc import abstractmethod
 from typing import Any
 import copy
 
+from simple_repo.dataflow import MultiEdge
+from simple_repo.exception import EdgeConnectionError
+
 
 def get_class(fullname: str):
     """
@@ -108,6 +111,34 @@ class SimpleNode(metaclass=Meta):
     @abstractmethod
     def execute(self):
         pass
+
+    def __gt__(self, other):
+        if not isinstance(other, SimpleNode):
+            raise EdgeConnectionError(
+                "Unable to connect node {} to a non SimpleNode object.".format(
+                    self.node_id
+                )
+            )
+        if not isinstance(self, InputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no output variable.".format(self.node_id)
+            )
+        if not isinstance(other, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(other.node_id)
+            )
+
+        vars = list(filter(lambda var: var in other._input_vars, self._output_vars))
+
+        if not vars:
+            raise EdgeConnectionError(
+                "Node {} has no matching variable to propagate. To use this function the node {} must have at least "
+                "one input variable with same name as at least one output variable of node {}.".format(
+                    self.node_id, other.node_id, self.node_id
+                )
+            )
+
+        return MultiEdge(self, other, vars, vars)
 
 
 class InputMixin:
