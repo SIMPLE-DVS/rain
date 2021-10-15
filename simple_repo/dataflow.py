@@ -4,6 +4,7 @@ import copy
 
 import simple_repo.base as base  # import module to avoid circular dependency
 from simple_repo.exception import DuplicatedNodeId, EdgeConnectionError
+from simple_repo.execution import LocalExecutor
 
 
 class MultiEdge:
@@ -73,7 +74,7 @@ class MultiEdge:
 
 
 class DataFlow:
-    def __init__(self, dataflow_id: str, executor: Any = None):
+    def __init__(self, dataflow_id: str, executor: Any = LocalExecutor()):
         self.id = dataflow_id
         self.executor = executor
         self._nodes = {}
@@ -167,6 +168,24 @@ class DataFlow:
         )
         return matching_edges[0] if matching_edges else None
 
+    def get_outgoing_edges(self, source) -> List[MultiEdge]:
+        matching_edges = list(
+            filter(
+                lambda edge: source in edge.source,
+                self._edges,
+            )
+        )
+        return matching_edges
+
+    def get_ingoing_edges(self, destination):
+        matching_edges = list(
+            filter(
+                lambda edge: destination in edge.destination,
+                self._edges,
+            )
+        )
+        return matching_edges
+
     def has_node(self, node):
         if type(node) is str:
             return lambda n: node in self._nodes.keys()
@@ -175,3 +194,10 @@ class DataFlow:
 
     def is_acyclic(self):
         return nx.is_directed_acyclic_graph(self._dag)
+
+    def get_execution_ordered_nodes(self):
+        topological_order = nx.topological_sort(self._dag)
+        return list(map(lambda node_id: self._nodes.get(node_id), topological_order))
+
+    def execute(self):
+        self.executor.execute(self)

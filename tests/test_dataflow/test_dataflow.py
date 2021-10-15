@@ -1,6 +1,12 @@
 import pytest
 
-from simple_repo import DataFlow, PandasCSVLoader, PandasPivot, PandasRenameColumn
+from simple_repo import (
+    DataFlow,
+    PandasCSVLoader,
+    PandasPivot,
+    PandasRenameColumn,
+    PandasIrisLoader,
+)
 from simple_repo.exception import DuplicatedNodeId
 
 
@@ -72,5 +78,32 @@ class TestDataflow:
         dataflow.add_edges([n > t, t > r, r > t])
         assert not dataflow.is_acyclic()
 
+    def test_get_execution_ordered_nodes(self, dataflow):
+        n = PandasCSVLoader("load", "./iris.csv")
+        t = PandasPivot("piv", "r", "c", "v")
+        r = PandasRenameColumn("rcol", [])
+        dataflow.add_edges([n @ "dataset" > t & r, t > r])
+        assert dataflow.get_execution_ordered_nodes() == [n, t, r]
+
     def test_execution(self):
-        pass
+        df = DataFlow("dataflow1")
+        load = PandasIrisLoader("iris")
+        rename = PandasRenameColumn(
+            "rcol",
+            columns=[
+                "lungh. sepalo",
+                "largh. sepalo",
+                "lungh. petalo",
+                "largh. petalo",
+            ],
+        )
+
+        df.add_edge(load @ "dataset" > rename)
+        df.execute()
+
+        assert list(rename.dataset.columns) == [
+            "lungh. sepalo",
+            "largh. sepalo",
+            "lungh. petalo",
+            "largh. petalo",
+        ]
