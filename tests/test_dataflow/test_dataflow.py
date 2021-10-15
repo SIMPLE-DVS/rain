@@ -1,6 +1,6 @@
 import pytest
 
-from simple_repo import DataFlow, PandasCSVLoader, PandasPivot
+from simple_repo import DataFlow, PandasCSVLoader, PandasPivot, PandasRenameColumn
 from simple_repo.exception import DuplicatedNodeId
 
 
@@ -32,14 +32,45 @@ class TestDataflow:
         with pytest.raises(DuplicatedNodeId):
             dataflow.add_nodes([n, t])
 
-    def test_add_edges(self):
-        pass
+    def test_add_edge(self, dataflow):
+        n = PandasCSVLoader("load", "./iris.csv")
+        t = PandasPivot("piv", "r", "c", "v")
+        dataflow.add_edge(n @ "dataset" > t)
+
+        assert (
+            dataflow.has_node(n)
+            and dataflow.has_node("piv")
+            and "dataset" in dataflow.get_edge(n, t).source_output
+        )
+
+    def test_add_edges(self, dataflow):
+        n = PandasCSVLoader("load", "./iris.csv")
+        t = PandasPivot("piv", "r", "c", "v")
+        r = PandasRenameColumn("rcol", [])
+        dataflow.add_edges([n @ "dataset" > t, n @ "dataset" > r])
+
+        assert (
+            dataflow.has_node(n)
+            and dataflow.has_node(t)
+            and dataflow.has_node(r)
+            and "dataset" in dataflow.get_edge(n, t).source_output
+            and "dataset" in dataflow.get_edge(n, r).source_output
+        )
 
     def test_is_acyclic(self, dataflow):
         n = PandasCSVLoader("load", "./iris.csv")
         t = PandasPivot("piv", "r", "c", "v")
         dataflow.add_nodes([n, t])
+        dataflow.add_edge(n > t)
         assert dataflow.is_acyclic()
+
+    def test_not_acyclic(self, dataflow):
+        n = PandasCSVLoader("load", "./iris.csv")
+        t = PandasPivot("piv", "r", "c", "v")
+        r = PandasRenameColumn("rcol", [])
+        dataflow.add_nodes([n, t])
+        dataflow.add_edges([n > t, t > r, r > t])
+        assert not dataflow.is_acyclic()
 
     def test_execution(self):
         pass

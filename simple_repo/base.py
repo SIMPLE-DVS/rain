@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import Any
 import copy
 
-from simple_repo.dataflow import MultiEdge
+import simple_repo.dataflow as dataflow  # import module to avoid circular dependency
 from simple_repo.exception import EdgeConnectionError
 
 
@@ -112,6 +112,18 @@ class SimpleNode(metaclass=Meta):
     def execute(self):
         pass
 
+    def __hash__(self):
+        return hash(self.node_id)
+
+    def __eq__(self, other):
+        if not isinstance(other, SimpleNode):
+            return False
+
+        if not self.node_id == other.node_id:
+            return False
+
+        return True
+
     def __gt__(self, other):
         if not isinstance(other, SimpleNode):
             raise EdgeConnectionError(
@@ -138,7 +150,40 @@ class SimpleNode(metaclass=Meta):
                 )
             )
 
-        return MultiEdge(self, other, vars, vars)
+        return dataflow.MultiEdge([self], [other], vars, vars)
+
+    def __matmul__(self, other):
+        if not isinstance(self, InputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no output variable.".format(self.node_id)
+            )
+
+        if type(other) is str:
+            if not hasattr(self, other):
+                raise EdgeConnectionError(
+                    "Node {} has no input called {}.".format(self.node_id, other)
+                )
+            return dataflow.MultiEdge([self], source_output=[other])
+        elif type(other) is list and all(type(item) is str for item in other):
+            return dataflow.MultiEdge([self], source_output=other)
+        else:
+            raise EdgeConnectionError(
+                "Unable to connect node {}. Node's variables must be specified as string or list of strings".format(
+                    self.node_id
+                )
+            )
+
+    def __and__(self, other):
+        if not isinstance(self, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(self.node_id)
+            )
+        elif not isinstance(other, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(other.node_id)
+            )
+
+        return dataflow.MultiEdge([self, other])
 
 
 class InputMixin:
