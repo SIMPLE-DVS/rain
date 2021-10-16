@@ -7,6 +7,7 @@
 #
 # from simple_repo.base import get_class
 # from simple_repo.base import ComputationalNode
+from simple_repo.exception import CyclicDataFlowException
 
 
 class Singleton(type):
@@ -40,6 +41,9 @@ class Singleton(type):
 
 class LocalExecutor(metaclass=Singleton):
     def execute(self, dataflow):
+        if not dataflow.is_acyclic():
+            raise CyclicDataFlowException(dataflow.id)
+
         ordered_nodes = dataflow.get_execution_ordered_nodes()
 
         for node in ordered_nodes:

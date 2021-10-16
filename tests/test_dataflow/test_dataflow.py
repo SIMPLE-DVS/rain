@@ -7,7 +7,7 @@ from simple_repo import (
     PandasRenameColumn,
     PandasIrisLoader,
 )
-from simple_repo.exception import DuplicatedNodeId
+from simple_repo.exception import DuplicatedNodeId, CyclicDataFlowException
 
 
 @pytest.fixture
@@ -25,6 +25,12 @@ class TestDataflow:
         dataflow.add_node(n)
         with pytest.raises(DuplicatedNodeId):
             dataflow.add_node(n)
+
+    def test_get_node(self, dataflow):
+        n = PandasCSVLoader("load", "./iris.csv")
+        dataflow.add_node(n)
+        assert dataflow.get_node("load") == n
+        assert dataflow.get_node("piv") is None
 
     def test_add_nodes(self, dataflow):
         n = PandasCSVLoader("load", "./iris.csv")
@@ -107,3 +113,21 @@ class TestDataflow:
             "lungh. petalo",
             "largh. petalo",
         ]
+
+    def test_execution_cyclic(self):
+        df = DataFlow("dataflow1")
+        load = PandasIrisLoader("iris")
+        rename = PandasRenameColumn(
+            "rcol",
+            columns=[
+                "lungh. sepalo",
+                "largh. sepalo",
+                "lungh. petalo",
+                "largh. petalo",
+            ],
+        )
+        pivot = PandasPivot("piv", "lungh. sepalo", "largh. sepalo", "lungh. petalo")
+
+        df.add_edges([load @ "dataset" > rename, rename > pivot, pivot > rename])
+        with pytest.raises(CyclicDataFlowException):
+            df.execute()

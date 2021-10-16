@@ -3,7 +3,11 @@ import networkx as nx
 import copy
 
 import simple_repo.base as base  # import module to avoid circular dependency
-from simple_repo.exception import DuplicatedNodeId, EdgeConnectionError
+from simple_repo.exception import (
+    DuplicatedNodeId,
+    EdgeConnectionError,
+    CyclicDataFlowException,
+)
 from simple_repo.execution import LocalExecutor
 
 
@@ -136,6 +140,9 @@ class DataFlow:
 
         return True
 
+    def get_node(self, node_id: str):
+        return self._nodes.get(node_id) if node_id in self._nodes.keys() else None
+
     def add_edge(self, edge: MultiEdge):
         if edge.source is not None:
             for node in edge.source:
@@ -200,4 +207,7 @@ class DataFlow:
         return list(map(lambda node_id: self._nodes.get(node_id), topological_order))
 
     def execute(self):
+        if not self.is_acyclic():
+            raise CyclicDataFlowException(self.id)
+
         self.executor.execute(self)
