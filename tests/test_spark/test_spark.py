@@ -24,7 +24,7 @@ computational_spark_nodes_instance = [
     sr.Tokenizer("", ""),
     sr.HashingTF("", ""),
     sr.LogisticRegression(2, 3),
-    # sr.SparkColumnSelector(features=[{"col":""}]),
+    sr.SparkColumnSelector(features=[{"col": ""}]),
     sr.SparkSplitDataset(1, 2),
 ]
 
