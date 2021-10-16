@@ -6,6 +6,7 @@ from simple_repo import (
     PandasPivot,
     PandasRenameColumn,
 )
+from simple_repo.exception import ParameterNotFound
 from tests.test_commons import check_param_not_found
 
 
@@ -24,7 +25,8 @@ class TestPandasColumnSelector:
     def test_parameter_not_found_exception(self):
         """Tests whether the class raises a ParameterNotFound exception."""
         incorrect_cols = [{"nome": "c1", "type": "tipo"}]
-        check_param_not_found(PandasColumnSelector, columns=incorrect_cols)
+        with pytest.raises(ParameterNotFound):
+            check_param_not_found(PandasColumnSelector, columns=incorrect_cols)
 
     def test_column_selection(self, iris_data, selector_data):
         sel = selector_data
