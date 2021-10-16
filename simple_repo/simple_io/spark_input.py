@@ -23,13 +23,15 @@ class SparkCSVLoader(SparkInputNode):
 
     _output_vars = {"dataset": DataFrame}
 
-    def __init__(self, path: str, header: bool = None, schema: bool = None):
+    def __init__(
+        self, node_id: str, path: str, header: bool = None, schema: bool = None
+    ):
+        super(SparkCSVLoader, self).__init__(node_id)
         self.parameters = Parameters(
             path=KeyValueParameter("path", str, path),
             header=KeyValueParameter("header", bool, header),
             schema=KeyValueParameter("inferSchema", bool, schema),
         )
-        super(SparkCSVLoader, self).__init__()
 
     def execute(self):
         self.dataset = self.spark.read.csv(**self.parameters.get_dict())
@@ -46,9 +48,9 @@ class SparkModelLoader(SparkInputNode):
 
     _output_vars = {"model": PipelineModel}
 
-    def __init__(self, path: str):
+    def __init__(self, node_id: str, path: str):
         self.parameters = Parameters(path=KeyValueParameter("path", str, path))
-        super(SparkModelLoader, self).__init__()
+        super(SparkModelLoader, self).__init__(node_id)
 
     def execute(self):
         self.model = PipelineModel.load(self.parameters.path.value)

@@ -17,8 +17,8 @@ class SparkPipelineNode(Estimator):
 
     _stages = []
 
-    def __init__(self, stages: List[SparkNode]):
-        super(SparkPipelineNode, self).__init__()
+    def __init__(self, node_id: str, stages: List[SparkNode]):
+        super(SparkPipelineNode, self).__init__(node_id)
         for stage in stages:
             if stage.computational_instance is None:
                 raise Exception(

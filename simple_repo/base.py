@@ -3,6 +3,9 @@ from abc import abstractmethod
 from typing import Any
 import copy
 
+import simple_repo.dataflow as dataflow  # import module to avoid circular dependency
+from simple_repo.exception import EdgeConnectionError
+
 
 def get_class(fullname: str):
     """
@@ -101,12 +104,86 @@ class Meta(type):
 
 
 class SimpleNode(metaclass=Meta):
-    def __init__(self):
+    def __init__(self, node_id: str):
         super(SimpleNode, self).__init__()
+        self.node_id = node_id
 
     @abstractmethod
     def execute(self):
         pass
+
+    def __hash__(self):
+        return hash(self.node_id)
+
+    def __eq__(self, other):
+        if not isinstance(other, SimpleNode):
+            return False
+
+        if not self.node_id == other.node_id:
+            return False
+
+        return True
+
+    def __gt__(self, other):
+        if not isinstance(other, SimpleNode):
+            raise EdgeConnectionError(
+                "Unable to connect node {} to a non SimpleNode object.".format(
+                    self.node_id
+                )
+            )
+        if not isinstance(self, InputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no output variable.".format(self.node_id)
+            )
+        if not isinstance(other, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(other.node_id)
+            )
+
+        vars = list(filter(lambda var: var in other._input_vars, self._output_vars))
+
+        if not vars:
+            raise EdgeConnectionError(
+                "Node {} has no matching variable to propagate. To use this function the node {} must have at least "
+                "one input variable with same name as at least one output variable of node {}.".format(
+                    self.node_id, other.node_id, self.node_id
+                )
+            )
+
+        return dataflow.MultiEdge([self], [other], vars, vars)
+
+    def __matmul__(self, other):
+        if not isinstance(self, InputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no output variable.".format(self.node_id)
+            )
+
+        if type(other) is str:
+            if not hasattr(self, other):
+                raise EdgeConnectionError(
+                    "Node {} has no input called {}.".format(self.node_id, other)
+                )
+            return dataflow.MultiEdge([self], source_output=[other])
+        elif type(other) is list and all(type(item) is str for item in other):
+            return dataflow.MultiEdge([self], source_output=other)
+        else:
+            raise EdgeConnectionError(
+                "Unable to connect node {}. Node's variables must be specified as string or list of strings".format(
+                    self.node_id
+                )
+            )
+
+    def __and__(self, other):
+        if not isinstance(self, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(self.node_id)
+            )
+        elif not isinstance(other, OutputMixin):
+            raise EdgeConnectionError(
+                "Node {} has no input variable.".format(other.node_id)
+            )
+
+        return dataflow.MultiEdge([self, other])
 
 
 class InputMixin:
@@ -136,8 +213,8 @@ class OutputMixin:
 
 
 class InputNode(SimpleNode, InputMixin):
-    def __init__(self):
-        super(InputNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(InputNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -145,8 +222,8 @@ class InputNode(SimpleNode, InputMixin):
 
 
 class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
-    def __init__(self):
-        super(ComputationalNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(ComputationalNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
@@ -154,18 +231,9 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
 
 
 class OutputNode(SimpleNode, OutputMixin):
-    def __init__(self):
-        super(OutputNode, self).__init__()
+    def __init__(self, node_id: str):
+        super(OutputNode, self).__init__(node_id)
 
     @abstractmethod
     def execute(self):
         pass
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]

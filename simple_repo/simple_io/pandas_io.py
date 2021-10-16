@@ -2,9 +2,12 @@ from abc import abstractmethod
 
 import pandas
 import pandas as pd
+from sklearn.datasets import load_iris
 
 from simple_repo.base import InputNode, OutputNode
 from simple_repo.parameter import KeyValueParameter, Parameters
+
+# TODO che cosa succede se ad un OutputNode vado a dare _output_vars? Capire se l'instanziazione dinamica degli attributi funziona ugualmente.
 
 
 class PandasInputNode(InputNode):
@@ -45,7 +48,9 @@ class PandasCSVLoader(PandasInputNode):
     # encoding_errors='strict', dialect=None, error_bad_lines=None, warn_bad_lines=None, on_bad_lines=None,
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
-    def __init__(self, path: str, delim: str = ","):
+    def __init__(self, node_id: str, path: str, delim: str = ","):
+        super(PandasCSVLoader, self).__init__(node_id)
+
         self.parameters = Parameters(
             path=KeyValueParameter("filepath_or_buffer", str, path),
             delim=KeyValueParameter("delimiter", str, delim),
@@ -53,11 +58,25 @@ class PandasCSVLoader(PandasInputNode):
 
         self.parameters.group_all("read_csv")
 
-        super(PandasCSVLoader, self).__init__()
-
     def execute(self):
         param_dict = self.parameters.get_dict_from_group("read_csv")
         self.dataset = pandas.read_csv(**param_dict)
+
+
+class PandasIrisLoader(PandasInputNode):
+    """Loads the iris dataset as a pandas DataFrame."""
+
+    _output_vars = {"target": pandas.DataFrame}
+
+    def __init__(self, node_id: str, separate_target: bool = False):
+        self._separate_target = separate_target
+        super(PandasIrisLoader, self).__init__(node_id)
+
+    def execute(self):
+        if self._separate_target:
+            self.dataset, self.target = load_iris(return_X_y=True, as_frame=True)
+        else:
+            self.dataset = load_iris(as_frame=True).data
 
 
 class PandasCSVWriter(PandasOutputNode):
@@ -93,6 +112,7 @@ class PandasCSVWriter(PandasOutputNode):
 
     def __init__(
         self,
+        node_id: str,
         path: str,
         delim: str = ",",
         include_rows: bool = True,
@@ -100,6 +120,7 @@ class PandasCSVWriter(PandasOutputNode):
         include_columns: bool = True,
         columns: list = None,
     ):
+        super(PandasCSVWriter, self).__init__(node_id)
         self.parameters = Parameters(
             path=KeyValueParameter("path_or_buf", str, path),
             delim=KeyValueParameter("sep", str, delim),
@@ -110,8 +131,6 @@ class PandasCSVWriter(PandasOutputNode):
         )
 
         self.parameters.group_all("write_csv")
-
-        super(PandasCSVWriter, self).__init__()
 
     def execute(self):
         param_dict = self.parameters.get_dict_from_group("write_csv")

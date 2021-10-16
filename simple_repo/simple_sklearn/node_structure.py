@@ -16,16 +16,16 @@ class SklearnMethod:
 class SklearnNode(ComputationalNode):
     _methods = {}
 
-    def __init__(self):
-        super(SklearnNode, self).__init__()
+    def __init__(self, node_id):
+        super(SklearnNode, self).__init__(node_id)
 
     def execute(self):
         pass
 
 
 class SklearnFunction(SklearnNode):
-    def __init__(self, **kwargs):
-        super(SklearnFunction, self).__init__()
+    def __init__(self, node_id: str, **kwargs):
+        super(SklearnFunction, self).__init__(node_id)
 
 
 class SklearnEstimator(SklearnNode):
@@ -33,8 +33,8 @@ class SklearnEstimator(SklearnNode):
     _methods = {"fit": False}
     _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
 
-    def __init__(self, estimator_class: type, execute: list):
-        super(SklearnEstimator, self).__init__()
+    def __init__(self, node_id: str, estimator_class: type, execute: list):
+        super(SklearnEstimator, self).__init__(node_id)
         self._estimator = estimator_class(**self._get_params_as_dict())
 
         for method in execute:
@@ -116,12 +116,12 @@ class TransformerMixin:
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
-    def __init__(self, estimator_type: type, execute: list):
-        super(SklearnClassifier, self).__init__(estimator_type, execute)
+    def __init__(self, node_id: str, estimator_type: type, execute: list):
+        super(SklearnClassifier, self).__init__(node_id, estimator_type, execute)
 
 
 class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
     _estimator_type = "clusterer"
 
-    def __init__(self, estimator_type: type, execute: list):
-        super(SklearnClusterer, self).__init__(estimator_type, execute)
+    def __init__(self, node_id: str, estimator_type: type, execute: list):
+        super(SklearnClusterer, self).__init__(node_id, estimator_type, execute)

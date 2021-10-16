@@ -16,8 +16,8 @@ class Tokenizer(Transformer):
         The name of the output column
     """
 
-    def __init__(self, in_col: str, out_col: str):
-        super(Tokenizer, self).__init__()
+    def __init__(self, node_id: str, in_col: str, out_col: str):
+        super(Tokenizer, self).__init__(node_id)
         self.parameters = Parameters(
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col),
@@ -40,8 +40,8 @@ class HashingTF(Transformer):
         The name of the output column
     """
 
-    def __init__(self, in_col: str, out_col: str):
-        super(HashingTF, self).__init__()
+    def __init__(self, node_id: str, in_col: str, out_col: str):
+        super(HashingTF, self).__init__(node_id)
         self.parameters = Parameters(
             inCol=KeyValueParameter("inputCol", str, in_col),
             outCol=KeyValueParameter("outputCol", str, out_col),
@@ -62,8 +62,8 @@ class LogisticRegression(Estimator):
     reg_param: float
     """
 
-    def __init__(self, max_iter: int, reg_param: float):
-        super(LogisticRegression, self).__init__()
+    def __init__(self, node_id: str, max_iter: int, reg_param: float):
+        super(LogisticRegression, self).__init__(node_id)
         self.parameters = Parameters(
             max_iter=KeyValueParameter("maxIter", int, max_iter),
             reg_param=KeyValueParameter("regParam", float, reg_param),
