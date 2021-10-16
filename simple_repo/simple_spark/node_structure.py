@@ -10,22 +10,12 @@ from simple_repo.base import ComputationalNode, InputNode, OutputNode
 class SparkNodeSession:
     """Mixin class to share the spark session among different kinds of spark nodes."""
 
-    spark: SparkSession = None
+    spark: SparkSession = SparkSession.builder.getOrCreate()
 
 
 class SparkStageMixin:
     def __init__(self):
-        self._computational_instance = None
-
-    @property
-    def computational_instance(self):
-        if self._computational_instance is None:
-            raise Exception("The computational instance is not instantiated yet")
-        return self._computational_instance
-
-    @computational_instance.setter
-    def computational_instance(self, inst):
-        self._computational_instance = inst
+        self.computational_instance = None
 
 
 class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
@@ -34,6 +24,7 @@ class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
     _input_vars = {"dataset": DataFrame}
 
     def __init__(self, node_id):
+        SparkStageMixin.__init__(self)
         super(SparkNode, self).__init__(node_id)
 
     @abstractmethod

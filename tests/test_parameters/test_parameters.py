@@ -1,5 +1,6 @@
 import pytest
 
+from simple_repo.exception import BadParameterStructure, ParameterNotFound
 from simple_repo.parameter import (
     Parameters,
     KeyValueParameter,
@@ -109,5 +110,56 @@ class TestParameters:
         assert "ratio" not in group_dct.keys()
 
 
-class TestKeyValueParameters:
-    pass
+class TestStructuredParameterList:
+    @pytest.fixture
+    def correct_param(self):
+        yield [
+            {"name": "Sherlock Holmes", "address": "221B Baker Street"},
+            {"name": "Sweeney Todd", "address": "Fleet Street"},
+            {"name": "Rick Deckard"},
+        ]
+
+    def test_bad_param_structure(self):
+        with pytest.raises(BadParameterStructure):
+            StructuredParameterList(name="n", val=5)
+
+    def test_add_parameter(self, correct_param):
+        spl = StructuredParameterList(name=True, address=False)
+        spl.add_parameter(**correct_param[0])
+
+        assert spl.has_parameters(name="Sherlock Holmes")
+
+    def test_paramnotfound_mandatories(self):
+        spl = StructuredParameterList(name=True, address=False)
+
+        with pytest.raises(ParameterNotFound):
+            spl.add_parameter(address="Fleet Street")
+
+    def test_paramnotfound_optionals(self, correct_param):
+        spl = StructuredParameterList(name=True, address=False)
+        param = correct_param[0]
+        param["location"] = "England"
+        with pytest.raises(ParameterNotFound):
+            spl.add_parameter(**param)
+
+    def test_add_parameters(self, correct_param):
+        spl = StructuredParameterList(name=True, address=False)
+        spl.add_all_parameters(*correct_param)
+
+        assert (
+            spl.has_parameters(name="Sherlock Holmes", address="221B Baker Street")
+            and spl.has_parameters(name="Sweeney Todd", address="Fleet Street")
+            and spl.has_parameters(name="Rick Deckard")
+        )
+
+    def test_paramnotfound_mandatories_in_list(self, correct_param):
+        spl = StructuredParameterList(name=True, address=False)
+        correct_param.append({"address": "698 Candlewood Lane"})
+        with pytest.raises(ParameterNotFound):
+            spl.add_all_parameters(*correct_param)
+
+    def test_paramnotfound_optionals_in_list(self, correct_param):
+        spl = StructuredParameterList(name=True, address=False)
+        correct_param.append({"name": "Jessica Fletcher", "location": "Maine"})
+        with pytest.raises(ParameterNotFound):
+            spl.add_all_parameters(*correct_param)

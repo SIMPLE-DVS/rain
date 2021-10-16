@@ -211,10 +211,11 @@ class StructuredParameterList(SimpleParameter):
         self._optional_keys = []
 
         for key, val in keys_structure.items():
-            if val:
-                self._mandatory_keys.append(key)
-            elif not val:
-                self._optional_keys.append(key)
+            if type(val) is bool:
+                if val:
+                    self._mandatory_keys.append(key)
+                elif not val:
+                    self._optional_keys.append(key)
             else:
                 raise BadParameterStructure(
                     "Invalid assignment for parameter structure! Set True if the key is "
@@ -243,6 +244,21 @@ class StructuredParameterList(SimpleParameter):
         return param
 
     def add_parameter(self, **param):
+        invalid_keys = list(
+            filter(
+                lambda k: k not in self._mandatory_keys
+                and k not in self._optional_keys,
+                param.keys(),
+            )
+        )
+
+        if invalid_keys:
+            raise ParameterNotFound(
+                "Invalid parameters keys {}. The key is neither mandatory nor optional.".format(
+                    invalid_keys
+                )
+            )
+
         new_param = {}
 
         # check if all the mandatory keys are present and add their value
@@ -271,6 +287,20 @@ class StructuredParameterList(SimpleParameter):
     @property
     def parameters(self):
         return self._parameters
+
+    def has_parameters(self, **kwargs):
+        for key, val in kwargs.items():
+            if not any(
+                map(
+                    lambda par: True
+                    if key in par.keys() and val == par.get(key)
+                    else False,
+                    self._parameters,
+                )
+            ):
+                return False
+
+        return True
 
 
 class SimpleHyperParameter(SimpleParameter):
