@@ -23,7 +23,7 @@ class SparkColumnSelector(Transformer):
         self.parameters = Parameters(
             features=StructuredParameterList(col=True, value=False)
         )
-        self.parameters.features.add_all_parameters(features)
+        self.parameters.features.add_all_parameters(*features)
 
     def execute(self):
         columns = [c["col"] for c in self.parameters.features.parameters]

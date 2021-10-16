@@ -64,7 +64,7 @@ class PandasColumnSelector(PandasNode):
             columns=StructuredParameterList(name=True, type=False)
         )
 
-        self.parameters.columns.add_all_parameters(columns)
+        self.parameters.columns.add_all_parameters(*columns)
 
         super(PandasColumnSelector, self).__init__()
 
