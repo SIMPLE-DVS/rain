@@ -19,7 +19,7 @@ class TestPandasColumnSelector:
     @pytest.fixture
     def selector_data(self):
         correct_cols = [{"name": "sepal length (cm)", "type": "float"}]
-        selector = PandasColumnSelector(columns=correct_cols)
+        selector = PandasColumnSelector("pcs1", columns=correct_cols)
         yield selector
 
     def test_parameter_not_found_exception(self):

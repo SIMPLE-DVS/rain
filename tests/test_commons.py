@@ -128,4 +128,4 @@ def check_param_not_found(class_, **kwargs):
     """Checks whether the class raises a TypeError exception when instantiating,
     meaning that an invalid argument has been passed."""
     with pytest.raises(TypeError):
-        class_(**kwargs)
+        class_("s1", **kwargs)

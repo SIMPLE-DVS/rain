@@ -20,12 +20,12 @@ computational_spark_nodes = [
 ]
 
 computational_spark_nodes_instance = [
-    sr.SparkPipelineNode([]),
-    sr.Tokenizer("", ""),
-    sr.HashingTF("", ""),
-    sr.LogisticRegression(2, 3),
-    sr.SparkColumnSelector(features=[{"col": ""}]),
-    sr.SparkSplitDataset(1, 2),
+    sr.SparkPipelineNode("s1", []),
+    sr.Tokenizer("s1", "", ""),
+    sr.HashingTF("s1", "", ""),
+    sr.LogisticRegression("s1", 2, 3),
+    sr.SparkColumnSelector("s1", features=[{"col": ""}]),
+    sr.SparkSplitDataset("s1", 1, 2),
 ]
 
 spark_nodes = [
@@ -72,7 +72,7 @@ class TestSparkCsvLoader:
         iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data).toPandas()
         tmpcsv = tmpdir / "tmp_iris.csv"
         iris.to_csv(tmpcsv, index=False)
-        loader = sr.SparkCSVLoader(path=tmpcsv.__str__(), header=True)
+        loader = sr.SparkCSVLoader("s1", path=tmpcsv.__str__(), header=True)
         loader.execute()
         iris_loaded = loader.dataset
         assert iris.shape == iris_loaded.toPandas().shape
@@ -84,7 +84,7 @@ class TestSparkModelLoader:
         model = PipelineModel([Tokenizer()])
         tmpmod = tmpdir / "tmp_model.pkl"
         model.write().overwrite().save(tmpmod.__str__())
-        loader = sr.SparkModelLoader(path=tmpmod.__str__())
+        loader = sr.SparkModelLoader("s1", path=tmpmod.__str__())
         loader.execute()
         assert isinstance(loader.model, PipelineModel)
         assert isinstance(loader.model.stages[0], Tokenizer)
@@ -94,7 +94,7 @@ class TestSaveModel:
     def test_spark_save_model(self, tmpdir):
         model = PipelineModel([Tokenizer()])
         tmpmod = tmpdir / "tmp_model.pkl"
-        sm = sr.SaveModel(path=tmpmod.__str__())
+        sm = sr.SaveModel("s1", path=tmpmod.__str__())
         sm.model = model
         assert not tmpmod.exists()
         sm.execute()
@@ -105,7 +105,7 @@ class TestSaveDataset:
     def test_spark_save_dataset(self, tmpdir, iris_data):
         iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
         tmpcsv = tmpdir / "tmp_csv.pkl"
-        sd = sr.SaveDataset(path=tmpcsv.__str__())
+        sd = sr.SaveDataset("s1", path=tmpcsv.__str__())
         sd.dataset = iris
         assert not tmpcsv.exists()
         sd.execute()
@@ -116,7 +116,7 @@ class TestTokenizer:
     def test_spark_tokenizer(self, iris_data):
         iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
         iris = iris.select(col("sepal length (cm)").cast("string"))
-        tk = sr.Tokenizer("sepal length (cm)", "sl")
+        tk = sr.Tokenizer("s1", "sepal length (cm)", "sl")
         tk.dataset = iris
         assert tk.computational_instance is not None
         tk.execute()
@@ -129,7 +129,7 @@ class TestHashingTf:
         iris = Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
             iris.select(col("sepal length (cm)").cast("string"))
         )
-        htf = sr.HashingTF("sl", "hsl")
+        htf = sr.HashingTF("s1", "sl", "hsl")
         htf.dataset = iris
         assert htf.computational_instance is not None
         htf.execute()
@@ -145,7 +145,7 @@ class TestLogisticRegression:
             )
         )
         iris = iris.withColumn("label", lit(10))
-        lr = sr.LogisticRegression(10, 0.01)
+        lr = sr.LogisticRegression("s1", 10, 0.01)
         lr.dataset = iris
         assert lr.computational_instance is not None
         lr.execute()
@@ -158,11 +158,11 @@ class TestSparkPipeline:
         iris = iris.select(col("sepal length (cm)").cast("string"))
         iris = iris.withColumn("label", lit(10))
         stages = [
-            sr.Tokenizer("sepal length (cm)", "sl"),
-            sr.HashingTF("sl", "features"),
-            sr.LogisticRegression(10, 0.01),
+            sr.Tokenizer("s1", "sepal length (cm)", "sl"),
+            sr.HashingTF("s1", "sl", "features"),
+            sr.LogisticRegression("s1", 10, 0.01),
         ]
-        pipe = sr.SparkPipelineNode(stages)
+        pipe = sr.SparkPipelineNode("s1", stages)
         pipe.dataset = iris
         pipe.execute()
         assert pipe.model is not None

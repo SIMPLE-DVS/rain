@@ -15,7 +15,7 @@ class TestPandasCSVLoader:
         tmpcsv = tmpdir / "tmp_iris.csv"
         iris.to_csv(tmpcsv, index=False)
 
-        pandas_loader = PandasCSVLoader(path=tmpcsv.__str__())
+        pandas_loader = PandasCSVLoader("s1", path=tmpcsv.__str__())
         pandas_loader.execute()
         iris_loaded = pandas_loader.dataset
 
@@ -35,7 +35,7 @@ class TestPandasCSVWriter:
         assert not tmpcsv.exists()
 
         pandas_writer = PandasCSVWriter(
-            path=tmpcsv.__str__(), include_rows=False, delim=";"
+            "s1", path=tmpcsv.__str__(), include_rows=False, delim=";"
         )
         pandas_writer.dataset = iris
         pandas_writer.execute()
