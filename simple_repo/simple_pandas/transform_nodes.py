@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import pandas
 
-from simple_repo.exception import ParametersException
+from simple_repo.exception import ParametersException, PandasSequenceException
 from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_pandas.node_structure import PandasNode
 
@@ -202,3 +202,33 @@ class PandasRenameColumn(PandasNode):
             self.dataset = pandas.DataFrame(self.dataset)
 
         self.dataset.columns = cols
+
+
+class PandasSequence(PandasNode):
+    """
+    PandasSequence wraps a list of nodes that must be executed in sequence into a single node.
+    Intermediate values are passed along the chain using the 'dataset' variable, hence only
+    PandasNodes can be used within a sequence.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique id of the node.
+    stages : list of PandasNode
+        ordered in an execution sequence. They must all be PandasNodes, hence have a 'dataset'
+        variable used for input and output.
+    """
+
+    def __init__(self, node_id: str, stages: List[PandasNode]):
+        super(PandasSequence, self).__init__(node_id)
+
+        if not all(isinstance(stage, PandasNode) for stage in stages):
+            raise PandasSequenceException("Every stage must be a PandasNode.")
+
+        self._stages = stages
+
+    def execute(self):
+        for stage in self._stages:
+            stage.set_input_value("dataset", self.dataset)
+            stage.execute()
+            self.dataset = stage.get_output_value("dataset")
