@@ -1,7 +1,7 @@
 import pytest
 
 from simple_repo import (
-    PandasColumnSelector,
+    PandasColumnsFiltering,
     PandasPivot,
     PandasRenameColumn,
     SklearnLinearSVC,
@@ -76,7 +76,7 @@ classes = [
     (PandasOutputNode, ["dataset"], None, None),
     (PandasCSVWriter, ["dataset"], None, None),
     (PandasNode, ["dataset"], ["dataset"], None),
-    (PandasColumnSelector, ["dataset"], ["dataset"], None),
+    (PandasColumnsFiltering, ["dataset"], ["dataset"], None),
     (PandasPivot, ["dataset"], ["dataset"], None),
     (PandasRenameColumn, ["dataset"], ["dataset"], None),  # Spark Nodes
     (SparkInputNode, None, [], None),

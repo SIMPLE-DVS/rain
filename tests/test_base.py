@@ -34,7 +34,7 @@ def test_output_node_attributes(class_or_obj):
 
 
 computational_data = [
-    sr.PandasColumnSelector,
+    sr.PandasColumnsFiltering,
     sr.PandasPivot,
     sr.PandasRenameColumn,
     sr.SimpleKMeans,
