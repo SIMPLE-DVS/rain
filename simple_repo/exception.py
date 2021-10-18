@@ -28,3 +28,8 @@ class CyclicDataFlowException(Exception):
 class ParametersException(ValueError):
     def __init__(self, msg):
         super(ParametersException, self).__init__(msg)
+
+
+class PandasSequenceException(Exception):
+    def __init__(self, msg):
+        super(PandasSequenceException, self).__init__(msg)
