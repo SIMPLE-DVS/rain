@@ -23,3 +23,8 @@ class CyclicDataFlowException(Exception):
         super(CyclicDataFlowException, self).__init__(
             "DataFlow {} has cycles.".format(dataflow_id)
         )
+
+
+class ParametersException(ValueError):
+    def __init__(self, msg):
+        super(ParametersException, self).__init__(msg)

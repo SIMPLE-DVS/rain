@@ -5,7 +5,7 @@ import simple_repo.simple_pandas as sp
 import simple_repo.simple_io.pandas_io as pio
 
 pandas_nodes = [
-    sp.PandasColumnSelector,
+    sp.PandasColumnsFiltering,
     sp.PandasPivot,
     sp.PandasRenameColumn,
     pio.PandasCSVLoader,
