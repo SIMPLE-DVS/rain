@@ -47,7 +47,7 @@ class Meta(type):
             filter(lambda base: hasattr(base, input_vars_string), bases)
         )
 
-        has_input = bool(bases_w_in_vars)  # check if bases_w_meth_vars is empty
+        has_input = bool(bases_w_in_vars)  # check if bases_w_in_vars is empty
 
         new_in_vars_dct = {}
         for base in bases_w_in_vars:
@@ -59,6 +59,12 @@ class Meta(type):
 
         if has_input:
             dct[input_vars_string] = new_in_vars_dct
+            for (
+                param
+            ) in (
+                new_in_vars_dct.keys()
+            ):  # set attributes named as the keys in the _input_vars dictionary
+                dct[param] = None
 
         # dct[output_vars_string] = union between dct["_output_vars"] if exist
         # and all the _output_vars those parents that have it.
@@ -67,7 +73,7 @@ class Meta(type):
             filter(lambda base: hasattr(base, output_vars_string), bases)
         )
 
-        has_output = bool(bases_w_out_vars)  # check if bases_w_meth_vars is empty
+        has_output = bool(bases_w_out_vars)  # check if bases_w_out_vars is empty
 
         new_out_vars_dct = {}
         for base in bases_w_out_vars:
@@ -79,6 +85,12 @@ class Meta(type):
 
         if has_output:
             dct[output_vars_string] = new_out_vars_dct
+            for (
+                param
+            ) in (
+                new_out_vars_dct.keys()
+            ):  # set attributes named as the keys in the _output_vars dictionary
+                dct[param] = None
 
         # dct[methods_vars_string] = union between dct["_methods"] if exist
         # and all the _methods those parents that have it.
