@@ -17,7 +17,6 @@ from simple_repo import (
     LogisticRegression,
     SparkPipelineNode,
 )
-from simple_repo.exception import ParameterNotFound
 from simple_repo.simple_io.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
@@ -25,11 +24,16 @@ from simple_repo.simple_io.pandas_io import (
     PandasCSVWriter,
 )
 from simple_repo.simple_pandas.node_structure import PandasNode
+from simple_repo.simple_sklearn.functions import (
+    TrainTestDatasetSplit,
+    TrainTestSampleTargetSplit,
+)
 from simple_repo.simple_sklearn.node_structure import (
     SklearnClassifier,
     SklearnEstimator,
     SklearnClusterer,
     SklearnNode,
+    SklearnFunction,
 )
 
 # TODO per come è impostato ora questo test non servono più i singoli test sui metodi nei moduli test degli engine. Detronizzarli!
@@ -46,10 +50,29 @@ from simple_repo.simple_spark.node_structure import (
 classes = [
     # Sklearn Nodes
     (SklearnNode, [], [], []),
+    (SklearnFunction, [], [], []),
+    (TrainTestDatasetSplit, ["dataset"], ["train_dataset", "test_dataset"], []),
+    (
+        TrainTestSampleTargetSplit,
+        ["sample_dataset", "target_dataset"],
+        [
+            "sample_train_dataset",
+            "sample_test_dataset",
+            "target_train_dataset",
+            "target_test_dataset",
+        ],
+        [],
+    ),
     (SklearnEstimator, ["fit_dataset"], ["fitted_model"], ["fit"]),
     (
         SklearnClassifier,
-        ["fit_dataset", "predict_dataset", "score_dataset"],
+        [
+            "fit_dataset",
+            "fit_targets",
+            "predict_dataset",
+            "score_dataset",
+            "score_targets",
+        ],
         ["fitted_model", "predictions", "scores"],
         ["fit", "predict", "score"],
     ),
@@ -67,7 +90,13 @@ classes = [
     ),
     (
         SklearnLinearSVC,
-        ["fit_dataset", "predict_dataset", "score_dataset"],
+        [
+            "fit_dataset",
+            "fit_targets",
+            "predict_dataset",
+            "score_dataset",
+            "score_targets",
+        ],
         ["fitted_model", "predictions", "scores"],
         ["fit", "predict", "score"],
     ),  # Pandas Nodes
@@ -111,12 +140,16 @@ def test_class_integrity(class_, in_vars, out_vars, methods_vars):
     if in_vars is None:
         assert not hasattr(class_, input_string)
     else:
-        assert set(in_vars) == set(class_._input_vars.keys())
+        assert set(in_vars) == set(class_._input_vars.keys()) and all(
+            hasattr(class_, param_name) for param_name in in_vars
+        )
 
     if out_vars is None:
         assert not hasattr(class_, output_string)
     else:
-        assert set(out_vars) == set(class_._output_vars.keys())
+        assert set(out_vars) == set(class_._output_vars.keys()) and all(
+            hasattr(class_, param_name) for param_name in out_vars
+        )
 
     if methods_vars is None:
         assert not hasattr(class_, methods_string)

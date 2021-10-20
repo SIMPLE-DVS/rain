@@ -1,16 +1,9 @@
 import pandas
 import sklearn.base
+from abc import abstractmethod
 
 from simple_repo.base import ComputationalNode
-
-
-class SklearnMethod:
-    def __init__(self, method_name: str, execute: bool = False):
-        self._method_name = method_name
-
-    @property
-    def method_name(self):
-        return self._method_name
+from simple_repo.exception import EstimatorNotFoundException, InputNotFoundException
 
 
 class SklearnNode(ComputationalNode):
@@ -18,14 +11,28 @@ class SklearnNode(ComputationalNode):
 
     def __init__(self, node_id):
         super(SklearnNode, self).__init__(node_id)
+        self._estimator_or_function = None
 
+    @abstractmethod
     def execute(self):
-        pass
+        raise NotImplementedError(
+            "Method execute for class {} is not implemented yet.".format(
+                self.__class__.__name__
+            )
+        )
 
 
 class SklearnFunction(SklearnNode):
-    def __init__(self, node_id: str, **kwargs):
+    def __init__(self, node_id: str):
         super(SklearnFunction, self).__init__(node_id)
+
+    @abstractmethod
+    def execute(self):
+        raise NotImplementedError(
+            "Method execute for class {} is not implemented yet.".format(
+                self.__class__.__name__
+            )
+        )
 
 
 class SklearnEstimator(SklearnNode):
@@ -33,9 +40,8 @@ class SklearnEstimator(SklearnNode):
     _methods = {"fit": False}
     _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
 
-    def __init__(self, node_id: str, estimator_class: type, execute: list):
+    def __init__(self, node_id: str, execute: list):
         super(SklearnEstimator, self).__init__(node_id)
-        self._estimator = estimator_class(**self._get_params_as_dict())
 
         for method in execute:
             if method not in self._methods.keys():
@@ -48,14 +54,18 @@ class SklearnEstimator(SklearnNode):
             self._methods[method] = True
 
     def fit(self):
-        if self._estimator_type == "classifier" and self.fit_target is not None:
-            self.fitted_model = self._estimator.fit(self.fit_dataset, self.fit_target)
-        else:
-            self.fitted_model = self._estimator.fit(self.fit_dataset)
+        self.fitted_model = self._estimator_or_function.fit(self.fit_dataset)
 
     def execute(self):
+        if self._estimator_or_function is None:
+            raise EstimatorNotFoundException(
+                "The estimator to use is not set for class {}".format(
+                    self.__class__.__name__
+                )
+            )
+
         # se la fit deve essere eseguita, allora sarà sempre eseguita per prima
-        if self._methods.get("fit"):
+        if self._methods.get("fit") and self.fitted_model is None:
             self.fit()
 
         remaining_methods = [
@@ -81,6 +91,11 @@ class PredictorMixin:
         if self.fitted_model is not None and self.predict_dataset is not None:
             self.predictions = self.fitted_model.predict(self.predict_dataset)
 
+            if (
+                type(self.predictions) is not pandas.DataFrame
+            ):  # some estimators returns a numpy ndarray
+                self.predictions = pandas.DataFrame(self.predictions)
+
 
 class ScorerMixin:
 
@@ -91,10 +106,23 @@ class ScorerMixin:
     _methods = {"score": False}
 
     def score(self):
-        if self.fitted_model is not None and self.score_dataset is not None:
-            if self.score_target is not None:
+        if self.score_dataset is None:
+            raise InputNotFoundException(
+                "The 'score_dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
+        if self.fitted_model is not None:
+            if self._estimator_type == "classifier":
+                if self.score_targets is None:
+                    raise InputNotFoundException(
+                        "The 'score_targets' input is not set for node {}".format(
+                            self.__class__.__name__
+                        )
+                    )
                 self.scores = self.fitted_model.score(
-                    self.score_dataset, self.score_target
+                    self.score_dataset, self.score_targets
                 )
             else:
                 self.scores = self.fitted_model.score(self.score_dataset)
@@ -109,19 +137,53 @@ class TransformerMixin:
     _methods = {"transform": False}
 
     def transform(self):
-        if self.fitted_model is not None and self.transform_dataset is not None:
-            self.transformed_dataset = self.fitted_model.score(self.transform_dataset)
+        if self.transform_dataset is None:
+            raise InputNotFoundException(
+                "The 'transform_dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
+        if self.fitted_model is not None:
+            self.transformed_dataset = self.fitted_model.transform(
+                self.transform_dataset
+            )
+
+            if (
+                type(self.transformed_dataset) is not pandas.DataFrame
+            ):  # some estimators returns a numpy ndarray
+                self.transformed_dataset = pandas.DataFrame(self.transformed_dataset)
 
 
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     _estimator_type = "classifier"
 
-    def __init__(self, node_id: str, estimator_type: type, execute: list):
-        super(SklearnClassifier, self).__init__(node_id, estimator_type, execute)
+    _input_vars = {"fit_targets": pandas.DataFrame, "score_targets": pandas.DataFrame}
+
+    def __init__(self, node_id: str, execute: list):
+        super(SklearnClassifier, self).__init__(node_id, execute)
+
+    def fit(self):
+        if self.fit_dataset is None:
+            raise InputNotFoundException(
+                "The 'fit_dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+        elif self.fit_targets is None:
+            raise InputNotFoundException(
+                "The 'fit_targets' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
+        self.fitted_model = self._estimator_or_function.fit(
+            self.fit_dataset, self.fit_targets
+        )
 
 
 class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
     _estimator_type = "clusterer"
 
-    def __init__(self, node_id: str, estimator_type: type, execute: list):
-        super(SklearnClusterer, self).__init__(node_id, estimator_type, execute)
+    def __init__(self, node_id: str, execute: list):
+        super(SklearnClusterer, self).__init__(node_id, execute)
