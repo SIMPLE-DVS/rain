@@ -72,4 +72,6 @@ class TrainTestSampleTargetSplit(SklearnFunction):
             self.sample_test_dataset,
             self.target_train_dataset,
             self.target_test_dataset,
-        ) = train_test_split(self.dataset, self.target, **self.parameters.get_dict())
+        ) = train_test_split(
+            self.sample_dataset, self.target_dataset, **self.parameters.get_dict()
+        )

@@ -36,8 +36,8 @@ class TestTrainTestSampleTargetSplit:
         iris_dt, iris_target = load_iris(return_X_y=True, as_frame=True)
 
         stt = TrainTestSampleTargetSplit("stt", test_size=0.33, shuffle=False)
-        stt.set_input_value("dataset", iris_dt)
-        stt.set_input_value("target", iris_target)
+        stt.set_input_value("sample_dataset", iris_dt)
+        stt.set_input_value("target_dataset", iris_target)
 
         stt.execute()
 
