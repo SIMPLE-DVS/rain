@@ -33,3 +33,13 @@ class ParametersException(ValueError):
 class PandasSequenceException(Exception):
     def __init__(self, msg):
         super(PandasSequenceException, self).__init__(msg)
+
+
+class EstimatorNotFoundException(Exception):
+    def __init__(self, msg):
+        super(EstimatorNotFoundException, self).__init__(msg)
+
+
+class InputNotFoundException(Exception):
+    def __init__(self, msg):
+        super(EstimatorNotFoundException, self).__init__(msg)

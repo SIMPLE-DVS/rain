@@ -15,7 +15,8 @@ class SimpleKMeans(SklearnClusterer):
     """
 
     def __init__(self, node_id: str, execute: list, n_clusters: int = 8):
+        super(SimpleKMeans, self).__init__(node_id, execute)
         self.parameters = Parameters(
             n_clusters=KeyValueParameter("n_clusters", int, n_clusters)
         )
-        super(SimpleKMeans, self).__init__(node_id, KMeans, execute)
+        self._estimator_or_function = KMeans(**self.parameters.get_dict())

@@ -22,6 +22,7 @@ class SklearnLinearSVC(SklearnClassifier):
         random_state: str = None,
         max_iter: int = 1000,
     ):
+        super(SklearnLinearSVC, self).__init__(node_id, execute)
         self.parameters = Parameters(
             penalty=KeyValueParameter("penalty", str, penalty),
             loss=KeyValueParameter("loss", str, loss),
@@ -38,4 +39,5 @@ class SklearnLinearSVC(SklearnClassifier):
             random_state=KeyValueParameter("random_state", str, random_state),
             max_iter=KeyValueParameter("max_iter", int, max_iter),
         )
-        super(SklearnLinearSVC, self).__init__(node_id, LinearSVC, execute)
+
+        self._estimator_or_function = LinearSVC(**self.parameters.get_dict())
