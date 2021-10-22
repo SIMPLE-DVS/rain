@@ -9,10 +9,10 @@ class Tokenizer(Transformer):
 
     Parameters
     ----------
-    in_col: str
+    in_col : str
         The name of the input column
 
-    out_col: str
+    out_col : str
         The name of the output column
     """
 
@@ -33,10 +33,10 @@ class HashingTF(Transformer):
 
     Parameters
     ----------
-    in_col: str
+    in_col : str
         The name of the input column
 
-    out_col: str
+    out_col : str
         The name of the output column
     """
 
@@ -57,9 +57,9 @@ class LogisticRegression(Estimator):
 
     Parameters
     ----------
-    max_iter: int
+    max_iter : int
 
-    reg_param: float
+    reg_param : float
     """
 
     def __init__(self, node_id: str, max_iter: int, reg_param: float):

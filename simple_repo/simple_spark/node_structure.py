@@ -10,7 +10,7 @@ from simple_repo.base import ComputationalNode, InputNode, OutputNode
 class SparkNodeSession:
     """Mixin class to share the spark session among different kinds of spark nodes."""
 
-    spark: SparkSession = SparkSession.builder.getOrCreate()
+    spark: SparkSession = None
 
 
 class SparkStageMixin:
