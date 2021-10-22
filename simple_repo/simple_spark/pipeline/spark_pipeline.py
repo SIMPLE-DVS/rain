@@ -10,7 +10,7 @@ class SparkPipelineNode(Estimator):
 
     Parameters
     ----------
-    stages: list of SparkNode
+    stages: List[SparkNode]
         List of SparkNode that can be executed in a Spark Pipeline
 
     """

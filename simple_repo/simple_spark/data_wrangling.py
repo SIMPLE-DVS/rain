@@ -10,7 +10,7 @@ class SparkColumnSelector(Transformer):
 
     Parameters
     ----------
-    features : list[dict]
+    features : list
         Every dictionary in the list must be of the form:
             {
                 col: str (Mandatory)

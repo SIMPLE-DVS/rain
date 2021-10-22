@@ -33,7 +33,7 @@ class SaveDataset(SparkOutputNode):
     path: str
         String representing the path where to save the dataset
 
-    index: bool = True
+    index: bool, default True
         String representing the path where to save the dataset
     """
 

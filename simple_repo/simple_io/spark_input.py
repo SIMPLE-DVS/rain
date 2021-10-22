@@ -12,10 +12,10 @@ class SparkCSVLoader(SparkInputNode):
     ----------
     path : str
         Path of the csv file.
-    header : bool
+    header : bool, default False
         uses the first line as names of columns. If None is set, it uses the
         default value, ``false``.
-    schema : bool
+    schema : bool, default False
         infers the input schema automatically from data. It requires one extra
         pass over the data. If None is set, it uses the default value, ``false``.
 
@@ -24,7 +24,7 @@ class SparkCSVLoader(SparkInputNode):
     _output_vars = {"dataset": DataFrame}
 
     def __init__(
-        self, node_id: str, path: str, header: bool = None, schema: bool = None
+        self, node_id: str, path: str, header: bool = False, schema: bool = False
     ):
         super(SparkCSVLoader, self).__init__(node_id)
         self.parameters = Parameters(
