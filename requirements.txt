@@ -6,3 +6,4 @@ sklearn~=0.0
 scikit-learn~=0.24.2
 
 pyspark~=3.1.2
+pymongo~=3.12.0
