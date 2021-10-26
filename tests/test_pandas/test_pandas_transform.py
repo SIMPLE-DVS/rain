@@ -9,7 +9,11 @@ from simple_repo import (
     PandasRenameColumn,
 )
 from simple_repo.exception import ParametersException, PandasSequenceException
-from simple_repo.simple_pandas.transform_nodes import PandasSelectRows, PandasFilterRows
+from simple_repo.simple_pandas.transform_nodes import (
+    PandasSelectRows,
+    PandasFilterRows,
+    PandasDropNan,
+)
 
 
 @pytest.fixture
@@ -176,6 +180,26 @@ class TestPandasFilterRows:
         filter.execute()
 
         assert filter.dataset.isnull().iloc[0, 1] and filter.dataset.isnull().iloc[1, 2]
+
+
+class TestPandasDropNan:
+    def test_execution(self):
+        df = pd.DataFrame(
+            [range(3), [0, np.NaN, 0], [0, 0, np.NaN], range(3), range(3)]
+        )
+
+        drop = PandasDropNan("dropnan", axis="rows", how="any")
+        drop.set_input_value("dataset", df)
+
+        drop.execute()
+
+        has_nan = drop.dataset.isnull().values.any()
+
+        assert not has_nan
+
+    def test_invalid_axis(self):
+        with pytest.raises(AttributeError):
+            PandasDropNan("dropnan", axis="index", how="any")
 
 
 class TestPandasPivot:
