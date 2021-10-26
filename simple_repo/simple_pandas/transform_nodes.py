@@ -64,7 +64,15 @@ from simple_repo.simple_pandas.node_structure import PandasNode
 
 
 class PandasColumnsFiltering(PandasNode):
-    """PandasColumnsFiltering manages filtering of columns.
+    """PandasColumnsFiltering manages filtering of columns. This node gives access
+    to several functionalities such as:
+    - select columns by their indexes;
+    - select columns by their names (labels);
+    - select columns containing a substring in their names;
+    - select columns that match a regex;
+    - select columns in a range of indexes;
+    - assign a type to a column.
+    Every parameter but 'columns_type' is mutually exclusive, meaning that only one can be used.
 
     Parameters
     ----------
@@ -79,7 +87,11 @@ class PandasColumnsFiltering(PandasNode):
     columns_regex : str
         Keep columns for which column labels match a given pattern.
     columns_range : Tuple[int, int]
-        Keep columns for which index falls withing the given range (from, to (included)).
+        Keep columns for which index falls withing the given range (from, to (excluded)).
+    columns_type : str or List[str]
+        Type to assign to columns. It can be either a string, meaning that it will try to apply
+        the chosen type to all the columns, or a list of strings, one for each column,
+        meaning that it will try to assign a chosen type to each column in order.
     """
 
     def __init__(
@@ -90,10 +102,11 @@ class PandasColumnsFiltering(PandasNode):
         columns_like: str = None,
         columns_regex: str = None,
         columns_range: Tuple[int, int] = None,
+        columns_type=None,
     ):
         super(PandasColumnsFiltering, self).__init__(node_id)
 
-        none_parameters = sum(
+        self.none_parameters_count = sum(
             parameter is not None
             for parameter in [
                 column_indexes,
@@ -104,7 +117,7 @@ class PandasColumnsFiltering(PandasNode):
             ]
         )
 
-        if none_parameters > 1:
+        if self.none_parameters_count > 1:
             raise ParametersException("Filtering parameters are mutually exclusive.")
 
         self.parameters = Parameters(
@@ -114,6 +127,7 @@ class PandasColumnsFiltering(PandasNode):
             columns_like=KeyValueParameter("like", str, value=columns_like),
             axis=KeyValueParameter("axis", str, value="columns"),
             columns_regex=KeyValueParameter("regex", str, value=columns_regex),
+            columns_type=KeyValueParameter("ctype", list, value=columns_type),
         )
 
         self.parameters.add_group(
@@ -127,10 +141,22 @@ class PandasColumnsFiltering(PandasNode):
             from_var = self.parameters.columns_range.value[0]
             to_var = self.parameters.columns_range.value[1]
             self.dataset = self.dataset.iloc[:, from_var:to_var]
-        else:
+        elif self.none_parameters_count == 1:
             self.dataset = self.dataset.filter(
                 **self.parameters.get_dict_from_group("filter")
             )
+
+        if (col_type := self.parameters.columns_type.value) is not None:
+            if isinstance(col_type, str):
+                self.dataset.astype(col_type)
+            elif isinstance(col_type, list):
+                self.dataset = self.dataset.astype(
+                    {
+                        col: col_type[index]
+                        for index, col in enumerate(self.dataset.columns)
+                        if col_type[index] is not None
+                    }
+                )
 
 
 class PandasPivot(PandasNode):
