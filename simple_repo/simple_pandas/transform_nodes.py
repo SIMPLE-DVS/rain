@@ -211,6 +211,42 @@ class PandasFilterRows(PandasNode):
         self.dataset = self.dataset[self.selected_rows]
 
 
+class PandasDropNan(PandasNode):
+    """Drops rows or columns that either only contains a nan or that has all nan values.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    axis : {'rows', 'columns'}, default 'rows'
+        The axis from where to remove the nan values.
+    how : {'any', 'all'}, default 'any
+        Whether to remove a row or a column which either contains any nan value or
+        contains all nan values.
+    """
+
+    def __init__(
+        self,
+        node_id: str,
+        axis="rows",
+        how="any",
+    ):
+        super(PandasDropNan, self).__init__(node_id)
+        if not axis == "rows" and not axis == "columns":
+            raise AttributeError("Invalid value for 'axis', set 'rows' or 'columns'.")
+
+        axis = 0 if axis == "rows" else 1
+
+        self.parameters = Parameters(
+            axis=KeyValueParameter("axis", str, axis),
+            how=KeyValueParameter("how", str, how),
+        )
+
+    def execute(self):
+        print(self.parameters.get_dict())
+        self.dataset = self.dataset.dropna(**self.parameters.get_dict())
+
+
 class PandasPivot(PandasNode):
     """Transforms a DataFrame into a Pivot from the given rows, columns and values.
 
