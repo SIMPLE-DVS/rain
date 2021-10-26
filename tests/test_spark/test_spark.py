@@ -6,9 +6,21 @@ from pyspark.sql.functions import col
 from sklearn.datasets import load_iris
 
 import simple_repo as sr
-from simple_repo.simple_spark.node_structure import SparkNode, SparkNodeSession
+from simple_repo.simple_spark.node_structure import (
+    SparkNode,
+    SparkNodeSession,
+    SparkInputNode,
+    SparkOutputNode,
+)
 from pyspark.ml.feature import Tokenizer, HashingTF
 from pyspark.sql.functions import lit
+
+
+spark = SparkSession.builder.getOrCreate()
+SparkNode.spark = spark
+SparkInputNode.spark = spark
+SparkOutputNode.spark = spark
+
 
 computational_spark_nodes = [
     sr.SparkPipelineNode,
@@ -69,7 +81,7 @@ def iris_data():
 
 class TestSparkCsvLoader:
     def test_dataset_load(self, tmpdir, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data).toPandas()
+        iris = spark.createDataFrame(iris_data).toPandas()
         tmpcsv = tmpdir / "tmp_iris.csv"
         iris.to_csv(tmpcsv, index=False)
         loader = sr.SparkCSVLoader("s1", path=tmpcsv.__str__(), header=True)
@@ -103,7 +115,7 @@ class TestSaveModel:
 
 class TestSaveDataset:
     def test_spark_save_dataset(self, tmpdir, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = spark.createDataFrame(iris_data)
         tmpcsv = tmpdir / "tmp_csv.pkl"
         sd = sr.SaveDataset("s1", path=tmpcsv.__str__())
         sd.dataset = iris
@@ -114,7 +126,7 @@ class TestSaveDataset:
 
 class TestTokenizer:
     def test_spark_tokenizer(self, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = spark.createDataFrame(iris_data)
         iris = iris.select(col("sepal length (cm)").cast("string"))
         tk = sr.Tokenizer("s1", "sepal length (cm)", "sl")
         tk.dataset = iris
@@ -125,7 +137,7 @@ class TestTokenizer:
 
 class TestHashingTf:
     def test_spark_hashing_tf(self, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = spark.createDataFrame(iris_data)
         iris = Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
             iris.select(col("sepal length (cm)").cast("string"))
         )
@@ -138,7 +150,7 @@ class TestHashingTf:
 
 class TestLogisticRegression:
     def test_spark_log_reg(self, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = spark.createDataFrame(iris_data)
         iris = HashingTF(inputCol="sl", outputCol="features").transform(
             Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
                 iris.select(col("sepal length (cm)").cast("string"))
@@ -154,7 +166,7 @@ class TestLogisticRegression:
 
 class TestSparkPipeline:
     def test_spark_pipeline(self, iris_data):
-        iris = SparkSession.builder.getOrCreate().createDataFrame(iris_data)
+        iris = spark.createDataFrame(iris_data)
         iris = iris.select(col("sepal length (cm)").cast("string"))
         iris = iris.withColumn("label", lit(10))
         stages = [
