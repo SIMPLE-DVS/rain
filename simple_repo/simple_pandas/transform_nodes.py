@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import pandas
 
+from simple_repo.base import ComputationalNode
 from simple_repo.exception import ParametersException, PandasSequenceException
 from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_pandas.node_structure import PandasNode
@@ -157,6 +158,57 @@ class PandasColumnsFiltering(PandasNode):
                         if col_type[index] is not None
                     }
                 )
+
+
+class PandasSelectRows(ComputationalNode):
+    """PandasSelectRows manages selection of rows, which can later be filtered or deleted.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    select_nan : bool
+        Select rows with at least one NaN value.
+    """
+
+    _input_vars = {"dataset": pandas.DataFrame}
+    _output_vars = {"selection": pandas.Series}
+
+    def __init__(
+        self,
+        node_id: str,
+        select_nan: bool,
+    ):
+        super(PandasSelectRows, self).__init__(node_id)
+
+        self.parameters = Parameters(
+            select_nan=KeyValueParameter("select_nan", str, value=select_nan),
+        )
+
+    def execute(self):
+        if self.parameters.select_nan.value:
+            self.selection = self.dataset.isnull().any(axis=1)
+
+
+class PandasFilterRows(PandasNode):
+    """PandasFilterRows manages filtering of rows that have been previously selected.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    """
+
+    _input_vars = {"selected_rows": pandas.Series}
+
+    def __init__(
+        self,
+        node_id: str,
+    ):
+        super(PandasFilterRows, self).__init__(node_id)
+
+    def execute(self):
+        self.dataset = self.dataset[self.selected_rows]
 
 
 class PandasPivot(PandasNode):
