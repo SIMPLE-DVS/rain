@@ -9,6 +9,7 @@ from simple_repo import (
     PandasRenameColumn,
 )
 from simple_repo.exception import ParametersException, PandasSequenceException
+from simple_repo.simple_pandas.transform_nodes import PandasSelectRows, PandasFilterRows
 
 
 @pytest.fixture
@@ -139,6 +140,42 @@ class TestPandasColumnsFiltering:
             prf.dataset["one"].dtype == "int32"
             and prf.dataset["three"].dtype == "int32"
         )
+
+
+class TestPandasSelectRows:
+    def test_execution(self):
+        df = pd.DataFrame(
+            [range(3), [0, np.NaN, 0], [0, 0, np.NaN], range(3), range(3)]
+        )
+
+        prf = PandasSelectRows("selrows", select_nan=True)
+        prf.set_input_value("dataset", df)
+
+        prf.execute()
+
+        expected_df = pd.Series([False, True, True, False, False])
+
+        assert prf.selection.equals(expected_df)
+
+
+class TestPandasFilterRows:
+    def test_execution(self):
+        df = pd.DataFrame(
+            [range(3), [0, np.NaN, 0], [0, 0, np.NaN], range(3), range(3)]
+        )
+
+        select = PandasSelectRows("selrows", select_nan=True)
+        select.set_input_value("dataset", df)
+
+        select.execute()
+
+        filter = PandasFilterRows("filtrows")
+        filter.set_input_value("dataset", df)
+        filter.set_input_value("selected_rows", select.selection)
+
+        filter.execute()
+
+        assert filter.dataset.isnull().iloc[0, 1] and filter.dataset.isnull().iloc[1, 2]
 
 
 class TestPandasPivot:
