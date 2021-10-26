@@ -107,6 +107,39 @@ class TestPandasColumnsFiltering:
 
         assert prf.dataset.equals(expected_df)
 
+    def test_columns_type_str(self, initial_dataframe):
+        prf = PandasColumnsFiltering("prf", columns_type="int")
+        prf.set_input_value("dataset", initial_dataframe)
+
+        prf.execute()
+
+        expected_df = initial_dataframe.astype("int")
+
+        assert prf.dataset.equals(expected_df)
+
+    def test_columns_type_list(self, initial_dataframe):
+        prf = PandasColumnsFiltering("prf", columns_type=["int", "float", "int"])
+        prf.set_input_value("dataset", initial_dataframe)
+
+        prf.execute()
+
+        assert (
+            prf.dataset["one"].dtype == "int32"
+            and prf.dataset["two"].dtype == "float64"
+            and prf.dataset["three"].dtype == "int32"
+        )
+
+    def test_columns_type_list_none(self, initial_dataframe):
+        prf = PandasColumnsFiltering("prf", columns_type=["int", None, "int"])
+        prf.set_input_value("dataset", initial_dataframe)
+
+        prf.execute()
+
+        assert (
+            prf.dataset["one"].dtype == "int32"
+            and prf.dataset["three"].dtype == "int32"
+        )
+
 
 class TestPandasPivot:
     pass
