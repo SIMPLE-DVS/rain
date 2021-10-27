@@ -4,3 +4,4 @@ from simple_repo.simple_sklearn.functions import (
     TrainTestSampleTargetSplit,
     TrainTestDatasetSplit,
 )
+from simple_repo.simple_sklearn.decomposition import SklearnPCA
