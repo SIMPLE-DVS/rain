@@ -50,3 +50,16 @@ class TestSklearnLinearSVC:
         node.execute()
 
         print(node.scores)
+
+
+class TestSklearnPCA:
+    def test_execution(self):
+        X, y = load_iris(return_X_y=True, as_frame=True)
+
+        node = ss.SklearnPCA("pca", ["fit", "transform"], n_components=3)
+        node.set_input_value("fit_dataset", X)
+        node.set_input_value("transform_dataset", X)
+
+        node.execute()
+
+        print(node.transformed_dataset)
