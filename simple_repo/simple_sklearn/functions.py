@@ -1,4 +1,5 @@
 import pandas
+from sklearn.metrics import davies_bouldin_score
 from sklearn.model_selection import train_test_split
 
 from simple_repo.parameter import Parameters, KeyValueParameter
@@ -75,3 +76,15 @@ class TrainTestSampleTargetSplit(SklearnFunction):
         ) = train_test_split(
             self.sample_dataset, self.target_dataset, **self.parameters.get_dict()
         )
+
+
+class DaviesBouldinScore(SklearnFunction):
+    _input_vars = {"samples_dataset": pandas.DataFrame, "labels": pandas.Series}
+
+    _output_vars = {"score": float}
+
+    def __init__(self, node_id: str):
+        super(DaviesBouldinScore, self).__init__(node_id)
+
+    def execute(self):
+        self.score = davies_bouldin_score(self.samples_dataset, self.labels)

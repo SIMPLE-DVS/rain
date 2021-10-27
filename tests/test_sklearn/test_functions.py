@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from simple_repo.simple_sklearn.functions import (
     TrainTestDatasetSplit,
     TrainTestSampleTargetSplit,
+    DaviesBouldinScore,
 )
 
 
@@ -54,3 +55,22 @@ class TestTrainTestSampleTargetSplit:
             and stt.target_train_dataset.equals(expected_target_train)
             and stt.target_test_dataset.equals(expected_target_test)
         )
+
+
+class TestTrainDaviesBouldinScore:
+    def test_execution(self):
+        from sklearn.cluster import KMeans
+        import pandas
+
+        iris_dt = load_iris(as_frame=True).data
+
+        kmeans = KMeans(n_clusters=3, random_state=1).fit(iris_dt)
+        labels = pandas.DataFrame(kmeans.labels_)
+
+        node = DaviesBouldinScore("dbscore")
+        node.set_input_value("samples_dataset", iris_dt)
+        node.set_input_value("labels", labels)
+
+        node.execute()
+
+        print(node.score)
