@@ -1,3 +1,5 @@
+import pandas
+
 from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_sklearn.node_structure import SklearnClusterer
 from sklearn.cluster import KMeans
@@ -14,9 +16,15 @@ class SimpleKMeans(SklearnClusterer):
         The number of clusters to form as well as the number of centroids to generate.
     """
 
+    _output_vars = {"labels": pandas.DataFrame}
+
     def __init__(self, node_id: str, execute: list, n_clusters: int = 8):
         super(SimpleKMeans, self).__init__(node_id, execute)
         self.parameters = Parameters(
             n_clusters=KeyValueParameter("n_clusters", int, n_clusters)
         )
         self._estimator_or_function = KMeans(**self.parameters.get_dict())
+
+    def execute(self):
+        super(SimpleKMeans, self).execute()
+        self.labels = self.fitted_model.labels_

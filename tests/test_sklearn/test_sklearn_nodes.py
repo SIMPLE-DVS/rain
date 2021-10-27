@@ -32,6 +32,7 @@ class TestKMeans:
         node.execute()
 
         print(node.scores)
+        print(node.labels)
 
 
 class TestSklearnLinearSVC:
