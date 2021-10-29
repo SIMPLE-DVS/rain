@@ -16,6 +16,13 @@ from simple_repo import (
     HashingTF,
     LogisticRegression,
     SparkPipelineNode,
+    MongoCSVReader,
+    MongoCSVWriter,
+    PandasAddColumn,
+    PandasReplaceColumn,
+    PandasFilterRows,
+    PandasSelectRows,
+    PandasDropNan,
 )
 from simple_repo.simple_io.pandas_io import (
     PandasInputNode,
@@ -107,7 +114,12 @@ classes = [
     (PandasNode, ["dataset"], ["dataset"], None),
     (PandasColumnsFiltering, ["dataset"], ["dataset"], None),
     (PandasPivot, ["dataset"], ["dataset"], None),
-    (PandasRenameColumn, ["dataset"], ["dataset"], None),  # Spark Nodes
+    (PandasRenameColumn, ["dataset"], ["dataset"], None),
+    (PandasAddColumn, ["dataset", "column"], ["dataset"], None),
+    (PandasReplaceColumn, ["column"], ["column"], None),
+    (PandasFilterRows, ["dataset", "selected_rows"], ["dataset"], None),
+    (PandasSelectRows, ["dataset"], ["selection"], None),
+    (PandasDropNan, ["dataset"], ["dataset"], None),  # Spark Nodes
     (SparkInputNode, None, [], None),
     (SparkCSVLoader, None, ["dataset"], None),
     (SparkModelLoader, None, ["model"], None),
@@ -127,7 +139,9 @@ classes = [
     (HashingTF, ["dataset"], ["dataset"], None),
     (Estimator, ["dataset"], ["model"], None),
     (LogisticRegression, ["dataset"], ["model"], None),
-    (SparkPipelineNode, ["dataset"], ["model"], None),
+    (SparkPipelineNode, ["dataset"], ["model"], None),  # IO
+    (MongoCSVReader, None, ["dataset"], None),
+    (MongoCSVWriter, ["dataset"], None, None),
 ]
 
 
