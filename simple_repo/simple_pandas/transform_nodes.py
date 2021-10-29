@@ -257,7 +257,6 @@ class PandasDropNan(PandasNode):
         )
 
     def execute(self):
-        print(self.parameters.get_dict())
         self.dataset = self.dataset.dropna(**self.parameters.get_dict())
 
 
@@ -423,4 +422,3 @@ class PandasReplaceColumn(PandasNode):
                 self.parameters.get_dict().get("second_value"),
             )
         )
-        print(self.column)
