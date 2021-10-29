@@ -85,7 +85,7 @@ classes = [
     (
         SimpleKMeans,
         ["fit_dataset", "predict_dataset", "score_dataset", "transform_dataset"],
-        ["fitted_model", "predictions", "scores", "transformed_dataset"],
+        ["fitted_model", "predictions", "scores", "transformed_dataset", "labels"],
         ["fit", "predict", "score", "transform"],
     ),
     (

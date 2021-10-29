@@ -147,7 +147,7 @@ class TestPandasColumnsFiltering:
 
 
 class TestPandasSelectRows:
-    def test_execution(self):
+    def test_select_nan(self):
         df = pd.DataFrame(
             [range(3), [0, np.NaN, 0], [0, 0, np.NaN], range(3), range(3)]
         )
@@ -158,6 +158,38 @@ class TestPandasSelectRows:
         prf.execute()
 
         expected_df = pd.Series([False, True, True, False, False])
+
+        assert prf.selection.equals(expected_df)
+
+    def test_condition(self):
+        df = pd.DataFrame(
+            [range(3), range(2, 7, 2), range(7, 10), range(3), range(12, 15)]
+        )
+        df.columns = ["one", "two", "three"]
+
+        prf = PandasSelectRows("selrows", conditions=["three == 2 & one < 9"])
+        prf.set_input_value("dataset", df)
+
+        prf.execute()
+
+        expected_df = pd.Series([True, False, False, True, False])
+
+        assert prf.selection.equals(expected_df)
+
+    def test_conditions(self):
+        df = pd.DataFrame(
+            [range(3), range(2, 7, 2), range(7, 10), range(3), range(12, 15)]
+        )
+        df.columns = ["one", "two", "three"]
+
+        prf = PandasSelectRows(
+            "selrows", conditions=["three == 2 & one < 9", "two >= 4 & two < 13"]
+        )
+        prf.set_input_value("dataset", df)
+
+        prf.execute()
+
+        expected_df = pd.Series([True, True, True, True, False])
 
         assert prf.selection.equals(expected_df)
 
