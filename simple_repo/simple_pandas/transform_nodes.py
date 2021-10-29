@@ -1,7 +1,10 @@
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
+import numpy
 import pandas
+import pandas as pd
 
+from simple_repo import PandasIrisLoader
 from simple_repo.base import ComputationalNode
 from simple_repo.exception import ParametersException, PandasSequenceException
 from simple_repo.parameter import KeyValueParameter, Parameters
@@ -357,3 +360,67 @@ class PandasSequence(PandasNode):
             stage.set_input_value("dataset", self.dataset)
             stage.execute()
             self.dataset = stage.get_output_value("dataset")
+
+
+class PandasAddColumn(PandasNode):
+    """
+    Node used to add a column to a Pandas Dataframe starting from a given Pandas Series.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique id of the node.
+    loc: int
+        Insertion index. Must verify 0 <= loc <= len(columns)
+    col: str
+        Label of the inserted column.
+    """
+
+    _input_vars = {"column": pd.Series}
+
+    def __init__(self, node_id: str, loc: int, col: str):
+        super(PandasAddColumn, self).__init__(node_id)
+        self.parameters = Parameters(
+            loc=KeyValueParameter("loc", int, loc),
+            col=KeyValueParameter("column", str, col),
+        )
+
+    def execute(self):
+        if self.parameters.loc.value > len(self.dataset.columns):
+            self.parameters.loc.value = len(self.dataset.columns)
+        self.dataset.insert(value=self.column, **self.parameters.get_dict())
+
+
+class PandasReplaceColumn(PandasNode):
+    """
+    Node used to replace the boolean values of a Pandas Series with other values given by the user.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique id of the node.
+    first_value: Any
+        Value used when the condition is True.
+    second_value: Any
+        Value used when the condition is True.
+    """
+
+    _input_vars = {"column": pd.Series}
+
+    def __init__(self, node_id: str, first_value: Any, second_value: Any):
+        super(PandasReplaceColumn, self).__init__(node_id)
+        self.parameters = Parameters(
+            first_value=KeyValueParameter("first_value", Any, first_value),
+            second_value=KeyValueParameter("second_value", Any, second_value),
+        )
+
+    def execute(self):
+        self.column = self.column.to_numpy()
+        self.column = pd.Series(
+            numpy.where(
+                self.column,
+                self.parameters.get_dict().get("first_value"),
+                self.parameters.get_dict().get("second_value"),
+            )
+        )
+        print(self.column)
