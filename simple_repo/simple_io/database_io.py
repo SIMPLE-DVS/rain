@@ -4,10 +4,10 @@ import pandas
 import pymongo
 
 from simple_repo.parameter import Parameters, KeyValueParameter
-from simple_repo.simple_io.pandas_io import PandasInputNode
+from simple_repo.simple_io.pandas_io import PandasInputNode, PandasOutputNode
 
 
-class MongoCSVWriter(PandasInputNode):
+class MongoCSVWriter(PandasOutputNode):
     """Write a Pandas Dataframe into a MongoDB collection.
 
     Parameters
