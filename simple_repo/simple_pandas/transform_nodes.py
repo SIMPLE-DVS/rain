@@ -177,17 +177,28 @@ class PandasSelectRows(ComputationalNode):
     def __init__(
         self,
         node_id: str,
-        select_nan: bool,
+        select_nan: bool = False,
+        conditions: List[str] = None,
     ):
         super(PandasSelectRows, self).__init__(node_id)
 
         self.parameters = Parameters(
             select_nan=KeyValueParameter("select_nan", str, value=select_nan),
+            conditions=KeyValueParameter("conditions", str, value=conditions),
         )
 
     def execute(self):
         if self.parameters.select_nan.value:
             self.selection = self.dataset.isnull().any(axis=1)
+        if conditions := self.parameters.conditions.value:
+            conds = []
+            for cond in conditions:
+                conds_or = [splitted_cond.strip() for splitted_cond in cond.split("&")]
+                new_cond = ["self.dataset.{}".format(or_cond) for or_cond in conds_or]
+                new_cond = "({})".format(" & ".join(new_cond))
+                conds.append(new_cond)
+            conds = " | ".join(conds)
+            self.selection = pandas.eval(conds, target=self.dataset)
 
 
 class PandasFilterRows(PandasNode):
