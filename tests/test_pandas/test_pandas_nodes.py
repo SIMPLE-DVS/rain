@@ -10,6 +10,11 @@ pandas_nodes = [
     sp.PandasRenameColumn,
     pio.PandasCSVLoader,
     pio.PandasCSVWriter,
+    sp.PandasFilterRows,
+    sp.PandasAddColumn,
+    sp.PandasDropNan,
+    # sp.PandasSelectRows,
+    # sp.PandasReplaceColumn
 ]
 
 

@@ -37,6 +37,7 @@ class MongoCSVWriter(PandasOutputNode):
         )
         collection = client[params.get("db")][params.get("coll")]
         collection.insert_many(self.dataset.to_dict("records"))
+        return collection
 
 
 class MongoCSVReader(PandasInputNode):
@@ -89,20 +90,3 @@ class MongoCSVReader(PandasInputNode):
                 )
             )
         )
-
-
-if __name__ == "__main__":
-    # w = MongoCSVWriter("mongo_writer",
-    #                    "mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority",
-    #                    "simple", "dataset")
-    # w.dataset = pandas.read_csv("C:/Users/Marco/Desktop/iris_ds.csv")
-    # w.execute()
-
-    r = MongoCSVReader(
-        "mongo_writer",
-        "mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority",
-        "simple",
-        "dataset",
-    )
-    r.execute()
-    print("ok")
