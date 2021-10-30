@@ -4,10 +4,10 @@ import pandas
 import pymongo
 
 from simple_repo.parameter import Parameters, KeyValueParameter
-from simple_repo.simple_io.pandas_io import PandasInputNode
+from simple_repo.simple_io.pandas_io import PandasInputNode, PandasOutputNode
 
 
-class MongoCSVWriter(PandasInputNode):
+class MongoCSVWriter(PandasOutputNode):
     """Write a Pandas Dataframe into a MongoDB collection.
 
     Parameters
@@ -37,6 +37,7 @@ class MongoCSVWriter(PandasInputNode):
         )
         collection = client[params.get("db")][params.get("coll")]
         collection.insert_many(self.dataset.to_dict("records"))
+        return collection
 
 
 class MongoCSVReader(PandasInputNode):
@@ -89,20 +90,3 @@ class MongoCSVReader(PandasInputNode):
                 )
             )
         )
-
-
-if __name__ == "__main__":
-    # w = MongoCSVWriter("mongo_writer",
-    #                    "mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority",
-    #                    "simple", "dataset")
-    # w.dataset = pandas.read_csv("C:/Users/Marco/Desktop/iris_ds.csv")
-    # w.execute()
-
-    r = MongoCSVReader(
-        "mongo_writer",
-        "mongodb+srv://admin:admin@cluster0.yhcxc.mongodb.net/simple?retryWrites=true&w=majority",
-        "simple",
-        "dataset",
-    )
-    r.execute()
-    print("ok")

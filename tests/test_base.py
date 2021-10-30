@@ -5,7 +5,12 @@ from simple_repo import simple_io as sio
 import simple_repo as sr
 
 
-input_data = [sio.SparkCSVLoader, sio.SparkModelLoader, sio.PandasCSVLoader]
+input_data = [
+    sio.SparkCSVLoader,
+    sio.SparkModelLoader,
+    sio.PandasCSVLoader,
+    sio.MongoCSVReader,
+]
 
 
 @pytest.mark.parametrize("class_or_obj", input_data)
@@ -19,7 +24,7 @@ def test_input_node_attributes(class_or_obj):
     )
 
 
-output_data = [sio.SaveModel, sio.SaveDataset, sio.PandasCSVWriter]
+output_data = [sio.SaveModel, sio.SaveDataset, sio.PandasCSVWriter, sio.MongoCSVWriter]
 
 
 @pytest.mark.parametrize("class_or_obj", output_data)
@@ -37,6 +42,11 @@ computational_data = [
     sr.PandasColumnsFiltering,
     sr.PandasPivot,
     sr.PandasRenameColumn,
+    sr.PandasReplaceColumn,
+    sr.PandasAddColumn,
+    sr.PandasDropNan,
+    sr.PandasFilterRows,
+    sr.PandasSelectRows,
     sr.SimpleKMeans,
     sr.SklearnLinearSVC,
     sr.SparkPipelineNode,

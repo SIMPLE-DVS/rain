@@ -1,3 +1,4 @@
+import numpy
 import pandas as pd
 import numpy as np
 import pytest
@@ -13,6 +14,8 @@ from simple_repo.simple_pandas.transform_nodes import (
     PandasSelectRows,
     PandasFilterRows,
     PandasDropNan,
+    PandasAddColumn,
+    PandasReplaceColumn,
 )
 
 
@@ -239,7 +242,28 @@ class TestPandasPivot:
 
 
 class TestPandasAddColumn:
-    pass
+    def test_add_column(self, iris_data):
+        ac = PandasAddColumn("ac", 2, "prova")
+        ac.dataset = iris_data
+        ac.column = pd.Series(range(0, 150))
+        assert len(ac.dataset.columns) == 4
+        ac.execute()
+        assert len(ac.dataset.columns) == 5
+        assert "prova" in ac.dataset.columns
+        assert ac.dataset["prova"].equals(pd.Series(range(0, 150)))
+
+
+class TestPandasReplaceColumn:
+    def test_replace_column(
+        self,
+    ):
+        ac = PandasReplaceColumn("rc", 10, 11)
+        ac.column = pd.Series([True, False, False, False, True])
+        ac.execute()
+        assert len(ac.column) == 5
+        assert numpy.array_equal(
+            ac.column.values, pd.Series([10, 11, 11, 11, 10]).values
+        )
 
 
 class TestPandasSequence:

@@ -390,7 +390,7 @@ class PandasAddColumn(PandasNode):
         self.dataset.insert(value=self.column, **self.parameters.get_dict())
 
 
-class PandasReplaceColumn(PandasNode):
+class PandasReplaceColumn(ComputationalNode):
     """
     Node used to replace the boolean values of a Pandas Series with other values given by the user.
 
@@ -405,6 +405,7 @@ class PandasReplaceColumn(PandasNode):
     """
 
     _input_vars = {"column": pd.Series}
+    _output_vars = {"column": pd.Series}
 
     def __init__(self, node_id: str, first_value: Any, second_value: Any):
         super(PandasReplaceColumn, self).__init__(node_id)
