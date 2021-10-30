@@ -36,7 +36,7 @@ computational_spark_nodes_instance = [
     sr.Tokenizer("s1", "", ""),
     sr.HashingTF("s1", "", ""),
     sr.LogisticRegression("s1", 2, 3),
-    sr.SparkColumnSelector("s1", features=[{"col": ""}]),
+    sr.SparkColumnSelector("s1", []),
     sr.SparkSplitDataset("s1", 1, 2),
 ]
 
@@ -76,12 +76,12 @@ def test_spark_instance(class_or_obj):
 
 @pytest.fixture
 def iris_data():
-    yield load_iris(as_frame=True).data
+    yield spark.createDataFrame(load_iris(as_frame=True).data)
 
 
 class TestSparkCsvLoader:
     def test_dataset_load(self, tmpdir, iris_data):
-        iris = spark.createDataFrame(iris_data).toPandas()
+        iris = iris_data.toPandas()
         tmpcsv = tmpdir / "tmp_iris.csv"
         iris.to_csv(tmpcsv, index=False)
         loader = sr.SparkCSVLoader("s1", path=tmpcsv.__str__(), header=True)
@@ -115,10 +115,9 @@ class TestSaveModel:
 
 class TestSaveDataset:
     def test_spark_save_dataset(self, tmpdir, iris_data):
-        iris = spark.createDataFrame(iris_data)
         tmpcsv = tmpdir / "tmp_csv.pkl"
         sd = sr.SaveDataset("s1", path=tmpcsv.__str__())
-        sd.dataset = iris
+        sd.dataset = iris_data
         assert not tmpcsv.exists()
         sd.execute()
         assert tmpcsv.exists()
@@ -126,8 +125,7 @@ class TestSaveDataset:
 
 class TestTokenizer:
     def test_spark_tokenizer(self, iris_data):
-        iris = spark.createDataFrame(iris_data)
-        iris = iris.select(col("sepal length (cm)").cast("string"))
+        iris = iris_data.select(col("sepal length (cm)").cast("string"))
         tk = sr.Tokenizer("s1", "sepal length (cm)", "sl")
         tk.dataset = iris
         assert tk.computational_instance is not None
@@ -137,9 +135,8 @@ class TestTokenizer:
 
 class TestHashingTf:
     def test_spark_hashing_tf(self, iris_data):
-        iris = spark.createDataFrame(iris_data)
         iris = Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
-            iris.select(col("sepal length (cm)").cast("string"))
+            iris_data.select(col("sepal length (cm)").cast("string"))
         )
         htf = sr.HashingTF("s1", "sl", "hsl")
         htf.dataset = iris
@@ -150,10 +147,9 @@ class TestHashingTf:
 
 class TestLogisticRegression:
     def test_spark_log_reg(self, iris_data):
-        iris = spark.createDataFrame(iris_data)
         iris = HashingTF(inputCol="sl", outputCol="features").transform(
             Tokenizer(inputCol="sepal length (cm)", outputCol="sl").transform(
-                iris.select(col("sepal length (cm)").cast("string"))
+                iris_data.select(col("sepal length (cm)").cast("string"))
             )
         )
         iris = iris.withColumn("label", lit(10))
@@ -166,8 +162,7 @@ class TestLogisticRegression:
 
 class TestSparkPipeline:
     def test_spark_pipeline(self, iris_data):
-        iris = spark.createDataFrame(iris_data)
-        iris = iris.select(col("sepal length (cm)").cast("string"))
+        iris = iris_data.select(col("sepal length (cm)").cast("string"))
         iris = iris.withColumn("label", lit(10))
         stages = [
             sr.Tokenizer("s1", "sepal length (cm)", "sl"),
@@ -179,3 +174,29 @@ class TestSparkPipeline:
         pipe.execute()
         assert pipe.model is not None
         assert pipe.computational_instance is None
+
+
+class TestSparkColumnSelector:
+    def test_spark_column_selector(self, iris_data):
+        data = iris_data.toDF(
+            *["sepal_length", "sepal_width", "petal_length", "petal_width"]
+        )
+        cs = sr.SparkColumnSelector(
+            "cs",
+            ["sepal_length", "sepal_width"],
+            ["sepal_length > 6.0", "sepal_width = 3.2"],
+        )
+        cs.dataset = data
+        cs.execute()
+        assert len(cs.dataset.columns) == 2
+        assert cs.dataset.count() == 7
+
+
+class TestSparkSplitDataset:
+    def test_spark_split_dataset(self, iris_data):
+        spd = sr.SparkSplitDataset("spd", 0.7, 0.3)
+        spd.dataset = iris_data
+        spd.execute()
+        assert spd.train_dataset is not None
+        assert spd.test_dataset is not None
+        assert spd.train_dataset.count() > spd.test_dataset.count()
