@@ -1,6 +1,8 @@
+from typing import List
+
 from pyspark.sql import DataFrame
 
-from simple_repo.parameter import StructuredParameterList, KeyValueParameter, Parameters
+from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_spark.node_structure import Transformer
 
 
@@ -10,30 +12,27 @@ class SparkColumnSelector(Transformer):
 
     Parameters
     ----------
-    features : list
-        Every dictionary in the list must be of the form:
-            {
-                col: str (Mandatory)
-                value: str (Optional)
-            }
+    column_list : List[str)
+        List of columns to select from the dataset
+    filter_list : List[str)
+        List of conditions used to filter the rows of the dataset
     """
 
-    def __init__(self, node_id: str, features: list):
+    def __init__(
+        self, node_id: str, column_list: List[str], filter_list: List[str] = []
+    ):
         super(SparkColumnSelector, self).__init__(node_id)
         self.parameters = Parameters(
-            features=StructuredParameterList(col=True, value=False)
+            column_list=KeyValueParameter("column_list", List[str], column_list),
+            filter_list=KeyValueParameter("filter_list", List[str], filter_list),
         )
-        self.parameters.features.add_all_parameters(*features)
 
     def execute(self):
-        columns = [c["col"] for c in self.parameters.features.parameters]
-        self.dataset = self.dataset.select(columns)
-        conditions = [
-            c["value"] for c in self.parameters.features.parameters if "value" in c
-        ]
-        for c in conditions:
+        self.dataset = self.dataset.select(
+            self.parameters.get_dict().get("column_list")
+        )
+        for c in self.parameters.get_dict().get("filter_list"):
             self.dataset = self.dataset.filter(c)
-        self.dataset.show()
 
 
 class SparkSplitDataset(Transformer):
@@ -59,5 +58,3 @@ class SparkSplitDataset(Transformer):
     def execute(self):
         values = list(self.parameters.get_dict().values())
         self.train_dataset, self.test_dataset = self.dataset.randomSplit(values)
-        self.train_dataset.show()
-        self.test_dataset.show()
