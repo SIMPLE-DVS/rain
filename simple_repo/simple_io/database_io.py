@@ -12,13 +12,13 @@ class MongoCSVWriter(PandasOutputNode):
 
     Parameters
     ----------
-    node_id: str
+    node_id : str
         The unique id of the node.
-    connection: str
+    connection : str
         Hostname or IP address or Unix domain socket path of a single MongoDB instance to connect to, or a mongodb URI
-    db: str
+    db : str
         Name of the database to connect to.
-    coll: str
+    coll : str
         Name of the collection to connect to.
     """
 
@@ -45,17 +45,17 @@ class MongoCSVReader(PandasInputNode):
 
     Parameters
     ----------
-    node_id: str
+    node_id : str
         The unique id of the node.
-    connection: str
+    connection : str
         Hostname or IP address or Unix domain socket path of a single MongoDB instance to connect to, or a mongodb URI
-    db: str
+    db : str
         Name of the database to connect to.
-    coll: str
+    coll : str
         Name of the collection to connect to.
-    filter: dict, default None
+    filter : dict, default None
         A SON object specifying elements which must be present for a document to be included in the result set
-    projection: dict, default None
+    projection : dict, default None
         A dict to exclude fields from the result (e.g. projection={'_id': False})
     """
 
