@@ -271,13 +271,13 @@ class PandasPivot(PandasNode):
         Name of the column whose values will be the columns of the pivot.
     values: str
         Name of the column whose values will be the values of the pivot.
-    aggfunc: str, default 'mean'
+    aggfunc : str, default 'mean'
         Function to use for the aggregation.
-    fill_value: int, default 0
+    fill_value : int, default 0
         Value to replace missing values with.
-    dropna: bool, default True
+    dropna : bool, default True
         Do not include columns whose entries are all NaN.
-    sort: bool, default True
+    sort : bool, default True
         Specifies if the result should be sorted.
     """
 
@@ -369,9 +369,9 @@ class PandasAddColumn(PandasNode):
     ----------
     node_id : str
         The unique id of the node.
-    loc: int
+    loc : int
         Insertion index. Must verify 0 <= loc <= len(columns)
-    col: str
+    col : str
         Label of the inserted column.
     """
 
@@ -398,9 +398,9 @@ class PandasReplaceColumn(ComputationalNode):
     ----------
     node_id : str
         The unique id of the node.
-    first_value: Any
+    first_value : Any
         Value used when the condition is True.
-    second_value: Any
+    second_value : Any
         Value used when the condition is True.
     """
 

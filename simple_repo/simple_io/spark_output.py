@@ -10,7 +10,7 @@ class SaveModel(SparkOutputNode):
 
     Parameters
     ----------
-    path: str
+    path : str
         String representing the path where to save the model
 
     """
@@ -30,10 +30,10 @@ class SaveDataset(SparkOutputNode):
 
     Parameters
     ----------
-    path: str
+    path : str
         String representing the path where to save the dataset
 
-    index: bool, default True
+    index : bool, default True
         String representing the path where to save the dataset
     """
 
