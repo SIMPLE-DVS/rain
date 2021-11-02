@@ -53,9 +53,9 @@ class MongoCSVReader(PandasInputNode):
         Name of the database to connect to.
     coll: str
         Name of the collection to connect to.
-    filter: dict
+    filter: dict, default None
         A SON object specifying elements which must be present for a document to be included in the result set
-    projection: dict
+    projection: dict, default None
         A dict to exclude fields from the result (e.g. projection={'_id': False})
     """
 
