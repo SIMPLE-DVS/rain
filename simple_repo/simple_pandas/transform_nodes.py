@@ -170,7 +170,7 @@ class PandasSelectRows(ComputationalNode):
     ----------
     node_id : str
         Id of the node.
-    select_nan : bool
+    select_nan : bool, default False
         Select rows with at least one NaN value.
     """
 
@@ -234,7 +234,7 @@ class PandasDropNan(PandasNode):
         Id of the node.
     axis : {'rows', 'columns'}, default 'rows'
         The axis from where to remove the nan values.
-    how : {'any', 'all'}, default 'any
+    how : {'any', 'all'}, default 'any'
         Whether to remove a row or a column which either contains any nan value or
         contains all nan values.
     """
@@ -271,13 +271,13 @@ class PandasPivot(PandasNode):
         Name of the column whose values will be the columns of the pivot.
     values: str
         Name of the column whose values will be the values of the pivot.
-    aggfunc: str = "mean"
+    aggfunc: str, default 'mean'
         Function to use for the aggregation.
-    fill_value: int = 0
+    fill_value: int, default 0
         Value to replace missing values with.
-    dropna: bool = True
+    dropna: bool, default True
         Do not include columns whose entries are all NaN.
-    sort: bool = True
+    sort: bool, default True
         Specifies if the result should be sorted.
     """
 

@@ -7,8 +7,6 @@ from sklearn.datasets import load_iris
 from simple_repo.base import InputNode, OutputNode
 from simple_repo.parameter import KeyValueParameter, Parameters
 
-# TODO che cosa succede se ad un OutputNode vado a dare _output_vars? Capire se l'instanziazione dinamica degli attributi funziona ugualmente.
-
 
 class PandasInputNode(InputNode):
     _output_vars = {"dataset": pandas.DataFrame}
@@ -33,7 +31,7 @@ class PandasCSVLoader(PandasInputNode):
     ----------
     path : str
         Of the CSV file.
-    delim : str
+    delim : str, default ','
         Delimiter symbol of the CSV file.
     """
 
@@ -86,15 +84,15 @@ class PandasCSVWriter(PandasOutputNode):
     ----------
     path : str
         Of the CSV file.
-    delim : str
+    delim : str, dafault ','
         Delimiter symbol of the CSV file.
-    include_rows : bool
+    include_rows : bool, default True
         Whether to include rows indexes.
-    rows_column_label : str
+    rows_column_label : str, default None
         If rows indexes must be included you can give a name to its column.
-    include_columns : bool
+    include_columns : bool, default True
         Whether to include column names.
-    columns : list
+    columns : list, default None
         If column names must be included you can give names to them.
         The order is relevant.
     """

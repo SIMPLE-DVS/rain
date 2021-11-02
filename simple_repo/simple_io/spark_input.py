@@ -13,12 +13,10 @@ class SparkCSVLoader(SparkInputNode):
     path : str
         Path of the csv file.
     header : bool, default False
-        uses the first line as names of columns. If None is set, it uses the
-        default value, ``false``.
+        Uses the first line as names of columns.
     schema : bool, default False
-        infers the input schema automatically from data. It requires one extra
-        pass over the data. If None is set, it uses the default value, ``false``.
-
+        Infers the input schema automatically from data. It requires one extra
+        pass over the data.
     """
 
     _output_vars = {"dataset": DataFrame}
