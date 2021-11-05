@@ -85,7 +85,7 @@ class DaviesBouldinScore(SklearnFunction):
     The minimum score is zero, with lower values indicating better clustering.
     """
 
-    _input_vars = {"samples_dataset": pandas.DataFrame, "labels": pandas.Series}
+    _input_vars = {"samples_dataset": pandas.DataFrame, "labels": pandas.DataFrame}
 
     _output_vars = {"score": float}
 
