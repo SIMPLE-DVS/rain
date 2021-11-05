@@ -79,6 +79,12 @@ class TrainTestSampleTargetSplit(SklearnFunction):
 
 
 class DaviesBouldinScore(SklearnFunction):
+    """
+    Computes the Davies-Bouldin score.
+    The score is defined as the average similarity measure of each cluster with its most similar cluster, where similarity is the ratio of within-cluster distances to between-cluster distances. Thus, clusters which are farther apart and less dispersed will result in a better score.
+    The minimum score is zero, with lower values indicating better clustering.
+    """
+
     _input_vars = {"samples_dataset": pandas.DataFrame, "labels": pandas.Series}
 
     _output_vars = {"score": float}

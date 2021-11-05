@@ -12,9 +12,9 @@ class SparkColumnSelector(Transformer):
 
     Parameters
     ----------
-    column_list : List[str)
+    column_list : List[str]
         List of columns to select from the dataset
-    filter_list : List[str)
+    filter_list : List[str]
         List of conditions used to filter the rows of the dataset
     """
 

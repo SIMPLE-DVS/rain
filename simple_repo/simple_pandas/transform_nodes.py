@@ -172,6 +172,8 @@ class PandasSelectRows(ComputationalNode):
         Id of the node.
     select_nan : bool, default False
         Select rows with at least one NaN value.
+    conditions : List[str]
+        List of conditions to select rows.
     """
 
     _input_vars = {"dataset": pandas.DataFrame}
@@ -269,7 +271,7 @@ class PandasPivot(PandasNode):
         Name of the column whose values will be the rows of the pivot.
     columns : str
         Name of the column whose values will be the columns of the pivot.
-    values: str
+    values : str
         Name of the column whose values will be the values of the pivot.
     aggfunc : str, default 'mean'
         Function to use for the aggregation.

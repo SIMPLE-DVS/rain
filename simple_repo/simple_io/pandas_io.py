@@ -84,7 +84,7 @@ class PandasCSVWriter(PandasOutputNode):
     ----------
     path : str
         Of the CSV file.
-    delim : str, dafault ','
+    delim : str, default ','
         Delimiter symbol of the CSV file.
     include_rows : bool, default True
         Whether to include rows indexes.
@@ -92,7 +92,7 @@ class PandasCSVWriter(PandasOutputNode):
         If rows indexes must be included you can give a name to its column.
     include_columns : bool, default True
         Whether to include column names.
-    columns : list, default None
+    columns : list[str], default None
         If column names must be included you can give names to them.
         The order is relevant.
     """
