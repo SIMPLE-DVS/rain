@@ -80,19 +80,19 @@ classes = [
             "score_dataset",
             "score_targets",
         ],
-        ["fitted_model", "predictions", "scores"],
+        ["fitted_model", "predictions", "score_value"],
         ["fit", "predict", "score"],
     ),
     (
         SklearnClusterer,
         ["fit_dataset", "predict_dataset", "score_dataset", "transform_dataset"],
-        ["fitted_model", "predictions", "scores", "transformed_dataset"],
+        ["fitted_model", "predictions", "score_value", "transformed_dataset"],
         ["fit", "predict", "score", "transform"],
     ),
     (
         SimpleKMeans,
         ["fit_dataset", "predict_dataset", "score_dataset", "transform_dataset"],
-        ["fitted_model", "predictions", "scores", "transformed_dataset", "labels"],
+        ["fitted_model", "predictions", "score_value", "transformed_dataset", "labels"],
         ["fit", "predict", "score", "transform"],
     ),
     (
@@ -104,7 +104,7 @@ classes = [
             "score_dataset",
             "score_targets",
         ],
-        ["fitted_model", "predictions", "scores"],
+        ["fitted_model", "predictions", "score_value"],
         ["fit", "predict", "score"],
     ),  # Pandas Nodes
     (PandasInputNode, None, ["dataset"], None),

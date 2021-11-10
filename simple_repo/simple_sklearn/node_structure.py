@@ -101,7 +101,7 @@ class ScorerMixin:
 
     _input_vars = {"score_dataset": pandas.DataFrame}
 
-    _output_vars = {"score": float}
+    _output_vars = {"score_value": float}
 
     _methods = {"score": False}
 
