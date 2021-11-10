@@ -132,7 +132,7 @@ class TransformerMixin:
 
     _input_vars = {"transform_dataset": pandas.DataFrame}
 
-    _output_vars = {"transformed_dataset": list}
+    _output_vars = {"transformed_dataset": pandas.DataFrame}
 
     _methods = {"transform": False}
 
