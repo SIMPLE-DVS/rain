@@ -4,7 +4,7 @@ import pandas
 import pandas as pd
 from sklearn.datasets import load_iris
 
-from simple_repo.base import InputNode, OutputNode
+from simple_repo.base import InputNode, OutputNode, Tags, LibTag, TypeTag
 from simple_repo.parameter import KeyValueParameter, Parameters
 
 
@@ -15,6 +15,10 @@ class PandasInputNode(InputNode):
     def execute(self):
         pass
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.PANDAS, TypeTag.INPUT)
+
 
 class PandasOutputNode(OutputNode):
     _input_vars = {"dataset": pandas.DataFrame}
@@ -22,6 +26,10 @@ class PandasOutputNode(OutputNode):
     @abstractmethod
     def execute(self):
         pass
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.PANDAS, TypeTag.OUTPUT)
 
 
 class PandasCSVLoader(PandasInputNode):

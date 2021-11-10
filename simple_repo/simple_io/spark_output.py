@@ -5,7 +5,7 @@ from simple_repo.parameter import KeyValueParameter, Parameters
 from simple_repo.simple_spark.node_structure import SparkOutputNode
 
 
-class SaveModel(SparkOutputNode):
+class SparkSaveModel(SparkOutputNode):
     """Save a trained PipelineModel
 
     Parameters
@@ -19,13 +19,13 @@ class SaveModel(SparkOutputNode):
 
     def __init__(self, node_id: str, path: str):
         self.parameters = Parameters(path=KeyValueParameter("path", str, path))
-        super(SaveModel, self).__init__(node_id)
+        super(SparkSaveModel, self).__init__(node_id)
 
     def execute(self):
         self.model.write().overwrite().save(**self.parameters.get_dict())
 
 
-class SaveDataset(SparkOutputNode):
+class SparkSaveDataset(SparkOutputNode):
     """Save a Spark Dataframe in a .csv format
 
     Parameters
@@ -44,7 +44,7 @@ class SaveDataset(SparkOutputNode):
             path=KeyValueParameter("path_or_buf", str, path),
             index=KeyValueParameter("index", bool, index),
         )
-        super(SaveDataset, self).__init__(node_id)
+        super(SparkSaveDataset, self).__init__(node_id)
 
     def execute(self):
         self.dataset.toPandas().to_csv(**self.parameters.get_dict())

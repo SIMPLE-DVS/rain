@@ -2,6 +2,7 @@ import pandas
 from sklearn.metrics import davies_bouldin_score
 from sklearn.model_selection import train_test_split
 
+from simple_repo.base import TypeTag, LibTag, Tags
 from simple_repo.parameter import Parameters, KeyValueParameter
 from simple_repo.simple_sklearn.node_structure import SklearnFunction
 
@@ -94,3 +95,7 @@ class DaviesBouldinScore(SklearnFunction):
 
     def execute(self):
         self.score = davies_bouldin_score(self.samples_dataset, self.labels)
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SKLEARN, TypeTag.METRICS)

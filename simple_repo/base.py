@@ -1,10 +1,49 @@
 import importlib
 from abc import abstractmethod
+from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 import copy
 
 import simple_repo.dataflow as dataflow  # import module to avoid circular dependency
 from simple_repo.exception import EdgeConnectionError
+
+
+class LibTag(Enum):
+    """
+    Enumeration representing the library which the SimpleNode refers to
+    """
+
+    PANDAS = "Pandas"
+    SPARK = "Spark"
+    SKLEARN = "Sklearn"
+    OTHER = "Other"
+
+
+class TypeTag(Enum):
+    """
+    Enumeration representing the type of the SimpleNode according to its functionality
+    """
+
+    INPUT = "Input"
+    OUTPUT = "Output"
+    TRANSFORMER = "Transformer"
+    CLASSIFIER = "Classifier"
+    CLUSTERER = "CLusterer"
+    REGRESSOR = "Regressor"
+    ESTIMATOR = "Estimator"
+    METRICS = "Metrics"
+    OTHER = "Other"
+
+
+@dataclass
+class Tags:
+    """
+    DataClass that acts as a tag for a SimpleNode: it stores the library and the type of the node
+    """
+
+    library: LibTag
+    type: TypeTag
 
 
 def get_class(fullname: str):
@@ -232,6 +271,10 @@ class InputNode(SimpleNode, InputMixin):
     def execute(self):
         pass
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.OTHER, TypeTag.INPUT)
+
 
 class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
     def __init__(self, node_id: str):
@@ -249,3 +292,11 @@ class OutputNode(SimpleNode, OutputMixin):
     @abstractmethod
     def execute(self):
         pass
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.OTHER, TypeTag.OUTPUT)
+
+
+if __name__ == "__main__":
+    print(SimpleNode._get_tags())

@@ -4,7 +4,14 @@ from pyspark.sql import DataFrame
 from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
 
-from simple_repo.base import ComputationalNode, InputNode, OutputNode
+from simple_repo.base import (
+    ComputationalNode,
+    InputNode,
+    OutputNode,
+    TypeTag,
+    LibTag,
+    Tags,
+)
 
 
 class SparkNodeSession:
@@ -44,6 +51,10 @@ class Transformer(SparkNode):
     def execute(self):
         pass
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SPARK, TypeTag.TRANSFORMER)
+
 
 class Estimator(SparkNode):
     """Class representing a Spark Estimator, it takes a dataset and returns a trained model."""
@@ -57,6 +68,10 @@ class Estimator(SparkNode):
     def execute(self):
         pass
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SPARK, TypeTag.ESTIMATOR)
+
 
 class SparkInputNode(InputNode, SparkNodeSession):
     """Class representing a Spark InputNode, it loads and returns an object/file."""
@@ -65,6 +80,10 @@ class SparkInputNode(InputNode, SparkNodeSession):
     def execute(self):
         pass
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SPARK, TypeTag.INPUT)
+
 
 class SparkOutputNode(OutputNode, SparkNodeSession):
     """Class representing a Spark OutputNode, it save a given object/file."""
@@ -72,3 +91,7 @@ class SparkOutputNode(OutputNode, SparkNodeSession):
     @abstractmethod
     def execute(self):
         pass
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SPARK, TypeTag.OUTPUT)
