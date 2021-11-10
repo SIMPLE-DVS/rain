@@ -31,7 +31,7 @@ class TestKMeans:
 
         node.execute()
 
-        print(node.scores)
+        print(node.score_value)
         print(node.labels)
 
 
@@ -50,7 +50,7 @@ class TestSklearnLinearSVC:
 
         node.execute()
 
-        print(node.scores)
+        print(node.score_value)
 
 
 class TestSklearnPCA:
