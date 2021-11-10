@@ -24,7 +24,12 @@ def test_input_node_attributes(class_or_obj):
     )
 
 
-output_data = [sio.SaveModel, sio.SaveDataset, sio.PandasCSVWriter, sio.MongoCSVWriter]
+output_data = [
+    sio.SparkSaveModel,
+    sio.SparkSaveDataset,
+    sio.PandasCSVWriter,
+    sio.MongoCSVWriter,
+]
 
 
 @pytest.mark.parametrize("class_or_obj", output_data)

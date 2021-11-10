@@ -47,9 +47,9 @@ class TestEdgesConnections:
         )
 
     def test_sub_non_output_node(self):
-        from simple_repo.simple_io import SaveModel
+        from simple_repo.simple_io import SparkSaveModel
 
-        n = SaveModel("load", "./iris.csv")
+        n = SparkSaveModel("load", "./iris.csv")
 
         with pytest.raises(EdgeConnectionError):
             n @ "dataset1"

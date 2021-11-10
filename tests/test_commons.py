@@ -8,8 +8,8 @@ from simple_repo import (
     SimpleKMeans,
     SparkCSVLoader,
     SparkModelLoader,
-    SaveModel,
-    SaveDataset,
+    SparkSaveModel,
+    SparkSaveDataset,
     SparkColumnSelector,
     SparkSplitDataset,
     Tokenizer,
@@ -23,14 +23,17 @@ from simple_repo import (
     PandasFilterRows,
     PandasSelectRows,
     PandasDropNan,
+    DaviesBouldinScore,
+    SklearnPCA,
 )
+from simple_repo.base import TypeTag, LibTag, Tags, SimpleNode
 from simple_repo.simple_io.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
     PandasCSVLoader,
     PandasCSVWriter,
 )
-from simple_repo.simple_pandas.node_structure import PandasNode
+from simple_repo.simple_pandas.node_structure import PandasTransformer
 from simple_repo.simple_sklearn.functions import (
     TrainTestDatasetSplit,
     TrainTestSampleTargetSplit,
@@ -55,10 +58,17 @@ from simple_repo.simple_spark.node_structure import (
 )
 
 classes = [
+    (SimpleNode, None, None, None, None),
     # Sklearn Nodes
-    (SklearnNode, [], [], []),
-    (SklearnFunction, [], [], []),
-    (TrainTestDatasetSplit, ["dataset"], ["train_dataset", "test_dataset"], []),
+    (SklearnNode, [], [], [], None),
+    (SklearnFunction, [], [], [], Tags(LibTag.SKLEARN, TypeTag.TRANSFORMER)),
+    (
+        TrainTestDatasetSplit,
+        ["dataset"],
+        ["train_dataset", "test_dataset"],
+        [],
+        Tags(LibTag.SKLEARN, TypeTag.TRANSFORMER),
+    ),
     (
         TrainTestSampleTargetSplit,
         ["sample_dataset", "target_dataset"],
@@ -69,8 +79,29 @@ classes = [
             "target_test_dataset",
         ],
         [],
+        Tags(LibTag.SKLEARN, TypeTag.TRANSFORMER),
     ),
-    (SklearnEstimator, ["fit_dataset"], ["fitted_model"], ["fit"]),
+    (
+        SklearnEstimator,
+        ["fit_dataset"],
+        ["fitted_model"],
+        ["fit"],
+        Tags(LibTag.SKLEARN, TypeTag.ESTIMATOR),
+    ),
+    (
+        DaviesBouldinScore,
+        ["samples_dataset", "labels"],
+        ["score"],
+        [],
+        Tags(LibTag.SKLEARN, TypeTag.METRICS),
+    ),
+    (
+        SklearnPCA,
+        ["fit_dataset", "transform_dataset", "score_dataset"],
+        ["fitted_model", "transformed_dataset", "score_value"],
+        ["fit", "transform", "score"],
+        Tags(LibTag.SKLEARN, TypeTag.ESTIMATOR),
+    ),
     (
         SklearnClassifier,
         [
@@ -82,18 +113,21 @@ classes = [
         ],
         ["fitted_model", "predictions", "score_value"],
         ["fit", "predict", "score"],
+        Tags(LibTag.SKLEARN, TypeTag.CLASSIFIER),
     ),
     (
         SklearnClusterer,
         ["fit_dataset", "predict_dataset", "score_dataset", "transform_dataset"],
         ["fitted_model", "predictions", "score_value", "transformed_dataset"],
         ["fit", "predict", "score", "transform"],
+        Tags(LibTag.SKLEARN, TypeTag.CLUSTERER),
     ),
     (
         SimpleKMeans,
         ["fit_dataset", "predict_dataset", "score_dataset", "transform_dataset"],
         ["fitted_model", "predictions", "score_value", "transformed_dataset", "labels"],
         ["fit", "predict", "score", "transform"],
+        Tags(LibTag.SKLEARN, TypeTag.CLUSTERER),
     ),
     (
         SklearnLinearSVC,
@@ -106,50 +140,143 @@ classes = [
         ],
         ["fitted_model", "predictions", "score_value"],
         ["fit", "predict", "score"],
+        Tags(LibTag.SKLEARN, TypeTag.CLASSIFIER),
     ),  # Pandas Nodes
-    (PandasInputNode, None, ["dataset"], None),
-    (PandasCSVLoader, None, ["dataset"], None),
-    (PandasOutputNode, ["dataset"], None, None),
-    (PandasCSVWriter, ["dataset"], None, None),
-    (PandasNode, ["dataset"], ["dataset"], None),
-    (PandasColumnsFiltering, ["dataset"], ["dataset"], None),
-    (PandasPivot, ["dataset"], ["dataset"], None),
-    (PandasRenameColumn, ["dataset"], ["dataset"], None),
-    (PandasAddColumn, ["dataset", "column"], ["dataset"], None),
-    (PandasReplaceColumn, ["column"], ["column"], None),
-    (PandasFilterRows, ["dataset", "selected_rows"], ["dataset"], None),
-    (PandasSelectRows, ["dataset"], ["selection"], None),
-    (PandasDropNan, ["dataset"], ["dataset"], None),  # Spark Nodes
-    (SparkInputNode, None, [], None),
-    (SparkCSVLoader, None, ["dataset"], None),
-    (SparkModelLoader, None, ["model"], None),
-    (SparkOutputNode, [], None, None),
-    (SaveModel, ["model"], None, None),
-    (SaveDataset, ["dataset"], None, None),
-    (SparkNode, ["dataset"], [], None),
-    (Transformer, ["dataset"], ["dataset"], None),
-    (SparkColumnSelector, ["dataset"], ["dataset"], None),
+    (PandasInputNode, None, ["dataset"], None, Tags(LibTag.PANDAS, TypeTag.INPUT)),
+    (PandasCSVLoader, None, ["dataset"], None, Tags(LibTag.PANDAS, TypeTag.INPUT)),
+    (PandasOutputNode, ["dataset"], None, None, Tags(LibTag.PANDAS, TypeTag.OUTPUT)),
+    (PandasCSVWriter, ["dataset"], None, None, Tags(LibTag.PANDAS, TypeTag.OUTPUT)),
+    (
+        PandasTransformer,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasColumnsFiltering,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasPivot,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasRenameColumn,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasAddColumn,
+        ["dataset", "column"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasReplaceColumn,
+        ["column"],
+        ["column"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasFilterRows,
+        ["dataset", "selected_rows"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasSelectRows,
+        ["dataset"],
+        ["selection"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasDropNan,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),  # Spark Nodes
+    (SparkInputNode, None, [], None, Tags(LibTag.SPARK, TypeTag.INPUT)),
+    (SparkCSVLoader, None, ["dataset"], None, Tags(LibTag.SPARK, TypeTag.INPUT)),
+    (SparkModelLoader, None, ["model"], None, Tags(LibTag.SPARK, TypeTag.INPUT)),
+    (SparkOutputNode, [], None, None, Tags(LibTag.SPARK, TypeTag.OUTPUT)),
+    (SparkSaveModel, ["model"], None, None, Tags(LibTag.SPARK, TypeTag.OUTPUT)),
+    (SparkSaveDataset, ["dataset"], None, None, Tags(LibTag.SPARK, TypeTag.OUTPUT)),
+    (SparkNode, ["dataset"], [], None, None),
+    (
+        Transformer,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.TRANSFORMER),
+    ),
+    (
+        SparkColumnSelector,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.TRANSFORMER),
+    ),
     (
         SparkSplitDataset,
         ["dataset"],
         ["dataset", "train_dataset", "test_dataset"],
         None,
+        Tags(LibTag.SPARK, TypeTag.TRANSFORMER),
     ),
-    (Tokenizer, ["dataset"], ["dataset"], None),
-    (HashingTF, ["dataset"], ["dataset"], None),
-    (Estimator, ["dataset"], ["model"], None),
-    (LogisticRegression, ["dataset"], ["model"], None),
-    (SparkPipelineNode, ["dataset"], ["model"], None),  # IO
-    (MongoCSVReader, None, ["dataset"], None),
-    (MongoCSVWriter, ["dataset"], None, None),
+    (
+        Tokenizer,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.TRANSFORMER),
+    ),
+    (
+        HashingTF,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.TRANSFORMER),
+    ),
+    (Estimator, ["dataset"], ["model"], None, Tags(LibTag.SPARK, TypeTag.ESTIMATOR)),
+    (
+        LogisticRegression,
+        ["dataset"],
+        ["model"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.ESTIMATOR),
+    ),
+    (
+        SparkPipelineNode,
+        ["dataset"],
+        ["model"],
+        None,
+        Tags(LibTag.SPARK, TypeTag.ESTIMATOR),
+    ),  # IO
+    (MongoCSVReader, None, ["dataset"], None, Tags(LibTag.OTHER, TypeTag.INPUT)),
+    (MongoCSVWriter, ["dataset"], None, None, Tags(LibTag.OTHER, TypeTag.OUTPUT)),
 ]
 
 
-@pytest.mark.parametrize("class_, in_vars, out_vars, methods_vars", classes)
-def test_class_integrity(class_, in_vars, out_vars, methods_vars):
+@pytest.mark.parametrize("class_, in_vars, out_vars, methods_vars, tags", classes)
+def test_class_integrity(class_, in_vars, out_vars, methods_vars, tags):
     input_string = "_input_vars"
     output_string = "_output_vars"
     methods_string = "_methods"
+    tags_methods_string = "_get_tags"
 
     if in_vars is None:
         assert not hasattr(class_, input_string)
@@ -169,6 +296,13 @@ def test_class_integrity(class_, in_vars, out_vars, methods_vars):
         assert not hasattr(class_, methods_string)
     else:
         assert set(methods_vars) == set(class_._methods.keys())
+
+    if tags is None:
+        assert not hasattr(class_, tags_methods_string)
+    else:
+        assert hasattr(class_, tags_methods_string)
+        assert callable(getattr(class_, tags_methods_string))
+        assert class_._get_tags().__eq__(tags)
 
 
 def check_param_not_found(class_, **kwargs):

@@ -1,13 +1,14 @@
 import ssl
 
 import pandas
+import pandas as pd
 import pymongo
 
+from simple_repo.base import InputNode, OutputNode
 from simple_repo.parameter import Parameters, KeyValueParameter
-from simple_repo.simple_io.pandas_io import PandasInputNode, PandasOutputNode
 
 
-class MongoCSVWriter(PandasOutputNode):
+class MongoCSVWriter(OutputNode):
     """Write a Pandas Dataframe into a MongoDB collection.
 
     Parameters
@@ -21,6 +22,8 @@ class MongoCSVWriter(PandasOutputNode):
     coll : str
         Name of the collection to connect to.
     """
+
+    _input_vars = {"dataset": pd.DataFrame}
 
     def __init__(self, node_id: str, connection: str, db: str, coll: str):
         self.parameters = Parameters(
@@ -40,7 +43,7 @@ class MongoCSVWriter(PandasOutputNode):
         return collection
 
 
-class MongoCSVReader(PandasInputNode):
+class MongoCSVReader(InputNode):
     """Read a Pandas Dataframe from a MongoDB collection.
 
     Parameters
@@ -58,6 +61,8 @@ class MongoCSVReader(PandasInputNode):
     projection : dict, default None
         A dict to exclude fields from the result (e.g. projection={'_id': False})
     """
+
+    _output_vars = {"dataset": pd.DataFrame}
 
     def __init__(
         self,

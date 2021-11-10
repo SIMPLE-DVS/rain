@@ -43,8 +43,8 @@ computational_spark_nodes_instance = [
 spark_nodes = [
     sr.SparkCSVLoader,
     sr.SparkModelLoader,
-    sr.SaveModel,
-    sr.SaveDataset,
+    sr.SparkSaveModel,
+    sr.SparkSaveDataset,
     sr.SparkPipelineNode,
     sr.Tokenizer,
     sr.HashingTF,
@@ -106,7 +106,7 @@ class TestSaveModel:
     def test_spark_save_model(self, tmpdir):
         model = PipelineModel([Tokenizer()])
         tmpmod = tmpdir / "tmp_model.pkl"
-        sm = sr.SaveModel("s1", path=tmpmod.__str__())
+        sm = sr.SparkSaveModel("s1", path=tmpmod.__str__())
         sm.model = model
         assert not tmpmod.exists()
         sm.execute()
@@ -116,7 +116,7 @@ class TestSaveModel:
 class TestSaveDataset:
     def test_spark_save_dataset(self, tmpdir, iris_data):
         tmpcsv = tmpdir / "tmp_csv.pkl"
-        sd = sr.SaveDataset("s1", path=tmpcsv.__str__())
+        sd = sr.SparkSaveDataset("s1", path=tmpcsv.__str__())
         sd.dataset = iris_data
         assert not tmpcsv.exists()
         sd.execute()

@@ -2,7 +2,7 @@ import pandas
 import sklearn.base
 from abc import abstractmethod
 
-from simple_repo.base import ComputationalNode
+from simple_repo.base import ComputationalNode, Tags, LibTag, TypeTag
 from simple_repo.exception import EstimatorNotFoundException, InputNotFoundException
 
 
@@ -33,6 +33,10 @@ class SklearnFunction(SklearnNode):
                 self.__class__.__name__
             )
         )
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SKLEARN, TypeTag.TRANSFORMER)
 
 
 class SklearnEstimator(SklearnNode):
@@ -77,6 +81,10 @@ class SklearnEstimator(SklearnNode):
         for method_name in remaining_methods:
             method = eval("self.{}".format(method_name))
             method()
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SKLEARN, TypeTag.ESTIMATOR)
 
 
 class PredictorMixin:
@@ -181,9 +189,17 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
             self.fit_dataset, self.fit_targets
         )
 
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SKLEARN, TypeTag.CLASSIFIER)
+
 
 class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
     _estimator_type = "clusterer"
 
     def __init__(self, node_id: str, execute: list):
         super(SklearnClusterer, self).__init__(node_id, execute)
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.SKLEARN, TypeTag.CLUSTERER)

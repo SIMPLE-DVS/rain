@@ -4,11 +4,9 @@ import numpy
 import pandas
 import pandas as pd
 
-from simple_repo import PandasIrisLoader
-from simple_repo.base import ComputationalNode
 from simple_repo.exception import ParametersException, PandasSequenceException
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_pandas.node_structure import PandasNode
+from simple_repo.simple_pandas.node_structure import PandasTransformer, PandasNode
 
 
 # def _filter_column_by_value(dataset, column: str, value):
@@ -67,7 +65,7 @@ from simple_repo.simple_pandas.node_structure import PandasNode
 #     return self.dataset
 
 
-class PandasColumnsFiltering(PandasNode):
+class PandasColumnsFiltering(PandasTransformer):
     """PandasColumnsFiltering manages filtering of columns. This node gives access
     to several functionalities such as:
     - select columns by their indexes;
@@ -163,7 +161,7 @@ class PandasColumnsFiltering(PandasNode):
                 )
 
 
-class PandasSelectRows(ComputationalNode):
+class PandasSelectRows(PandasNode):
     """PandasSelectRows manages selection of rows, which can later be filtered or deleted.
 
     Parameters
@@ -206,7 +204,7 @@ class PandasSelectRows(ComputationalNode):
             self.selection = pandas.eval(conds, target=self.dataset)
 
 
-class PandasFilterRows(PandasNode):
+class PandasFilterRows(PandasTransformer):
     """PandasFilterRows manages filtering of rows that have been previously selected.
 
     Parameters
@@ -227,7 +225,7 @@ class PandasFilterRows(PandasNode):
         self.dataset = self.dataset[self.selected_rows]
 
 
-class PandasDropNan(PandasNode):
+class PandasDropNan(PandasTransformer):
     """Drops rows or columns that either only contains a nan or that has all nan values.
 
     Parameters
@@ -262,7 +260,7 @@ class PandasDropNan(PandasNode):
         self.dataset = self.dataset.dropna(**self.parameters.get_dict())
 
 
-class PandasPivot(PandasNode):
+class PandasPivot(PandasTransformer):
     """Transforms a DataFrame into a Pivot from the given rows, columns and values.
 
     Parameters
@@ -310,7 +308,7 @@ class PandasPivot(PandasNode):
         self.dataset = pandas.pivot_table(self.dataset, **param_dict)
 
 
-class PandasRenameColumn(PandasNode):
+class PandasRenameColumn(PandasTransformer):
     """Sets column names for a pandas DataFrame.
 
     Parameters
@@ -333,7 +331,7 @@ class PandasRenameColumn(PandasNode):
         self.dataset.columns = cols
 
 
-class PandasSequence(PandasNode):
+class PandasSequence(PandasTransformer):
     """
     PandasSequence wraps a list of nodes that must be executed in sequence into a single node.
     Intermediate values are passed along the chain using the 'dataset' variable, hence only
@@ -343,15 +341,15 @@ class PandasSequence(PandasNode):
     ----------
     node_id : str
         The unique id of the node.
-    stages : list of PandasNode
+    stages : list of PandasTransformer
         ordered in an execution sequence. They must all be PandasNodes, hence have a 'dataset'
         variable used for input and output.
     """
 
-    def __init__(self, node_id: str, stages: List[PandasNode]):
+    def __init__(self, node_id: str, stages: List[PandasTransformer]):
         super(PandasSequence, self).__init__(node_id)
 
-        if not all(isinstance(stage, PandasNode) for stage in stages):
+        if not all(isinstance(stage, PandasTransformer) for stage in stages):
             raise PandasSequenceException("Every stage must be a PandasNode.")
 
         self._stages = stages
@@ -363,7 +361,7 @@ class PandasSequence(PandasNode):
             self.dataset = stage.get_output_value("dataset")
 
 
-class PandasAddColumn(PandasNode):
+class PandasAddColumn(PandasTransformer):
     """
     Node used to add a column to a Pandas Dataframe starting from a given Pandas Series.
 
@@ -392,7 +390,7 @@ class PandasAddColumn(PandasNode):
         self.dataset.insert(value=self.column, **self.parameters.get_dict())
 
 
-class PandasReplaceColumn(ComputationalNode):
+class PandasReplaceColumn(PandasNode):
     """
     Node used to replace the boolean values of a Pandas Series with other values given by the user.
 
