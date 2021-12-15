@@ -66,6 +66,10 @@ class LocalExecutor(metaclass=Singleton):
                                 out_edge.source_output[0]
                             ),
                         )
+                        if out_edge.destination_input[0] not in dest_node._input_vars:
+                            dest_node._input_vars[out_edge.destination_input[0]] = out_edge.source[0].get_output_value(
+                                    out_edge.source_output[0]
+                                )
                 elif (
                     len(out_edge.source_output) == 1
                     and len(out_edge.destination_input) > 1
@@ -78,6 +82,11 @@ class LocalExecutor(metaclass=Singleton):
                                     out_edge.source_output[0]
                                 ),
                             )
+                            if out_edge.destination_input[0] not in dest_node._input_vars:
+                                dest_node._input_vars[out_edge.destination_input[0]] = out_edge.source[
+                                    0].get_output_value(
+                                    out_edge.source_output[0]
+                                )
                 elif (
                     len(out_edge.source_output) > 1
                     and len(out_edge.destination_input) > 1
@@ -90,6 +99,11 @@ class LocalExecutor(metaclass=Singleton):
                                     out_edge.source_output[index]
                                 ),
                             )
+                            if out_edge.destination_input[0] not in dest_node._input_vars:
+                                dest_node._input_vars[out_edge.destination_input[0]] = out_edge.source[
+                                    0].get_output_value(
+                                    out_edge.source_output[0]
+                                )
                 else:
                     raise Exception("Error during values propagation!")
 
