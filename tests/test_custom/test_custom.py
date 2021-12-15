@@ -5,7 +5,6 @@ from simple_repo.custom.custom import CustomNode
 def sumelements(input_dict, output_dict):
     output_dict["sum"] = input_dict["dataset"]["a"].sum()
 
-
 def divide(input_dict, output_dict):
     output_dict["division"] = input_dict["sum"] / 5
 
