@@ -1,4 +1,6 @@
 from simple_repo.base import ComputationalNode
+import inspect
+import re
 
 
 class CustomNode(ComputationalNode):
@@ -32,3 +34,31 @@ class CustomNode(ComputationalNode):
 
         return super(CustomNode, self).__matmul__(other)
 
+
+def parse_custom_node(custom_function):
+    """Given a function, returns the inputs, outputs and kwargs that the corresponding CustomNode should use"""
+
+    params = list(inspect.signature(custom_function).parameters.values())
+    kwargs_dict = get_kwargs(params)
+
+    code = inspect.getsource(custom_function)
+    inputs = get_variables_matches(code, params[0])
+    outputs = get_variables_matches(code, params[1])
+
+    return inputs, outputs, kwargs_dict
+
+
+def get_variables_matches(code, params):
+    regex = r"{}\[\"([a-zA-Z_\d-]+)\"\]".format(params)
+    matches = re.findall(regex, code, re.MULTILINE)
+    return matches
+
+
+def get_kwargs(params):
+    kwargs_dict = {}
+    for p in params[2:]:
+        if p.default is inspect.Signature.empty:
+            kwargs_dict[p.name] = None
+        else:
+            kwargs_dict[p.name] = p.default
+    return kwargs_dict
