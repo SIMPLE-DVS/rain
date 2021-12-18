@@ -12,4 +12,4 @@ from simple_repo.simple_io import *
 from simple_repo.simple_pandas import *
 from simple_repo.simple_sklearn import *
 from simple_repo.simple_spark import *
-from simple_repo.dataflow import DataFlow
+from simple_repo.base import DataFlow
