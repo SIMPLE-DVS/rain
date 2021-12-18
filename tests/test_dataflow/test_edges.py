@@ -5,48 +5,29 @@ from simple_repo.exception import EdgeConnectionError
 
 
 class TestEdgesConnections:
-    def test_gt_node_node(self):
-        n = PandasCSVLoader("load", "./iris.csv")
-        t = PandasPivot("piv", "r", "c", "v")
-
-        edge = n > t
-
-        intersection = set(n._output_vars.keys()).intersection(
-            set(t._input_vars.keys())
-        )
-
-        assert (
-            edge.source == [n]
-            and edge.destination == [t]
-            and all(key in n._output_vars.keys() for key in intersection)
-            and all(key in t._input_vars.keys() for key in intersection)
-        )
-
-    def test_sub_node_str(self):
+    def test_matmul_node_str(self):
         n = PandasCSVLoader("load", "./iris.csv")
 
-        edge = n @ "dataset"
+        edgespec = n @ "dataset"
 
         assert (
-            edge.source == [n]
-            and edge.destination is None
-            and type(edge.source_output) == list
-            and "dataset" in edge.source_output
+            edgespec.node == n
+            and type(edgespec.nodes_attributes) == list
+            and "dataset" in edgespec.nodes_attributes
         )
 
-    def test_sub_node_str_list(self):
+    def test_matmul_node_str_list(self):
         n = PandasCSVLoader("load", "./iris.csv")
 
-        edge = n @ ["dataset1", "dataset2"]
+        edgespec = n @ ["dataset", "dataset"]
 
         assert (
-            edge.source == [n]
-            and edge.destination is None
-            and type(edge.source_output) == list
-            and edge.source_output == ["dataset1", "dataset2"]
+            edgespec.node == n
+            and type(edgespec.nodes_attributes) == list
+            and edgespec.nodes_attributes == ["dataset", "dataset"]
         )
 
-    def test_sub_non_output_node(self):
+    def test_matmul_non_output_node(self):
         from simple_repo.simple_io import SparkSaveModel
 
         n = SparkSaveModel("load", "./iris.csv")
@@ -69,31 +50,31 @@ class TestEdgesConnections:
         with pytest.raises(EdgeConnectionError):
             n @ "non_existing_var"
 
-    def test_gt_edge_to_destination(self):
-        n = PandasCSVLoader("load", "./iris.csv")
-        t = PandasPivot("piv", "r", "c", "v")
+    # def test_gt_edge_to_destination(self):
+    #     n = PandasCSVLoader("load", "./iris.csv")
+    #     t = PandasPivot("piv", "r", "c", "v")
+    #
+    #     edge = n @ "dataset" > t
+    #
+    #     assert (
+    #         edge.source == [n]
+    #         and edge.destination == [t]
+    #         and "dataset" in edge.source_output
+    #         and "dataset" in edge.destination_input
+    #     )
 
-        edge = n @ "dataset" > t
-
-        assert (
-            edge.source == [n]
-            and edge.destination == [t]
-            and "dataset" in edge.source_output
-            and "dataset" in edge.destination_input
-        )
-
-    def test_gt_edge_list_to_destination(self):
-        n = PandasCSVLoader("load", "./iris.csv")
-        t = PandasPivot("piv", "r", "c", "v")
-
-        edge = n @ ["dataset1", "dataset2"] > t
-
-        assert (
-            edge.source == [n]
-            and edge.destination == [t]
-            and ["dataset1", "dataset2"] == edge.source_output
-            and ["dataset1", "dataset2"] == edge.destination_input
-        )
+    # def test_gt_edge_list_to_destination(self):
+    #     n = PandasCSVLoader("load", "./iris.csv")
+    #     t = PandasPivot("piv", "r", "c", "v")
+    #
+    #     edge = n @ ["dataset1", "dataset2"] > t
+    #
+    #     assert (
+    #         edge.source == [n]
+    #         and edge.destination == [t]
+    #         and ["dataset1", "dataset2"] == edge.source_output
+    #         and ["dataset1", "dataset2"] == edge.destination_input
+    #     )
 
     def test_gt_edge_at_to_destination(self):
         n = PandasCSVLoader("load", "./iris.csv")
@@ -102,22 +83,8 @@ class TestEdgesConnections:
         edge = n @ "dataset" > t @ "dataset"
 
         assert (
-            edge.source == [n]
-            and edge.destination == [t]
-            and "dataset" in edge.source_output
-            and "dataset" in edge.destination_input
-        )
-
-    def test_gt_edge_at_to_destination_node_list(self):
-        n = PandasCSVLoader("load", "./iris.csv")
-        t = PandasPivot("piv", "r", "c", "v")
-        r = PandasRenameColumn("rcol", [])
-
-        edge = n @ "dataset" > t & r & n @ "dataset"
-
-        assert (
-            edge.source == [n]
-            and edge.destination == [t, r, n]
-            and "dataset" in edge.source_output
-            and "dataset" in edge.destination_input
+            edge.source.node == n
+            and edge.destination.node == t
+            and "dataset" in edge.source.nodes_attributes
+            and "dataset" in edge.destination.nodes_attributes
         )
