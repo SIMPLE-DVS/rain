@@ -15,7 +15,7 @@ def function_test(input_dict, output_dict, test, test1, test2=True, test3="ciao"
     output_dict["sum"] = input_dict["dataset"]["a"].sum()
     output_dict["fail?"] = input_dict[",.fail2"].get()
     a.reverse()
-    output_dict["test_out"]["b"] = input_dict["test_in"]
+    output_dict["test_out"]["b"] = input_dict.get("test_in")
 
 
 def test_custom_node():

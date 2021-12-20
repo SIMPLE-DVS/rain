@@ -31,14 +31,17 @@ def parse_custom_node(custom_function):
     kwargs_dict = get_kwargs(params)
 
     code = inspect.getsource(custom_function)
-    inputs = get_variables_matches(code, params[0])
-    outputs = get_variables_matches(code, params[1])
+    inputs = get_variables_matches(
+        code, r"{}(?:\[|\.get\()\"([a-zA-Z_\d-]+)\"".format(params[0])
+    )
+    outputs = get_variables_matches(
+        code, r"{}\[\"([a-zA-Z_\d-]+)\"\]".format(params[1])
+    )
 
     return inputs, outputs, kwargs_dict
 
 
-def get_variables_matches(code, params):
-    regex = r"{}\[\"([a-zA-Z_\d-]+)\"\]".format(params)
+def get_variables_matches(code, regex):
     matches = re.findall(regex, code, re.MULTILINE)
     return matches
 
