@@ -243,7 +243,7 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
         pass
 
     def has_attribute(self, attribute: str) -> bool:
-        in_out_vars = set(self._output_vars.keys()).union(self._output_vars.keys())
+        in_out_vars = set(self._input_vars.keys()).union(self._output_vars.keys())
         return attribute in in_out_vars
 
 
