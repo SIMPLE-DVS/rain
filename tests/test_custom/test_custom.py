@@ -26,7 +26,13 @@ def test_custom_node():
     cnode = CustomNode("c", use_function=sumelements)
     cnode2 = CustomNode("c2", use_function=divide)
 
-    df.add_edges([iris > rename, rename @ "dataset" > cnode, cnode @ "sum" > cnode2])
+    df.add_edges(
+        [
+            iris @ "dataset" > rename @ "dataset",
+            rename @ "dataset" > cnode @ "dataset",
+            cnode @ "sum" > cnode2 @ "sum",
+        ]
+    )
 
     df.execute()
 
