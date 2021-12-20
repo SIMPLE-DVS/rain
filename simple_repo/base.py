@@ -24,6 +24,7 @@ class LibTag(Enum):
     SPARK = "Spark"
     SKLEARN = "Sklearn"
     OTHER = "Other"
+    CUSTOM = "Custom"
 
 
 class TypeTag(Enum):
@@ -40,6 +41,7 @@ class TypeTag(Enum):
     ESTIMATOR = "Estimator"
     METRICS = "Metrics"
     OTHER = "Other"
+    CUSTOM = "Custom"
 
 
 @dataclass
