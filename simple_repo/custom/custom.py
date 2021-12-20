@@ -1,9 +1,11 @@
-from simple_repo.base import ComputationalNode
+from simple_repo.base import ComputationalNode, Tags, LibTag, TypeTag
 import inspect
 import re
 
 
 class CustomNode(ComputationalNode):
+    """A node that can contain user-defined Python code."""
+
     def __init__(self, node_id: str, use_function, **kwargs):
         super(CustomNode, self).__init__(node_id)
         inputs, outputs, self._other_params = parse_custom_node(use_function)
@@ -22,6 +24,10 @@ class CustomNode(ComputationalNode):
         self._function(in_vars, self._output_vars, **self._other_params)
         for outname, out in self._output_vars.items():
             setattr(self, outname, out)
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.CUSTOM, TypeTag.CUSTOM)
 
 
 def parse_custom_node(custom_function):
