@@ -329,7 +329,7 @@ class TestPandasSequence:
             ],
         )
 
-        df.add_edge(load > ps)
+        df.add_edge(load @ "dataset" > ps @ "dataset")
 
         df.execute()
 

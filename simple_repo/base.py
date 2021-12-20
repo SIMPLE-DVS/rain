@@ -2,11 +2,17 @@ import importlib
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, List, Union
 import copy
 
-import simple_repo.dataflow as dataflow  # import module to avoid circular dependency
-from simple_repo.exception import EdgeConnectionError
+import networkx as nx
+
+from simple_repo.exception import (
+    EdgeConnectionError,
+    CyclicDataFlowException,
+    DuplicatedNodeId,
+)
+from simple_repo.execution import LocalExecutor
 
 
 class LibTag(Enum):
@@ -163,6 +169,10 @@ class SimpleNode(metaclass=Meta):
     def execute(self):
         pass
 
+    @abstractmethod
+    def has_attribute(self, attribute: str) -> bool:
+        pass
+
     def __hash__(self):
         return hash(self.node_id)
 
@@ -175,66 +185,11 @@ class SimpleNode(metaclass=Meta):
 
         return True
 
-    def __gt__(self, other):
-        if not isinstance(other, SimpleNode):
-            raise EdgeConnectionError(
-                "Unable to connect node {} to a non SimpleNode object.".format(
-                    self.node_id
-                )
-            )
-        if not isinstance(self, InputMixin):
-            raise EdgeConnectionError(
-                "Node {} has no output variable.".format(self.node_id)
-            )
-        if not isinstance(other, OutputMixin):
-            raise EdgeConnectionError(
-                "Node {} has no input variable.".format(other.node_id)
-            )
-
-        vars = list(filter(lambda var: var in other._input_vars, self._output_vars))
-
-        if not vars:
-            raise EdgeConnectionError(
-                "Node {} has no matching variable to propagate. To use this function the node {} must have at least "
-                "one input variable with same name as at least one output variable of node {}.".format(
-                    self.node_id, other.node_id, self.node_id
-                )
-            )
-
-        return dataflow.MultiEdge([self], [other], vars, vars)
-
     def __matmul__(self, other):
-        if not isinstance(self, InputMixin):
-            raise EdgeConnectionError(
-                "Node {} has no output variable.".format(self.node_id)
-            )
+        return EdgeContentSpecifier(self, other)
 
-        if type(other) is str:
-            if not hasattr(self, other):
-                raise EdgeConnectionError(
-                    "Node {} has no input called {}.".format(self.node_id, other)
-                )
-            return dataflow.MultiEdge([self], source_output=[other])
-        elif type(other) is list and all(type(item) is str for item in other):
-            return dataflow.MultiEdge([self], source_output=other)
-        else:
-            raise EdgeConnectionError(
-                "Unable to connect node {}. Node's variables must be specified as string or list of strings".format(
-                    self.node_id
-                )
-            )
-
-    def __and__(self, other):
-        if not isinstance(self, OutputMixin):
-            raise EdgeConnectionError(
-                "Node {} has no input variable.".format(self.node_id)
-            )
-        elif not isinstance(other, OutputMixin):
-            raise EdgeConnectionError(
-                "Node {} has no input variable.".format(other.node_id)
-            )
-
-        return dataflow.MultiEdge([self, other])
+    def __str__(self):
+        return self.node_id
 
 
 class InputMixin:
@@ -271,6 +226,9 @@ class InputNode(SimpleNode, InputMixin):
     def execute(self):
         pass
 
+    def has_attribute(self, attribute: str) -> bool:
+        return attribute in self._output_vars.keys()
+
     @classmethod
     def _get_tags(cls):
         return Tags(LibTag.OTHER, TypeTag.INPUT)
@@ -284,6 +242,10 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
     def execute(self):
         pass
 
+    def has_attribute(self, attribute: str) -> bool:
+        in_out_vars = set(self._input_vars.keys()).union(self._output_vars.keys())
+        return attribute in in_out_vars
+
 
 class OutputNode(SimpleNode, OutputMixin):
     def __init__(self, node_id: str):
@@ -293,10 +255,209 @@ class OutputNode(SimpleNode, OutputMixin):
     def execute(self):
         pass
 
+    def has_attribute(self, attribute: str) -> bool:
+        return attribute in self._input_vars.keys()
+
     @classmethod
     def _get_tags(cls):
         return Tags(LibTag.OTHER, TypeTag.OUTPUT)
 
 
-if __name__ == "__main__":
-    print(SimpleNode._get_tags())
+class EdgeContentSpecifier:
+    """It works as an attribute specifier for the nodes that are used within a Multiedge.
+
+    Parameters
+    ----------
+    node : SimpleNode
+        The node that contains the chosen attributes
+    nodes_attributes : Union[str, List]
+        The chosen attributes of the node, they can either be the input or the output of the node.
+    """
+
+    def __init__(self, node: SimpleNode, nodes_attributes: Union[str, List]):
+        self.node = node
+
+        if isinstance(nodes_attributes, str):
+            nodes_attributes = [nodes_attributes]
+        elif (
+            not isinstance(nodes_attributes, list)
+            or not bool(list)
+            or not all([isinstance(attr, str) for attr in nodes_attributes])
+        ):
+            raise EdgeConnectionError(
+                f"The chosen {nodes_attributes} node attributes must be either string or a non-empty list."
+            )
+
+        for attr in nodes_attributes:
+            if not node.has_attribute(attr):
+                raise EdgeConnectionError(f"Node {node} has no attribute {attr}")
+
+        self.nodes_attributes = nodes_attributes
+
+    def __gt__(self, other):
+        if not isinstance(other, EdgeContentSpecifier):
+            raise EdgeConnectionError(
+                "The right side of '>' must be an EdgeContentSpecifier!"
+                "The latter can be created with 'node_var @ ['in_out_attr']'"
+            )
+
+        return MultiEdge(self, other)
+
+
+class MultiEdge:
+    """Represents an edge of the dataflow.
+
+    Parameters
+    ----------
+    source : EdgeContentSpecifier
+        source node and its attributes.
+    destination : EdgeContentSpecifier
+        destination node and its attributes.
+    """
+
+    def __init__(
+        self,
+        source: EdgeContentSpecifier,
+        destination: EdgeContentSpecifier,
+    ):
+        if not isinstance(source.node, InputMixin):
+            raise EdgeConnectionError(f"Node '{source.node}' has no output variable.")
+        elif not isinstance(destination.node, OutputMixin):
+            raise EdgeConnectionError(
+                f"Node '{destination.node}' has no input variable."
+            )
+
+        self.source = source
+        self.destination = destination
+
+
+class DataFlow:
+    def __init__(self, dataflow_id: str, executor: Any = LocalExecutor()):
+        self.id = dataflow_id
+        self.executor = executor
+        self._nodes = {}
+        self._edges: List[MultiEdge] = []
+        self._dag = nx.DiGraph(name=self.id)
+
+    def add_node(self, node) -> bool:
+        """Add a node to the dataflow. If a node with the same node id exists then an exception will be raised.
+
+        Parameters
+        ----------
+        node : SimpleNode
+            The node to add.
+
+        Returns
+        -------
+        bool
+            True if the node has been correctly added.
+
+        Raises
+        ------
+        DuplicatedNodeId
+            If a node with the same node id already exists.
+
+        """
+        if node.node_id in self._nodes.keys():
+            raise DuplicatedNodeId(
+                "The node identified as {} already exists within the DataFlow.".format(
+                    node.node_id
+                )
+            )
+
+        self._nodes[node.node_id] = node
+        self._dag.add_node(node.node_id)
+
+        return True
+
+    def add_nodes(self, nodes) -> bool:
+        """Add a node to the dataflow. If a node with the same node id exists then an exception will be raised.
+
+        Parameters
+        ----------
+        nodes : list of SimpleNode
+            The node to add.
+
+        Returns
+        -------
+        bool
+            True if the node has been correctly added.
+
+        Raises
+        ------
+        DuplicatedNodeId
+            If a node with the same node id already exists.
+
+        """
+        for node in nodes:
+            self.add_node(node)
+
+        return True
+
+    def get_node(self, node_id: str):
+        return self._nodes.get(node_id) if node_id in self._nodes.keys() else None
+
+    def add_edge(self, edge: MultiEdge):
+        try:
+            self.add_node(edge.source.node)
+        except DuplicatedNodeId:
+            pass
+
+        try:
+            self.add_node(edge.destination.node)
+        except DuplicatedNodeId:
+            pass
+
+        self._edges.append(edge)
+        self._dag.add_edge(edge.source.node.node_id, edge.destination.node.node_id)
+
+    def add_edges(self, edges: List[MultiEdge]):
+        for edge in edges:
+            self.add_edge(edge)
+
+    def get_edge(self, source: SimpleNode, destination: SimpleNode) -> MultiEdge:
+        matching_edges = list(
+            filter(
+                lambda edge: source == edge.source.node
+                and destination == edge.destination.node,
+                self._edges,
+            )
+        )
+        return matching_edges[0] if matching_edges else None
+
+    def get_outgoing_edges(self, source: SimpleNode) -> List[MultiEdge]:
+        matching_edges = list(
+            filter(
+                lambda edge: source == edge.source.node,
+                self._edges,
+            )
+        )
+        return matching_edges
+
+    def get_ingoing_edges(self, destination):
+        matching_edges = list(
+            filter(
+                lambda edge: destination in edge.destination,
+                self._edges,
+            )
+        )
+        return matching_edges
+
+    def has_node(self, node):
+        if type(node) is str:
+            return lambda n: node in self._nodes.keys()
+
+        return lambda n: node in self._nodes.values()
+
+    def is_acyclic(self):
+        return nx.is_directed_acyclic_graph(self._dag)
+
+    def get_execution_ordered_nodes(self):
+        topological_order = nx.topological_sort(self._dag)
+        return list(map(lambda node_id: self._nodes.get(node_id), topological_order))
+
+    def execute(self):
+        if not self.is_acyclic():
+            raise CyclicDataFlowException(self.id)
+
+        self.executor.execute(self)

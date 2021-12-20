@@ -56,40 +56,37 @@ class LocalExecutor(metaclass=Singleton):
 
             for out_edge in node_out_edge:
                 if (
-                    len(out_edge.source_output) == 1
-                    and len(out_edge.destination_input) == 1
+                    len(out_edge.source.nodes_attributes) == 1
+                    and len(out_edge.destination.nodes_attributes) == 1
                 ):
-                    for dest_node in out_edge.destination:
-                        dest_node.set_input_value(
-                            out_edge.destination_input[0],
-                            out_edge.source[0].get_output_value(
-                                out_edge.source_output[0]
+                    out_edge.destination.node.set_input_value(
+                        out_edge.destination.nodes_attributes[0],
+                        out_edge.source.node.get_output_value(
+                            out_edge.source.nodes_attributes[0]
+                        ),
+                    )
+                elif (
+                    len(out_edge.source.nodes_attributes) == 1
+                    and len(out_edge.destination.nodes_attributes) > 1
+                ):
+                    for dest_inp in out_edge.destination.nodes_attributes:
+                        out_edge.destination.node.set_input_value(
+                            dest_inp,
+                            out_edge.source.node.get_output_value(
+                                out_edge.source.nodes_attributes[0]
                             ),
                         )
                 elif (
-                    len(out_edge.source_output) == 1
-                    and len(out_edge.destination_input) > 1
+                    len(out_edge.source.nodes_attributes) > 1
+                    and len(out_edge.destination.nodes_attributes) > 1
                 ):
-                    for dest_node in out_edge.destination:
-                        for dest_inp in out_edge.destination_input:
-                            dest_node.set_input_value(
-                                dest_inp,
-                                out_edge.source[0].get_output_value(
-                                    out_edge.source_output[0]
-                                ),
-                            )
-                elif (
-                    len(out_edge.source_output) > 1
-                    and len(out_edge.destination_input) > 1
-                ):
-                    for dest_node in out_edge.destination:
-                        for index, source_out in enumerate(out_edge.source_output):
-                            dest_node.set_input_value(
-                                out_edge.destination_input[index],
-                                out_edge.source[0].get_output_value(
-                                    out_edge.source_output[index]
-                                ),
-                            )
+                    for index, source_out in enumerate(out_edge.source_output):
+                        out_edge.destination.node.set_input_value(
+                            out_edge.destination.nodes_attributes[index],
+                            out_edge.source.node.get_output_value(
+                                out_edge.source.nodes_attributes[index]
+                            ),
+                        )
                 else:
                     raise Exception("Error during values propagation!")
 

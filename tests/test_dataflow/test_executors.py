@@ -16,7 +16,7 @@ class TestExecutors:
             ],
         )
         df.add_nodes([load, rename])
-        df.add_edge(load @ "dataset" > rename)
+        df.add_edge(load @ "dataset" > rename @ "dataset")
 
         LocalExecutor().execute(df)
 
