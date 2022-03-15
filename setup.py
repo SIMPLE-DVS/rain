@@ -13,10 +13,8 @@ with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
 requirements = [
-    "pandas==1.3.0",
-    "sklearn==0.0",
-    "scikit-learn==0.24.2",
-    "pyspark==3.1.2",
+    "setuptools==57.4.0",
+    "networkx==2.7.1",
 ]
 
 test_requirements = [
