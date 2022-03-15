@@ -5,7 +5,7 @@ from simple_repo import (
     PandasCSVLoader,
     PandasPivot,
     PandasRenameColumn,
-    PandasIrisLoader,
+    IrisDatasetLoader,
 )
 from simple_repo.exception import DuplicatedNodeId, CyclicDataFlowException
 
@@ -107,7 +107,7 @@ class TestDataflow:
 
     def test_execution(self):
         df = DataFlow("dataflow1")
-        load = PandasIrisLoader("iris")
+        load = IrisDatasetLoader("iris")
         rename = PandasRenameColumn(
             "rcol",
             columns=[
@@ -130,7 +130,7 @@ class TestDataflow:
 
     def test_execution_cyclic(self):
         df = DataFlow("dataflow1")
-        load = PandasIrisLoader("iris")
+        load = IrisDatasetLoader("iris")
         rename = PandasRenameColumn(
             "rcol",
             columns=[

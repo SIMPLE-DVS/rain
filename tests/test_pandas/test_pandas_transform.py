@@ -268,13 +268,13 @@ class TestPandasReplaceColumn:
 
 class TestPandasSequence:
     def test_exception_contains_non_computational_node(self):
-        from simple_repo import PandasIrisLoader
+        from simple_repo import IrisDatasetLoader
 
         with pytest.raises(PandasSequenceException):
             PandasSequence(
                 "ps",
                 stages=[
-                    PandasIrisLoader("pil"),
+                    IrisDatasetLoader("pil"),
                     PandasColumnsFiltering("pcf", columns_range=(0, 1)),
                 ],
             )

@@ -1,11 +1,11 @@
-from simple_repo import DataFlow, PandasRenameColumn, PandasIrisLoader
+from simple_repo import DataFlow, PandasRenameColumn, IrisDatasetLoader
 from simple_repo.execution import LocalExecutor
 
 
 class TestExecutors:
     def test_local_executor(self):
         df = DataFlow("dataflow1")
-        load = PandasIrisLoader("iris")
+        load = IrisDatasetLoader("iris")
         rename = PandasRenameColumn(
             "rcol",
             columns=[

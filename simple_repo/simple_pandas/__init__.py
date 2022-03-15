@@ -9,3 +9,10 @@ from simple_repo.simple_pandas.transform_nodes import (
     PandasSelectRows,
     PandasAddColumn,
 )
+
+from simple_repo.simple_pandas.pandas_io import (
+    PandasCSVLoader,
+    PandasCSVWriter,
+)
+
+dependencies = ["numpy", "pandas"]

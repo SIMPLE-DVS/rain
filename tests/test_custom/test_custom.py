@@ -21,7 +21,7 @@ def function_test(input_dict, output_dict, test, test1, test2=True, test3="ciao"
 def test_custom_node():
     df = simple_repo.DataFlow("df1")
 
-    iris = simple_repo.PandasIrisLoader("loadiris")
+    iris = simple_repo.IrisDatasetLoader("loadiris")
     rename = simple_repo.PandasRenameColumn("rcol", ["a", "b", "c", "d"])
     cnode = CustomNode("c", use_function=sumelements)
     cnode2 = CustomNode("c2", use_function=divide)

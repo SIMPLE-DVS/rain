@@ -2,7 +2,7 @@ import pytest
 
 from simple_repo.simple_pandas.node_structure import PandasTransformer
 import simple_repo.simple_pandas as sp
-import simple_repo.simple_io.pandas_io as pio
+import simple_repo.simple_pandas.pandas_io as pio
 
 pandas_nodes = [
     sp.PandasColumnsFiltering,

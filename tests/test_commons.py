@@ -27,7 +27,7 @@ from simple_repo import (
     SklearnPCA,
 )
 from simple_repo.base import TypeTag, LibTag, Tags, SimpleNode
-from simple_repo.simple_io.pandas_io import (
+from simple_repo.simple_pandas.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
     PandasCSVLoader,
