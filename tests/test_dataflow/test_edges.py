@@ -1,7 +1,7 @@
 import pytest
 
-from simple_repo import PandasCSVLoader, PandasPivot, PandasRenameColumn
-from simple_repo.exception import EdgeConnectionError
+from simple_repo import PandasCSVLoader, PandasPivot
+from simple_repo.core.exception import EdgeConnectionError
 
 
 class TestEdgesConnections:

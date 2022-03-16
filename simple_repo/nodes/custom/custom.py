@@ -1,4 +1,4 @@
-from simple_repo.base import ComputationalNode, Tags, LibTag, TypeTag
+from simple_repo.core.base import ComputationalNode, Tags, LibTag, TypeTag
 import inspect
 import re
 

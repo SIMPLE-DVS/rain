@@ -1,9 +1,6 @@
 from abc import abstractmethod
 from typing import Any
 
-from simple_repo.exception import ParameterNotFound
-from simple_repo.exception import BadParameterStructure
-
 
 class Parameters:
     """Parameters handles all the parameters within a SimpleNode.

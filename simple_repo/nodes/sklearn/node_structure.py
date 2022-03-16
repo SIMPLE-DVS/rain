@@ -2,8 +2,11 @@ import pandas
 import sklearn.base
 from abc import abstractmethod
 
-from simple_repo.base import ComputationalNode, Tags, LibTag, TypeTag
-from simple_repo.exception import EstimatorNotFoundException, InputNotFoundException
+from simple_repo.core.base import ComputationalNode, Tags, LibTag, TypeTag
+from simple_repo.core.exception import (
+    EstimatorNotFoundException,
+    InputNotFoundException,
+)
 
 
 class SklearnNode(ComputationalNode):

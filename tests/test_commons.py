@@ -26,7 +26,7 @@ from simple_repo import (
     DaviesBouldinScore,
     SklearnPCA,
 )
-from simple_repo.base import TypeTag, LibTag, Tags, SimpleNode
+from simple_repo.core.base import TypeTag, LibTag, Tags, SimpleNode
 from simple_repo.nodes.pandas.pandas_io import (
     PandasInputNode,
     PandasOutputNode,

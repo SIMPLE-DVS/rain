@@ -20,5 +20,5 @@ for dependency in hard_dependencies:
 if missing_dependencies:
     raise ImportError(f"Missing required dependencies:{','.join(missing_dependencies)}")
 
-from simple_repo.base import DataFlow  # noqa: E402
+from simple_repo.core.base import *  # noqa: E402
 from simple_repo.nodes import *  # noqa: E402

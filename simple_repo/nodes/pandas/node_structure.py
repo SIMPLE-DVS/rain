@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 import pandas as pd
 
-from simple_repo.base import ComputationalNode, TypeTag, LibTag, Tags
+from simple_repo.core.base import ComputationalNode, TypeTag, LibTag, Tags
 
 
 class PandasTransformer(ComputationalNode):

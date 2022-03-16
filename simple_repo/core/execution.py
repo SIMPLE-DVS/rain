@@ -7,7 +7,7 @@
 #
 # from simple_repo.base import get_class
 # from simple_repo.base import ComputationalNode
-from simple_repo.exception import CyclicDataFlowException
+from simple_repo.core.exception import CyclicDataFlowException
 
 
 class Singleton(type):

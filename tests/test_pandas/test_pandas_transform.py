@@ -9,7 +9,7 @@ from simple_repo import (
     PandasSequence,
     PandasRenameColumn,
 )
-from simple_repo.exception import ParametersException, PandasSequenceException
+from simple_repo.core.exception import ParametersException, PandasSequenceException
 from simple_repo.nodes.pandas.transform_nodes import (
     PandasSelectRows,
     PandasFilterRows,

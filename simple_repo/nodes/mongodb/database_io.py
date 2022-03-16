@@ -4,8 +4,8 @@ import pandas
 import pandas as pd
 import pymongo
 
-from simple_repo.base import InputNode, OutputNode
-from simple_repo.parameter import Parameters, KeyValueParameter
+from simple_repo.core.base import InputNode, OutputNode
+from simple_repo.core.parameter import Parameters, KeyValueParameter
 
 
 class MongoCSVWriter(OutputNode):

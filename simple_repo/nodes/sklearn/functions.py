@@ -2,8 +2,8 @@ import pandas
 from sklearn.metrics import davies_bouldin_score
 from sklearn.model_selection import train_test_split
 
-from simple_repo.base import TypeTag, LibTag, Tags
-from simple_repo.parameter import Parameters, KeyValueParameter
+from simple_repo.core.base import TypeTag, LibTag, Tags
+from simple_repo.core.parameter import Parameters, KeyValueParameter
 from simple_repo.nodes.sklearn.node_structure import SklearnFunction
 
 

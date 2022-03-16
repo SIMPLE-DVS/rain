@@ -1,6 +1,6 @@
 import pytest
 
-from simple_repo.parameter import (
+from simple_repo.core.parameter import (
     Parameters,
     KeyValueParameter,
     SimpleParameter,

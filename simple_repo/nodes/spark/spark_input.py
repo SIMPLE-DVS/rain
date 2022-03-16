@@ -1,7 +1,7 @@
 from pyspark.ml import PipelineModel
 from pyspark.sql import DataFrame
 
-from simple_repo.parameter import KeyValueParameter, Parameters
+from simple_repo.core.parameter import KeyValueParameter, Parameters
 from simple_repo.nodes.spark.node_structure import SparkInputNode
 
 

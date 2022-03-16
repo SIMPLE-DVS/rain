@@ -1,6 +1,6 @@
 import pandas
 
-from simple_repo.parameter import KeyValueParameter, Parameters
+from simple_repo.core.parameter import KeyValueParameter, Parameters
 from simple_repo.nodes.sklearn.node_structure import SklearnClusterer
 from sklearn.cluster import KMeans
 

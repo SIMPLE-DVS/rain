@@ -1,6 +1,6 @@
 import pytest
 
-from simple_repo.base import InputNode, OutputNode, ComputationalNode, SimpleNode
+from simple_repo.core.base import InputNode, OutputNode, ComputationalNode, SimpleNode
 from simple_repo.nodes import mongodb
 from simple_repo.nodes import pandas
 from simple_repo.nodes import sklearn

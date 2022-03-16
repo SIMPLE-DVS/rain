@@ -4,7 +4,7 @@ from pyspark.sql import DataFrame
 from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
 
-from simple_repo.base import (
+from simple_repo.core.base import (
     ComputationalNode,
     InputNode,
     OutputNode,

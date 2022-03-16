@@ -7,7 +7,7 @@ from simple_repo import (
     PandasRenameColumn,
     IrisDatasetLoader,
 )
-from simple_repo.exception import DuplicatedNodeId, CyclicDataFlowException
+from simple_repo.core.exception import DuplicatedNodeId, CyclicDataFlowException
 
 
 @pytest.fixture
