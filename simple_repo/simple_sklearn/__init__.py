@@ -7,5 +7,3 @@ from simple_repo.simple_sklearn.functions import (
 )
 from simple_repo.simple_sklearn.decomposition import SklearnPCA
 from simple_repo.simple_sklearn.loaders import IrisDatasetLoader
-
-dependencies = ["pandas", "sklearn"]

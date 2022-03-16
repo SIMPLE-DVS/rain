@@ -17,5 +17,3 @@ from simple_repo.simple_spark.spark_output import (
     SparkSaveDataset,
     SparkSaveModel,
 )
-
-dependencies = ["pyspark"]
