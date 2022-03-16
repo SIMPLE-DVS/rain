@@ -1,13 +1,13 @@
 import pytest
 
-from simple_repo import (
+from rain import (
     DataFlow,
     PandasCSVLoader,
     PandasPivot,
     PandasRenameColumn,
     IrisDatasetLoader,
 )
-from simple_repo.core.exception import DuplicatedNodeId, CyclicDataFlowException
+from rain.core.exception import DuplicatedNodeId, CyclicDataFlowException
 
 
 @pytest.fixture

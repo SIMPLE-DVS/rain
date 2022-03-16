@@ -3,8 +3,8 @@ from abc import abstractmethod
 import pandas
 import pandas as pd
 
-from simple_repo.core.base import InputNode, OutputNode, Tags, LibTag, TypeTag
-from simple_repo.core.parameter import KeyValueParameter, Parameters
+from rain.core.base import InputNode, OutputNode, Tags, LibTag, TypeTag
+from rain.core.parameter import KeyValueParameter, Parameters
 
 
 class PandasInputNode(InputNode):

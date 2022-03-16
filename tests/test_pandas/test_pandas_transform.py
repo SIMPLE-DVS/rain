@@ -4,13 +4,13 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-from simple_repo import (
+from rain import (
     PandasColumnsFiltering,
     PandasSequence,
     PandasRenameColumn,
 )
-from simple_repo.core.exception import ParametersException, PandasSequenceException
-from simple_repo.nodes.pandas.transform_nodes import (
+from rain.core.exception import ParametersException, PandasSequenceException
+from rain.nodes.pandas.transform_nodes import (
     PandasSelectRows,
     PandasFilterRows,
     PandasDropNan,
@@ -268,7 +268,7 @@ class TestPandasReplaceColumn:
 
 class TestPandasSequence:
     def test_exception_contains_non_computational_node(self):
-        from simple_repo import IrisDatasetLoader
+        from rain import IrisDatasetLoader
 
         with pytest.raises(PandasSequenceException):
             PandasSequence(
@@ -281,7 +281,7 @@ class TestPandasSequence:
 
     # def test_exception_using_non_pandas_stages(self):
     #     # TODO AttributeError: 'SimpleKMeans' object has no attribute '_get_params_as_dict()'. Fixare quest'errore prima di testare questo.
-    #     from simple_repo import SimpleKMeans
+    #     from rain import SimpleKMeans
     #     with pytest.raises(PandasSequenceException):
     #         ps = PandasSequence("ps", stages=[
     #             PandasColumnsFiltering("pcf", columns_range=(0, 1)),
@@ -316,7 +316,7 @@ class TestPandasSequence:
         iris_data.to_csv(iris_file, index=False)
 
         # setup sequence w/ stages
-        import simple_repo as sr
+        import rain as sr
 
         df = sr.DataFlow("df1")
 

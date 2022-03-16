@@ -2,7 +2,7 @@ from sklearn.datasets import load_iris
 
 import pandas
 
-from simple_repo.core.base import Tags, LibTag, TypeTag, InputNode
+from rain.core.base import Tags, LibTag, TypeTag, InputNode
 
 
 class IrisDatasetLoader(InputNode):

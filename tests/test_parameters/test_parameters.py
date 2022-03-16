@@ -1,6 +1,6 @@
 import pytest
 
-from simple_repo.core.parameter import (
+from rain.core.parameter import (
     Parameters,
     KeyValueParameter,
     SimpleParameter,

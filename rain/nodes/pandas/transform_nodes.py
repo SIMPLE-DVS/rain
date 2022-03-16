@@ -4,9 +4,9 @@ import numpy
 import pandas
 import pandas as pd
 
-from simple_repo.core.exception import ParametersException, PandasSequenceException
-from simple_repo.core.parameter import KeyValueParameter, Parameters
-from simple_repo.nodes.pandas.node_structure import PandasTransformer, PandasNode
+from rain.core.exception import ParametersException, PandasSequenceException
+from rain.core.parameter import KeyValueParameter, Parameters
+from rain.nodes.pandas.node_structure import PandasTransformer, PandasNode
 
 
 # def _filter_column_by_value(dataset, column: str, value):

@@ -1,7 +1,7 @@
 import pytest
 
-from simple_repo import PandasCSVLoader, PandasPivot
-from simple_repo.core.exception import EdgeConnectionError
+from rain import PandasCSVLoader, PandasPivot
+from rain.core.exception import EdgeConnectionError
 
 
 class TestEdgesConnections:
@@ -28,7 +28,7 @@ class TestEdgesConnections:
         )
 
     def test_matmul_non_output_node(self):
-        from simple_repo.nodes.spark import SparkSaveModel
+        from rain.nodes.spark import SparkSaveModel
 
         n = SparkSaveModel("load", "./iris.csv")
 

@@ -1,6 +1,6 @@
 import pytest
 
-from simple_repo import (
+from rain import (
     PandasColumnsFiltering,
     PandasPivot,
     PandasRenameColumn,
@@ -26,19 +26,19 @@ from simple_repo import (
     DaviesBouldinScore,
     SklearnPCA,
 )
-from simple_repo.core.base import TypeTag, LibTag, Tags, SimpleNode
-from simple_repo.nodes.pandas.pandas_io import (
+from rain.core.base import TypeTag, LibTag, Tags, SimpleNode
+from rain.nodes.pandas.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
     PandasCSVLoader,
     PandasCSVWriter,
 )
-from simple_repo.nodes.pandas.node_structure import PandasTransformer
-from simple_repo.nodes.sklearn.functions import (
+from rain.nodes.pandas.node_structure import PandasTransformer
+from rain.nodes.sklearn.functions import (
     TrainTestDatasetSplit,
     TrainTestSampleTargetSplit,
 )
-from simple_repo.nodes.sklearn.node_structure import (
+from rain.nodes.sklearn.node_structure import (
     SklearnClassifier,
     SklearnEstimator,
     SklearnClusterer,
@@ -49,7 +49,7 @@ from simple_repo.nodes.sklearn.node_structure import (
 # TODO per come è impostato ora questo test non servono più i singoli test sui metodi nei moduli test degli engine. Detronizzarli!
 
 # for each class write the expected list of inputs, output and methods (if present) respectively
-from simple_repo.nodes.spark.node_structure import (
+from rain.nodes.spark.node_structure import (
     SparkInputNode,
     SparkOutputNode,
     SparkNode,

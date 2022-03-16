@@ -1,11 +1,11 @@
 import pytest
 
-from simple_repo.core.base import InputNode, OutputNode, ComputationalNode, SimpleNode
-from simple_repo.nodes import mongodb
-from simple_repo.nodes import pandas
-from simple_repo.nodes import sklearn
-from simple_repo.nodes import spark
-import simple_repo as sr
+from rain.core.base import InputNode, OutputNode, ComputationalNode, SimpleNode
+from rain.nodes import mongodb
+from rain.nodes import pandas
+from rain.nodes import sklearn
+from rain.nodes import spark
+import rain as sr
 
 
 input_data = [

@@ -2,8 +2,8 @@ from typing import List
 
 from pyspark.sql import DataFrame
 
-from simple_repo.core.parameter import KeyValueParameter, Parameters
-from simple_repo.nodes.spark.node_structure import Transformer
+from rain.core.parameter import KeyValueParameter, Parameters
+from rain.nodes.spark.node_structure import Transformer
 
 
 class SparkColumnSelector(Transformer):

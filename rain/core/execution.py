@@ -5,9 +5,9 @@
 #
 # from pyspark.sql import SparkSession
 #
-# from simple_repo.base import get_class
-# from simple_repo.base import ComputationalNode
-from simple_repo.core.exception import CyclicDataFlowException
+# from rain.base import get_class
+# from rain.base import ComputationalNode
+from rain.core.exception import CyclicDataFlowException
 
 
 class Singleton(type):
@@ -162,7 +162,7 @@ class LocalExecutor(metaclass=Singleton):
 #         for node in nodes:
 #             cls = get_class(node.node)
 #             if cls == get_class(
-#                 "simple_repo.spark.pipeline.spark_pipeline.SparkPipelineNode"
+#                 "rain.spark.pipeline.spark_pipeline.SparkPipelineNode"
 #             ):
 #                 stages = []
 #                 pipe = node.parameters.get("stages")

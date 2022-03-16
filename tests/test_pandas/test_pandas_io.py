@@ -1,6 +1,6 @@
 from sklearn.datasets import load_iris
 
-from simple_repo import PandasCSVLoader, PandasCSVWriter
+from rain import PandasCSVLoader, PandasCSVWriter
 from tests.test_commons import check_param_not_found
 
 

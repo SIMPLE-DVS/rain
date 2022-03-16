@@ -1,1 +1,1 @@
-"""Unit test package for simple_repo."""
+"""Unit test package for rain."""

@@ -5,8 +5,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from sklearn.datasets import load_iris
 
-import simple_repo as sr
-from simple_repo.nodes.spark.node_structure import (
+import rain as sr
+from rain.nodes.spark.node_structure import (
     SparkNode,
     SparkNodeSession,
     SparkInputNode,

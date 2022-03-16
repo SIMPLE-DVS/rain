@@ -2,8 +2,8 @@ import pandas
 import sklearn.base
 from abc import abstractmethod
 
-from simple_repo.core.base import ComputationalNode, Tags, LibTag, TypeTag
-from simple_repo.core.exception import (
+from rain.core.base import ComputationalNode, Tags, LibTag, TypeTag
+from rain.core.exception import (
     EstimatorNotFoundException,
     InputNotFoundException,
 )

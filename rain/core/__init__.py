@@ -1,4 +1,4 @@
-from simple_repo.core.base import (
+from rain.core.base import (
     SimpleNode,
     InputNode,
     ComputationalNode,

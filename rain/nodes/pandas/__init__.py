@@ -1,4 +1,4 @@
-from simple_repo.nodes.pandas.transform_nodes import (
+from rain.nodes.pandas.transform_nodes import (
     PandasColumnsFiltering,
     PandasPivot,
     PandasRenameColumn,
@@ -10,7 +10,7 @@ from simple_repo.nodes.pandas.transform_nodes import (
     PandasAddColumn,
 )
 
-from simple_repo.nodes.pandas.pandas_io import (
+from rain.nodes.pandas.pandas_io import (
     PandasCSVLoader,
     PandasCSVWriter,
 )

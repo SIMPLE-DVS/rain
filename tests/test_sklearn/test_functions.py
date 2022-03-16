@@ -2,7 +2,7 @@ import pytest
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
-from simple_repo.nodes.sklearn.functions import (
+from rain.nodes.sklearn.functions import (
     TrainTestDatasetSplit,
     TrainTestSampleTargetSplit,
     DaviesBouldinScore,

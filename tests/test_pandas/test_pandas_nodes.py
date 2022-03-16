@@ -1,8 +1,8 @@
 import pytest
 
-from simple_repo.nodes.pandas.node_structure import PandasTransformer
-import simple_repo.nodes.pandas as sp
-import simple_repo.nodes.pandas.pandas_io as pio
+from rain.nodes.pandas.node_structure import PandasTransformer
+import rain.nodes.pandas as sp
+import rain.nodes.pandas.pandas_io as pio
 
 pandas_nodes = [
     sp.PandasColumnsFiltering,

@@ -2,8 +2,8 @@ import pytest
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
-import simple_repo.nodes.sklearn as ss
-from simple_repo.nodes.sklearn.node_structure import SklearnNode
+import rain.nodes.sklearn as ss
+from rain.nodes.sklearn.node_structure import SklearnNode
 
 sklearn_nodes = [ss.SklearnLinearSVC, ss.SimpleKMeans]
 

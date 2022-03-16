@@ -7,12 +7,12 @@ import copy
 
 import networkx as nx
 
-from simple_repo.core.exception import (
+from rain.core.exception import (
     EdgeConnectionError,
     CyclicDataFlowException,
     DuplicatedNodeId,
 )
-from simple_repo.core.execution import LocalExecutor
+from rain.core.execution import LocalExecutor
 
 
 class LibTag(Enum):

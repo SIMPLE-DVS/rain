@@ -1,5 +1,5 @@
-from simple_repo import DataFlow, PandasRenameColumn, IrisDatasetLoader
-from simple_repo.core.execution import LocalExecutor
+from rain import DataFlow, PandasRenameColumn, IrisDatasetLoader
+from rain.core.execution import LocalExecutor
 
 
 class TestExecutors:
