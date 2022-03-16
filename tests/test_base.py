@@ -1,18 +1,18 @@
 import pytest
 
 from simple_repo.base import InputNode, OutputNode, ComputationalNode, SimpleNode
-from simple_repo import mongodb
-from simple_repo import simple_pandas
-from simple_repo import simple_sklearn
-from simple_repo import simple_spark
+from simple_repo.nodes import mongodb
+from simple_repo.nodes import pandas
+from simple_repo.nodes import sklearn
+from simple_repo.nodes import spark
 import simple_repo as sr
 
 
 input_data = [
-    simple_spark.SparkCSVLoader,
-    simple_spark.SparkModelLoader,
-    simple_pandas.PandasCSVLoader,
-    simple_sklearn.IrisDatasetLoader,
+    spark.SparkCSVLoader,
+    spark.SparkModelLoader,
+    pandas.PandasCSVLoader,
+    sklearn.IrisDatasetLoader,
     mongodb.MongoCSVReader,
 ]
 
@@ -29,9 +29,9 @@ def test_input_node_attributes(class_or_obj):
 
 
 output_data = [
-    simple_spark.SparkSaveModel,
-    simple_spark.SparkSaveDataset,
-    simple_pandas.PandasCSVWriter,
+    spark.SparkSaveModel,
+    spark.SparkSaveDataset,
+    pandas.PandasCSVWriter,
     mongodb.MongoCSVWriter,
 ]
 

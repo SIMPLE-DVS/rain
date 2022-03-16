@@ -1,5 +1,5 @@
 import simple_repo
-from simple_repo.custom.custom import CustomNode, parse_custom_node
+from simple_repo.nodes.custom import CustomNode, parse_custom_node
 
 
 def sumelements(input_dict, output_dict):

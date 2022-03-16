@@ -28,7 +28,7 @@ class TestEdgesConnections:
         )
 
     def test_matmul_non_output_node(self):
-        from simple_repo.simple_spark import SparkSaveModel
+        from simple_repo.nodes.spark import SparkSaveModel
 
         n = SparkSaveModel("load", "./iris.csv")
 

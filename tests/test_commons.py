@@ -27,18 +27,18 @@ from simple_repo import (
     SklearnPCA,
 )
 from simple_repo.base import TypeTag, LibTag, Tags, SimpleNode
-from simple_repo.simple_pandas.pandas_io import (
+from simple_repo.nodes.pandas.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
     PandasCSVLoader,
     PandasCSVWriter,
 )
-from simple_repo.simple_pandas.node_structure import PandasTransformer
-from simple_repo.simple_sklearn.functions import (
+from simple_repo.nodes.pandas.node_structure import PandasTransformer
+from simple_repo.nodes.sklearn.functions import (
     TrainTestDatasetSplit,
     TrainTestSampleTargetSplit,
 )
-from simple_repo.simple_sklearn.node_structure import (
+from simple_repo.nodes.sklearn.node_structure import (
     SklearnClassifier,
     SklearnEstimator,
     SklearnClusterer,
@@ -49,7 +49,7 @@ from simple_repo.simple_sklearn.node_structure import (
 # TODO per come è impostato ora questo test non servono più i singoli test sui metodi nei moduli test degli engine. Detronizzarli!
 
 # for each class write the expected list of inputs, output and methods (if present) respectively
-from simple_repo.simple_spark.node_structure import (
+from simple_repo.nodes.spark.node_structure import (
     SparkInputNode,
     SparkOutputNode,
     SparkNode,

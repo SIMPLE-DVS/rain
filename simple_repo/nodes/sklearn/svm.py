@@ -1,7 +1,7 @@
 from sklearn.svm import LinearSVC
 
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_sklearn.node_structure import SklearnClassifier
+from simple_repo.nodes.sklearn.node_structure import SklearnClassifier
 
 
 class SklearnLinearSVC(SklearnClassifier):

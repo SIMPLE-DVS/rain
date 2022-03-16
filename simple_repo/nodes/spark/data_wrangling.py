@@ -3,7 +3,7 @@ from typing import List
 from pyspark.sql import DataFrame
 
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_spark.node_structure import Transformer
+from simple_repo.nodes.spark.node_structure import Transformer
 
 
 class SparkColumnSelector(Transformer):

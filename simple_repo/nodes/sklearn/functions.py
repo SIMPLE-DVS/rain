@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 from simple_repo.base import TypeTag, LibTag, Tags
 from simple_repo.parameter import Parameters, KeyValueParameter
-from simple_repo.simple_sklearn.node_structure import SklearnFunction
+from simple_repo.nodes.sklearn.node_structure import SklearnFunction
 
 
 class TrainTestDatasetSplit(SklearnFunction):

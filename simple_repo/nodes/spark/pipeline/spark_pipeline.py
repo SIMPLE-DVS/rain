@@ -2,7 +2,7 @@ from typing import List
 
 from pyspark.ml import Pipeline
 
-from simple_repo.simple_spark.node_structure import Estimator, SparkNode
+from simple_repo.nodes.spark.node_structure import Estimator, SparkNode
 
 
 class SparkPipelineNode(Estimator):

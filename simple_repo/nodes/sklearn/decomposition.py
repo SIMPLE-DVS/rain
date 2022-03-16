@@ -1,7 +1,7 @@
 from sklearn.decomposition import PCA
 
 from simple_repo.parameter import Parameters, KeyValueParameter
-from simple_repo.simple_sklearn.node_structure import (
+from simple_repo.nodes.sklearn.node_structure import (
     SklearnEstimator,
     TransformerMixin,
     ScorerMixin,

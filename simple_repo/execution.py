@@ -162,7 +162,7 @@ class LocalExecutor(metaclass=Singleton):
 #         for node in nodes:
 #             cls = get_class(node.node)
 #             if cls == get_class(
-#                 "simple_repo.simple_spark.pipeline.spark_pipeline.SparkPipelineNode"
+#                 "simple_repo.spark.pipeline.spark_pipeline.SparkPipelineNode"
 #             ):
 #                 stages = []
 #                 pipe = node.parameters.get("stages")

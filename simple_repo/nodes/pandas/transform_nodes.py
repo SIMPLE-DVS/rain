@@ -6,7 +6,7 @@ import pandas as pd
 
 from simple_repo.exception import ParametersException, PandasSequenceException
 from simple_repo.parameter import KeyValueParameter, Parameters
-from simple_repo.simple_pandas.node_structure import PandasTransformer, PandasNode
+from simple_repo.nodes.pandas.node_structure import PandasTransformer, PandasNode
 
 
 # def _filter_column_by_value(dataset, column: str, value):
