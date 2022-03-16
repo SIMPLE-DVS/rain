@@ -15,6 +15,7 @@ with open("HISTORY.rst") as history_file:
 requirements = [
     "setuptools==57.4.0",
     "networkx==2.7.1",
+    "pandas==1.3.0",
 ]
 
 test_requirements = [
