@@ -35,7 +35,7 @@ class PandasCSVLoader(PandasInputNode):
     """Loads a pandas DataFrame from a CSV file.
 
     Output Attributes
-    ----------------
+    -----------------
     dataset : pandas.DataFrame
         The loaded csv file as a pandas DataFrame.
 
