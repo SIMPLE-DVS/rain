@@ -214,20 +214,20 @@ def analyze():
     Analyze the Rain library searching for all the classes that are SimpleNode. Return a list of object
     containing all the relevant information about the classes.
     """
-    modules = find_modules("../rain")
+    modules = find_modules("./rain")
 
     simple_node_subclasses = get_simple_node_subclasses(modules)
 
     simple_nodes_info = get_simple_nodes_info(simple_node_subclasses)
 
-    with open("nodes.json", "w") as f:
+    with open("./analyzer_output/rain_structure.json", "w") as f:
         json.dump([node.__dict__ for node in simple_nodes_info], f)
 
     return simple_nodes_info
 
 
 def get_analyzed_nodes():
-    with open("./nodes.json", "r") as f:
+    with open("./analyzer_output/rain_structure.json", "r") as f:
         nodes = json.load(f)
     return nodes
 
