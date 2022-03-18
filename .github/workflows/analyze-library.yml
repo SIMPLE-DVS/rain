@@ -23,7 +23,7 @@ jobs:
           pip install numpydoc
       - name: Execute analyzer
         run: |
-          python ./node_analyzer.py
+          python ./rain_analyzer.py
       - name: Commit files
         run: |
           git config --local user.email "riccardo.coltrinari@studenti.unicam.it"
