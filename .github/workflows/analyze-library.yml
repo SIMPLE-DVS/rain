@@ -2,12 +2,12 @@ name: Analyze-Library
 
 on:
   push:
+    branches: [master]
       
 jobs:
   lib-analysis:
     if: contains(github.event.head_commit.message, '[Start Analysis]')
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout repo content
         uses: actions/checkout@v2
@@ -23,13 +23,7 @@ jobs:
       - name: Execute analyzer
         run: |
           python ./rain_analyzer.py
-      - name: Commit files
+      - name: Upload to Firebase Storage
         run: |
-          git config --local user.email "riccardo.coltrinari@studenti.unicam.it"
-          git config --local user.name "DazeDC"
-          git commit -m "Atomatically Generate rain_structure.json file." -a
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GTB_TOKEN }}
-          branch: master
+          curl -i -X POST -H "Content-Type: multipart/form-data" -F "data=analyzer_output/rain_structure.json" https://firebasestorage.googleapis.com/v0/b/rainfall-firebase.appspot.com/o/rain_structure.json
+          
