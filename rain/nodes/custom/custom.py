@@ -27,7 +27,7 @@ class CustomNode(ComputationalNode):
 
     @classmethod
     def _get_tags(cls):
-        return Tags(LibTag.CUSTOM, TypeTag.CUSTOM)
+        return Tags(LibTag.BASE, TypeTag.CUSTOM)
 
 
 def parse_custom_node(custom_function):

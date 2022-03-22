@@ -4,7 +4,7 @@ import pandas
 import pandas as pd
 import pymongo
 
-from rain.core.base import InputNode, OutputNode
+from rain.core.base import InputNode, OutputNode, Tags, LibTag, TypeTag
 from rain.core.parameter import Parameters, KeyValueParameter
 
 
@@ -41,6 +41,10 @@ class MongoCSVWriter(OutputNode):
         collection = client[params.get("db")][params.get("coll")]
         collection.insert_many(self.dataset.to_dict("records"))
         return collection
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.MONGODB, TypeTag.OUTPUT)
 
 
 class MongoCSVReader(InputNode):
@@ -95,3 +99,7 @@ class MongoCSVReader(InputNode):
                 )
             )
         )
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.MONGODB, TypeTag.INPUT)

@@ -22,4 +22,4 @@ class IrisDatasetLoader(InputNode):
 
     @classmethod
     def _get_tags(cls):
-        return Tags(LibTag.PANDAS, TypeTag.INPUT)
+        return Tags(LibTag.SKLEARN, TypeTag.INPUT)
