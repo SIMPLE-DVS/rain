@@ -217,7 +217,14 @@ def get_libraries(classes):
 
 
 def get_dependencies(libs):
-    pass
+    with open("requirements_dev.txt", "r") as f:
+        lines = f.readlines()
+    libs = [l.lower() for l in libs]
+    dependencies = []
+    for line in lines:
+        if any(lib in line for lib in libs):
+            dependencies.append(line.strip())
+    return dependencies
 
 
 def analyze():
@@ -230,7 +237,7 @@ def analyze():
     simple_node_subclasses = get_simple_node_subclasses(modules)
 
     libs = get_libraries(simple_node_subclasses)
-    # libs = get_dependencies(libs)
+    libs = get_dependencies(libs)
 
     simple_nodes_info = get_simple_nodes_info(simple_node_subclasses)
     simple_nodes_info = [node.__dict__ for node in simple_nodes_info]
