@@ -21,10 +21,11 @@ class LibTag(Enum):
     """
 
     PANDAS = "Pandas"
-    SPARK = "Spark"
+    SPARK = "PySpark"
     SKLEARN = "Sklearn"
+    MONGODB = "PyMongo"
     OTHER = "Other"
-    CUSTOM = "Custom"
+    BASE = "Base"
 
 
 class TypeTag(Enum):

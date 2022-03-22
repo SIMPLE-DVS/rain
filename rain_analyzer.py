@@ -209,6 +209,24 @@ def get_parameters(cls, params_desc, params_type):
     return parameters
 
 
+def get_libraries(classes):
+    libs = set()
+    for clz in classes:
+        libs.add(clz._get_tags().library.value)
+    return libs
+
+
+def get_dependencies(libs):
+    with open("requirements_dev.txt", "r") as f:
+        lines = f.readlines()
+    libs = [l.lower() for l in libs]
+    dependencies = []
+    for line in lines:
+        if any(lib in line for lib in libs):
+            dependencies.append(line.strip())
+    return dependencies
+
+
 def analyze():
     """
     Analyze the Rain library searching for all the classes that are SimpleNode. Return a list of object
@@ -218,10 +236,16 @@ def analyze():
 
     simple_node_subclasses = get_simple_node_subclasses(modules)
 
+    libs = get_libraries(simple_node_subclasses)
+    libs = get_dependencies(libs)
+
     simple_nodes_info = get_simple_nodes_info(simple_node_subclasses)
+    simple_nodes_info = [node.__dict__ for node in simple_nodes_info]
+
+    info = {"nodes": simple_nodes_info, "dependencies": libs}
 
     with open("./analyzer_output/rain_structure.json", "w") as f:
-        json.dump([node.__dict__ for node in simple_nodes_info], f)
+        json.dump(info, f)
 
     return simple_nodes_info
 
