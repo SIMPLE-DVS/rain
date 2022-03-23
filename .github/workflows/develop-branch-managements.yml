@@ -1,0 +1,21 @@
+name: Delete and Re-Create branch develop
+
+on:
+  pull_request:
+    types:
+      - closed
+jobs:
+  branch-develop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete branch develop
+        uses: dawidd6/action-delete-branch@v3
+        with:
+          github_token: ${{secrets.GTB_TOKEN}}
+          branches: develop
+      - name: Create branch develop
+        uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GTB_TOKEN }}
+        with:
+          branch: 'develop'
