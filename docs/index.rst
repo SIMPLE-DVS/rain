@@ -1,5 +1,5 @@
 Welcome to SIMPLE Repository's documentation!
-======================================
+=============================================
 
 .. toctree::
    :maxdepth: 2
@@ -8,9 +8,9 @@ Welcome to SIMPLE Repository's documentation!
    readme
    installation
    usage
-   modules
    contributing
    authors
+   modules
    history
 
 Indices and tables
