@@ -47,7 +47,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "SIMPLE Repository"
+project = "Rain Library"
 copyright = "2021, Riccardo Coltrinari"
 author = "Riccardo Coltrinari"
 
@@ -83,7 +83,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "pydata_sphinx_theme"
+html_theme = "karma_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
@@ -99,7 +99,7 @@ html_theme = "pydata_sphinx_theme"
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file commons name for HTML help builder.
-htmlhelp_basename = "simple_repodoc"
+htmlhelp_basename = "rain_doc"
 
 # -- Options for LaTeX output ------------------------------------------
 
@@ -125,7 +125,7 @@ latex_documents = [
     (
         master_doc,
         "rain.tex",
-        "SIMPLE Repository Documentation",
+        "Rain Library Documentation",
         "Riccardo Coltrinari",
         "manual",
     ),
@@ -135,7 +135,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "rain", "SIMPLE Repository Documentation", [author], 1)]
+man_pages = [(master_doc, "rain", "Rain Library Documentation", [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------
 
@@ -145,11 +145,13 @@ man_pages = [(master_doc, "rain", "SIMPLE Repository Documentation", [author], 1
 texinfo_documents = [
     (
         master_doc,
-        "rain",
-        "SIMPLE Repository Documentation",
+        "Rain",
+        "Rain Library Documentation",
         author,
-        "rain",
+        "Rain",
         "One line description of project.",
         "Miscellaneous",
     ),
 ]
+
+napoleon_custom_sections = [("Input", "params_style"), ("Output", "params_style")]
