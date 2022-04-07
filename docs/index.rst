@@ -1,5 +1,5 @@
-Welcome to SIMPLE Repository's documentation!
-=============================================
+Welcome to Rain documentation!
+==============================
 
 .. toctree::
    :maxdepth: 2

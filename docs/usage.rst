@@ -1,6 +1,6 @@
-=====
+===============
 Getting started
-=====
+===============
 
 Once installed, to use Rain in a project you just have to import it in your Python script::
 
@@ -91,7 +91,7 @@ Follows an example of a possible Dataflow configuration::
 In the above script we:
 
 - first import the library;
-- instantiate a Dataflow (with Id *"df1"* and referenced as *df*) passing a Local Executor, meaning
+- instantiate a Dataflow (with Id *df1* and referenced as *df*) passing a Local Executor, meaning
   that the Dataflow will be executed in the local machine that runs the script;
 - instantiate 4 nodes (*csv_loader, filter_col, kmeans, writer*):
 
