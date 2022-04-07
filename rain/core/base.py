@@ -13,6 +13,7 @@ from rain.core.exception import (
     DuplicatedNodeId,
 )
 from rain.core.execution import LocalExecutor
+from rain.loguru_logger import logger
 
 
 class LibTag(Enum):
@@ -165,6 +166,8 @@ class Meta(type):
 
 class SimpleNode(metaclass=Meta):
     def __init__(self, node_id: str):
+        logger.info("Create Node", node_name=type(self).__name__)
+
         super(SimpleNode, self).__init__()
         self.node_id = node_id
 
@@ -330,17 +333,28 @@ class MultiEdge:
                 f"Node '{destination.node}' has no input variable."
             )
 
+        logger.debug(
+            f"Create edge from {source.nodes_attributes} to {destination.node.node_id} - {destination.nodes_attributes}",
+            node_name=type(source.node).__name__,
+        )
+
         self.source = source
         self.destination = destination
 
 
 class DataFlow:
     def __init__(self, dataflow_id: str, executor: Any = LocalExecutor()):
+        logger.info("Create Dataflow", dataflow_id=dataflow_id)
+
         self.id = dataflow_id
         self.executor = executor
         self._nodes = {}
         self._edges: List[MultiEdge] = []
         self._dag = nx.DiGraph(name=self.id)
+
+        logger.debug(
+            f"Use executor {type(self.executor).__name__}", dataflow_id=dataflow_id
+        )
 
     def add_node(self, node) -> bool:
         """Add a node to the dataflow. If a node with the same node id exists then an exception will be raised.
@@ -361,6 +375,7 @@ class DataFlow:
             If a node with the same node id already exists.
 
         """
+        logger.info(f"Add node {type(node).__name__}", dataflow_id=self.id)
         if node.node_id in self._nodes.keys():
             raise DuplicatedNodeId(
                 "The node identified as {} already exists within the DataFlow.".format(
@@ -401,6 +416,10 @@ class DataFlow:
         return self._nodes.get(node_id) if node_id in self._nodes.keys() else None
 
     def add_edge(self, edge: MultiEdge):
+        logger.info(
+            f"Add edge from {edge.source.node.node_id} - {edge.source.nodes_attributes} to {edge.destination.node.node_id} - {edge.destination.nodes_attributes}",
+            dataflow_id=self.id,
+        )
         try:
             self.add_node(edge.source.node)
         except DuplicatedNodeId:
@@ -462,5 +481,5 @@ class DataFlow:
     def execute(self):
         if not self.is_acyclic():
             raise CyclicDataFlowException(self.id)
-
+        logger.info("Start execution of the Dataflow", dataflow_id=self.id)
         self.executor.execute(self)
