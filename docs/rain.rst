@@ -5,7 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
    rain.core
    rain.nodes
@@ -17,6 +17,14 @@ rain.logger module
 ------------------
 
 .. automodule:: rain.logger
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rain.prova module
+-----------------
+
+.. automodule:: rain.prova
    :members:
    :undoc-members:
    :show-inheritance:
