@@ -9,6 +9,7 @@ Welcome to Rain documentation!
    installation
    usage
    modules
+   extending
    contributing
    authors
    history
