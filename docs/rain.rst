@@ -21,14 +21,6 @@ rain.logger module
    :undoc-members:
    :show-inheritance:
 
-rain.prova module
------------------
-
-.. automodule:: rain.prova
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 
