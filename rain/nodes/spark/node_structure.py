@@ -21,12 +21,25 @@ class SparkNodeSession:
 
 
 class SparkStageMixin:
+    """Mixin class to store the Spark Estimator/Transformer instance that should be used in a SparkPipeline."""
+
     def __init__(self):
         self.computational_instance = None
 
 
 class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
-    """Class representing a Spark ComputationalNode, it could be either a Transformer or Estimator."""
+    """Class representing a Spark ComputationalNode, it could be either a Transformer or Estimator.
+
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    """
 
     _input_vars = {"dataset": DataFrame}
 
@@ -40,7 +53,23 @@ class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
 
 
 class Transformer(SparkNode):
-    """Class representing a Spark Transformer, it manipulates a given dataset and returns a modified version of it."""
+    """Class representing a Spark Transformer, it manipulates a given dataset and returns a modified version of it.
+
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    """
 
     _output_vars = {"dataset": DataFrame}
 
@@ -57,7 +86,23 @@ class Transformer(SparkNode):
 
 
 class Estimator(SparkNode):
-    """Class representing a Spark Estimator, it takes a dataset and returns a trained model."""
+    """Class representing a Spark Estimator, it takes a dataset and returns a trained model.
+
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    model : PipelineModel
+        A Spark PipelineModel.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    """
 
     _output_vars = {"model": PipelineModel}
 
