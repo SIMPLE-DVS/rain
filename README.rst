@@ -7,12 +7,8 @@ Rain
         :target: https://pypi.python.org/pypi/simple_repo
     .. image:: https://img.shields.io/travis/DazeDC/simple_repo.svg
         :target: https://travis-ci.com/DazeDC/simple_repo
-    .. image:: https://readthedocs.org/projects/simple-repo/badge/?version=latest
-        :target: https://simple-repo.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
 
 * Free software: GNU General Public License v3
-* Documentation: https://simple-repo.readthedocs.io.
 
 What is it?
 -----------
@@ -133,7 +129,30 @@ A complete description of all the available nodes with their
 behavior, accepted parameters, inputs and outputs is available at this `link`_.
 
 .. _link: ./rain.nodes.html;
-.. _here: ./usage.html);
+.. _here: ./usage.html;
+
+
+Full Documentation
+------------------
+
+To load all the documentation follow the steps:
+
+From the main directory cd to the 'docs' directory.
+
+.. code-block:: console
+
+    $ cd docs
+
+If you are on Windows then run the 'make.bat' file.
+    
+Otherwise download sphinx and the sphinx theme specified in the requirements_dev.txt file.
+Then run the command:
+
+.. code-block:: console
+
+    $ sphinx-build . ./_build
+    
+The _build directory will contain the html files, open the index.html file to read the full documentation.
 
 Authors
 -------
@@ -141,11 +160,3 @@ Authors
 * Alessandro Antinori <alessandro.antinori@studenti.unicam.it>
 * Riccardo Coltrinari <riccardo.coltrinari@studenti.unicam.it>
 * Marco Scarpetta <marco.scarpetta@studenti.unicam.it>
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
