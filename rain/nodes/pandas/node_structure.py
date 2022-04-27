@@ -6,9 +6,12 @@ from rain.core.base import ComputationalNode, TypeTag, LibTag, Tags
 
 
 class PandasTransformer(ComputationalNode):
-    """
-    Every PandasNode takes a pandas DataFrame as input,
-    applies a tansformation and returns a pandas DataFrame as output.
+    """Parent class for all the nodes that take a dataset as input, apply a transformation and expose the transformed dataset as output.
+
+    Parameters
+    ----------
+    node_id : str
+        Unique identifier of the node in the DataFlow.
     """
 
     _input_vars = {"dataset": pd.DataFrame}
@@ -29,6 +32,11 @@ class PandasTransformer(ComputationalNode):
 class PandasNode(ComputationalNode):
     """
     Node that perform some transformation using the Pandas library without input/output constraints.
+    
+    Parameters
+    ----------
+    node_id : str
+        Unique identifier of the node in the DataFlow.
     """
 
     def __init__(self, node_id: str):

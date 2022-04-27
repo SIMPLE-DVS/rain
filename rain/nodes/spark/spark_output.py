@@ -8,10 +8,17 @@ from rain.nodes.spark.node_structure import SparkOutputNode
 class SparkSaveModel(SparkOutputNode):
     """Save a trained PipelineModel
 
+    Input
+    -----
+    model : PipelineModel
+        The Spark PipelineModel to be saved.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     path : str
-        String representing the path where to save the model
+        String representing the path where to save the model.
 
     """
 
@@ -28,8 +35,15 @@ class SparkSaveModel(SparkOutputNode):
 class SparkSaveDataset(SparkOutputNode):
     """Save a Spark Dataframe in a .csv format
 
+    Input
+    -----
+    dataset : DataFrame
+        The Spark Dataframe to be saved.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     path : str
         String representing the path where to save the dataset
 

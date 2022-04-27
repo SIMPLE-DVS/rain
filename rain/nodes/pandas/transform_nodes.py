@@ -75,6 +75,16 @@ class PandasColumnsFiltering(PandasTransformer):
     - select columns in a range of indexes;
     - assign a type to a column.
     Every parameter but 'columns_type' is mutually exclusive, meaning that only one can be used.
+    
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame.
 
     Parameters
     ----------
@@ -163,13 +173,23 @@ class PandasColumnsFiltering(PandasTransformer):
 
 class PandasSelectRows(PandasNode):
     """PandasSelectRows manages selection of rows, which can later be filtered or deleted.
+    
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+    
+    Output
+    ------
+    selection : pd.Series
+        A pandas Series containing True on the selected rows and False on the other.
 
     Parameters
     ----------
     node_id : str
         Id of the node.
     select_nan : bool, default False
-        Select rows with at least one NaN value.
+        Whether to select rows with at least one NaN value.
     conditions : List[str]
         List of conditions to select rows.
     """
@@ -207,6 +227,18 @@ class PandasSelectRows(PandasNode):
 class PandasFilterRows(PandasTransformer):
     """PandasFilterRows manages filtering of rows that have been previously selected.
 
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame to filter.
+    selected_rows : pd.Series
+        A pandas Series containing True on the rows to keep.
+    
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame containing only the selected rows.
+
     Parameters
     ----------
     node_id : str
@@ -226,7 +258,17 @@ class PandasFilterRows(PandasTransformer):
 
 
 class PandasDropNan(PandasTransformer):
-    """Drops rows or columns that either only contains a nan or that has all nan values.
+    """Drops rows or columns that either has at least a NaN value or that has all NaN values.
+
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+        
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame.
 
     Parameters
     ----------
@@ -261,7 +303,17 @@ class PandasDropNan(PandasTransformer):
 
 
 class PandasPivot(PandasTransformer):
-    """Transforms a DataFrame into a Pivot from the given rows, columns and values.
+    """Transforms a DataFrame into a Pivot table from the given rows, columns and values.
+    
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+        
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame containing a Pivot table.
 
     Parameters
     ----------
@@ -311,6 +363,16 @@ class PandasPivot(PandasTransformer):
 class PandasRenameColumn(PandasTransformer):
     """Sets column names for a pandas DataFrame.
 
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+        
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+
     Parameters
     ----------
     columns : list[str]
@@ -336,6 +398,16 @@ class PandasSequence(PandasTransformer):
     PandasSequence wraps a list of nodes that must be executed in sequence into a single node.
     Intermediate values are passed along the chain using the 'dataset' variable, hence only
     PandasNodes can be used within a sequence.
+    
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+        
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame.
 
     Parameters
     ----------
@@ -364,6 +436,18 @@ class PandasSequence(PandasTransformer):
 class PandasAddColumn(PandasTransformer):
     """
     Node used to add a column to a Pandas Dataframe starting from a given Pandas Series.
+    
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+    column : pd.Series
+        A pandas Series to add to the dataset.
+        
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame.
 
     Parameters
     ----------
@@ -393,6 +477,16 @@ class PandasAddColumn(PandasTransformer):
 class PandasReplaceColumn(PandasNode):
     """
     Node used to replace the boolean values of a Pandas Series with other values given by the user.
+    
+    Input
+    -----
+    column : pd.Series
+        A pandas Series containing all True or False values.
+        
+    Output
+    ------
+    column : pd.Series
+        A pandas Series containing the substituted values.
 
     Parameters
     ----------
@@ -401,7 +495,7 @@ class PandasReplaceColumn(PandasNode):
     first_value : Any
         Value used when the condition is True.
     second_value : Any
-        Value used when the condition is True.
+        Value used when the condition is False.
     """
 
     _input_vars = {"column": pd.Series}

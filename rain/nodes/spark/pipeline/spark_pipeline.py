@@ -6,12 +6,29 @@ from rain.nodes.spark.node_structure import Estimator, SparkNode
 
 
 class SparkPipelineNode(Estimator):
-    """Represent a Spark Pipeline consisting of SparkNode (stages)
+    """Represent a Spark Pipeline consisting of SparkNode (stages). It should contain some Spark Transformer and a final
+    Spark Estimator that return the trained model.
+
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    model : PipelineModel
+        A Spark PipelineModel.
 
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     stages: List[SparkNode]
-        List of SparkNode that can be executed in a Spark Pipeline
+        List of SparkNode that can be executed in a Spark Pipeline.
+
+    See Also
+    --------
+    `<https://spark.apache.org/docs/latest/ml-pipeline.html#pipeline>`_ : Spark Pipeline documentation.
 
     """
 

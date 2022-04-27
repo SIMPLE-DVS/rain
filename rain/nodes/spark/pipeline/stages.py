@@ -7,13 +7,24 @@ from pyspark.ml.feature import HashingTF as Htf, Tokenizer as Tk
 class Tokenizer(Transformer):
     """Represent a Spark Tokenizer used to split text in individual term.
 
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    dataset : DataFrame
+        The modified Spark DataFrame.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     in_col : str
-        The name of the input column
-
+        The name of the input column.
     out_col : str
-        The name of the output column
+        The name of the output column.
     """
 
     def __init__(self, node_id: str, in_col: str, out_col: str):
@@ -31,13 +42,24 @@ class Tokenizer(Transformer):
 class HashingTF(Transformer):
     """Represent a Spark HashingTF that maps a sequence of terms to their term frequencies using the hashing trick.
 
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    dataset : DataFrame
+        The modified Spark DataFrame.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     in_col : str
-        The name of the input column
-
+        The name of the input column.
     out_col : str
-        The name of the output column
+        The name of the output column.
     """
 
     def __init__(self, node_id: str, in_col: str, out_col: str):
@@ -55,11 +77,23 @@ class HashingTF(Transformer):
 class LogisticRegression(Estimator):
     """Represent a SparkNode that supports fitting traditional logistic regression model.
 
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    model : PipelineModel
+        A Spark PipelineModel.
+
     Parameters
     ----------
     max_iter : int
+        Max number of iterations.
 
     reg_param : float
+        Regularization parameter.
     """
 
     def __init__(self, node_id: str, max_iter: int, reg_param: float):

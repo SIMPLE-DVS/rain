@@ -10,12 +10,31 @@ from rain.nodes.sklearn.node_structure import (
 
 class SklearnPCA(SklearnEstimator, TransformerMixin, ScorerMixin):
     """
-    Node representation of a sklearn PCA estimator.
+    Node representation of a sklearn PCA estimator that uses the 'sklearn.decomposition.PCA'.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the clusterer.
+    score_dataset : pandas.DataFrame
+        The dataset that will be used to perform the scoring.
+    transform_dataset : pandas.DataFrame
+        The dataset that will be used to perform the transform.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+    score_value : float
+        The score value that results from the scoring.
+    transformed_dataset : pandas.DataFrame
+        The dataset that results from the transform.
 
     Parameters
     ----------
-    execute : list[str]
-        List of methods to execute.
+    execute : {'fit', 'score', 'transform'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
     n_components : int
         Number of components to keep.
     whiten : bool
@@ -23,13 +42,13 @@ class SklearnPCA(SklearnEstimator, TransformerMixin, ScorerMixin):
     svd_solver : {'auto', 'full', 'arpack', 'randomized'}, default='auto'
         Svd solver.
     tol : float
-        Tolerance for singular values computed by svd_solver == ‘arpack’.
+        Tolerance for singular values computed by svd_solver == 'arpack'.
         Must be positive.
     iterated_power : int
-        Number of iterations for the power method computed by svd_solver == ‘randomized’.
+        Number of iterations for the power method computed by svd_solver == 'randomized'.
         Must be positive.
     random_state : int
-        Used when the ‘arpack’ or ‘randomized’ solvers are used. Pass an int for reproducible results across multiple function calls.
+        Used when the 'arpack' or 'randomized' solvers are used. Pass an int for reproducible results across multiple function calls.
     """
 
     def __init__(

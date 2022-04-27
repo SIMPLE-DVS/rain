@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install SIMPLE Repository, run this command in your terminal:
+To install Rain library, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install simple_repo
+    $ pip install git+https://github.com/SIMPLE-DVS/rain.git
 
-This is the preferred method to install SIMPLE Repository, as it will always install the most recent stable release.
+This is the preferred method to install Rain, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/DazeDC/simple_repo
+    $ git clone https://github.com/SIMPLE-DVS/rain.git
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/DazeDC/simple_repo/tarball/master
+    $ curl -OJL https://github.com/SIMPLE-DVS/rain/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,11 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/DazeDC/simple_repo
-.. _tarball: https://github.com/DazeDC/simple_repo/tarball/master
+.. _Github repo: https://github.com/SIMPLE-DVS/rain
+.. _tarball: https://github.com/SIMPLE-DVS/rain/tarball/master
+
+Finally, you can use Rain as a standard Python library, so importing it in your script:
+
+.. code-block:: python
+
+    import rain

@@ -128,34 +128,45 @@ class Parameters:
         return parameters
 
 
-class SimpleIO:
-    def __init__(self, io_type: type):
-        self._type = io_type
-
-    @property
-    def type(self):
-        return self._type
-
-
 class SimpleParameter:
+    """Base class that represents a Parameter for a given node.
+
+    Parameters
+    ----------
+    is_mandatory : bool, default False
+        True if the parameter is mandatory, False otherwise.
+    group_name : str, default None
+        Name of the group of this parameter, used to pass it to the right function.
+    """
     def __init__(self, is_mandatory: bool = False, group_name: str = None):
         self._is_mandatory = is_mandatory
         self.group_name = group_name
 
     @property
     def is_mandatory(self):
+        """Returns the variable that specify if the parameter is mandatory."""
         return self._is_mandatory
 
     @abstractmethod
-    def get_structure(self):
+    def get_structure(self) -> dict:
+        """Returns the structure of the parameter as a dictionary."""
         pass
 
 
 class KeyValueParameter(SimpleParameter):
-    """
-    A KeyValue Parameter contains information about parameters that can be used during the transformation.
-    """
+    """A KeyValue Parameter contains information about parameters that can be used during the transformation.
 
+    Parameters
+    ----------
+    name : str
+        The name of this parameter.
+    p_type : type
+        The type of this parameter.
+    value : Any, default None
+        The value of this parameter.
+    is_mandatory : bool, default False
+        True if the parameter is mandatory, False otherwise.
+    """
     def __init__(
         self, name: str, p_type: type, value: Any = None, is_mandatory: bool = False
     ):
@@ -173,19 +184,29 @@ class KeyValueParameter(SimpleParameter):
         return struct
 
     @property
-    def name(self):
+    def name(self) -> str:
+        """Returns the variable containing the name of the parameter."""
         return self._name
 
     @property
-    def type(self):
+    def type(self) -> type:
+        """Returns the variable containing the type of the parameter."""
         return self._type
 
     @property
-    def value(self):
+    def value(self) -> Any:
+        """Returns the variable containing the value of the parameter."""
         return self._value
 
     @value.setter
     def value(self, value):
+        """Set the value of the parameter.
+
+        Parameters
+        ----------
+        value : Any
+            The value that should be set for this parameter
+        """
         self._value = value
 
     def __str__(self):
@@ -198,6 +219,13 @@ class KeyValueParameter(SimpleParameter):
 
 
 class SimpleHyperParameter(SimpleParameter):
+    """A KeyValue Parameter contains information about parameters that can be used during the transformation.
+
+    Parameters
+    ----------
+    is_mandatory : bool, default False
+        Name of the group of this parameter, used to pass it to the right function.
+    """
     def __init__(self, is_mandatory: bool = False):
         super(SimpleHyperParameter, self).__init__(is_mandatory)
 

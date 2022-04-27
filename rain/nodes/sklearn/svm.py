@@ -5,6 +5,63 @@ from rain.nodes.sklearn.node_structure import SklearnClassifier
 
 
 class SklearnLinearSVC(SklearnClassifier):
+    """Node that uses the 'sklearn.svm.LinearSVC' classifier.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the classifier.
+    fit_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the fit of the classifier.
+    predict_dataset : pandas.DataFrame
+        The dataset that will be used to perform the predict of the classifier.
+    score_dataset : pandas.DataFrame
+        The dataset that will be used to perform the scoring.
+    score_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the scoring.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+    predictions : pandas.DataFrame
+        The predictions that result from the predict.
+    score_value : float
+        The score value that results from the scoring.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    execute : {'fit', 'predict', 'score'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
+    penalty : str, default='l2'
+        Penalty.
+    loss : str, default='squared_hinge',
+        Loss.
+    dual : bool, default='True',
+        Dual.
+    tol : float, default='0.0001',
+        Tol.
+    C : float, default='1.0',
+        C.
+    multi_class : str, default='ovr',
+        Multi_class.
+    fit_intercept : bool, default='True',
+        Fit_intercept.
+    intercept_scaling : int, default='1',
+        Intercept_scaling.
+    class_weight : float, default='None',
+        Class_weight.
+    verbose : int, default='0',
+        Verbose.
+    random_state : str, default='None',
+        Random_state.
+    max_iter : int, default='1000',
+        Max_iter.
+    """
+
     def __init__(
         self,
         node_id: str,

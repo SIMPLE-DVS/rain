@@ -8,8 +8,15 @@ from rain.nodes.spark.node_structure import SparkInputNode
 class SparkCSVLoader(SparkInputNode):
     """Loads a CSV file as a Spark DataFrame.
 
+    Output
+    ------
+    dataset : DataFrame
+        The loaded Spark DataFrame.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     path : str
         Path of the csv file.
     header : bool, default False
@@ -38,8 +45,15 @@ class SparkCSVLoader(SparkInputNode):
 class SparkModelLoader(SparkInputNode):
     """Loads a file as a Spark Model.
 
+    Output
+    ------
+    model : PipelineModel
+        The loaded Spark PipelineModel.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     path : str
         Path of the csv file.
     """
