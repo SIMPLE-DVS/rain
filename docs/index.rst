@@ -1,5 +1,5 @@
-Welcome to SIMPLE Repository's documentation!
-=============================================
+Welcome to Rain documentation!
+==============================
 
 .. toctree::
    :maxdepth: 2
@@ -8,9 +8,10 @@ Welcome to SIMPLE Repository's documentation!
    readme
    installation
    usage
+   modules
+   extending
    contributing
    authors
-   modules
    history
 
 Indices and tables

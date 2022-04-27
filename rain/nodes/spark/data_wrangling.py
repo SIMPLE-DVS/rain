@@ -7,11 +7,22 @@ from rain.nodes.spark.node_structure import Transformer
 
 
 class SparkColumnSelector(Transformer):
-    """SparkColumnSelector manages filtering of rows, columns and values
-    for a Spark DataFrame.
+    """SparkColumnSelector manages filtering of rows, columns and values for a Spark DataFrame.
+
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    dataset : DataFrame
+        A Spark DataFrame.
 
     Parameters
     ----------
+    node_id : str
+        Id of the node
     column_list : List[str]
         List of columns to select from the dataset
     filter_list : List[str]
@@ -38,8 +49,22 @@ class SparkColumnSelector(Transformer):
 class SparkSplitDataset(Transformer):
     """Splits a Spark DataFrame in two DataFrames, train and test.
 
+    Input
+    -----
+    dataset : DataFrame
+        A Spark DataFrame.
+
+    Output
+    ------
+    train_dataset : DataFrame
+        A Spark DataFrame used for the training phase.
+    test_dataset : DataFrame
+        A Spark DataFrame used for the test phase.
+
     Parameters
     ----------
+    node_id : str
+        Id of the node.
     train : float
         Percentage of the dataset to split into a train dataset.
     test : float

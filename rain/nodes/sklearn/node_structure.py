@@ -10,6 +10,8 @@ from rain.core.exception import (
 
 
 class SklearnNode(ComputationalNode):
+    """Base class for all the nodes that use the sklearn library."""
+
     _methods = {}
 
     def __init__(self, node_id):
@@ -26,6 +28,8 @@ class SklearnNode(ComputationalNode):
 
 
 class SklearnFunction(SklearnNode):
+    """Base class for all the nodes that use an sklearn function."""
+
     def __init__(self, node_id: str):
         super(SklearnFunction, self).__init__(node_id)
 
@@ -43,6 +47,27 @@ class SklearnFunction(SklearnNode):
 
 
 class SklearnEstimator(SklearnNode):
+    """Base class for all the nodes that use an sklearn Estimator.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the estimator.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    execute : {'fit'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
+    """
+
     _input_vars = {"fit_dataset": pandas.DataFrame}
     _methods = {"fit": False}
     _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
@@ -91,6 +116,7 @@ class SklearnEstimator(SklearnNode):
 
 
 class PredictorMixin:
+    """Mixin class to add a prediction functionality to an estimator."""
 
     _input_vars = {"predict_dataset": pandas.DataFrame}
 
@@ -109,6 +135,7 @@ class PredictorMixin:
 
 
 class ScorerMixin:
+    """Mixin class to add a scoring functionality to an estimator."""
 
     _input_vars = {"score_dataset": pandas.DataFrame}
 
@@ -140,6 +167,7 @@ class ScorerMixin:
 
 
 class TransformerMixin:
+    """Mixin class to add a transformer functionality to an estimator."""
 
     _input_vars = {"transform_dataset": pandas.DataFrame}
 
@@ -167,6 +195,39 @@ class TransformerMixin:
 
 
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
+    """Base class for all the nodes that use an sklearn classifier.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the classifier.
+    fit_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the fit of the classifier.
+    predict_dataset : pandas.DataFrame
+        The dataset that will be used to perform the predict of the classifier.
+    score_dataset : pandas.DataFrame
+        The dataset that will be used to perform the scoring.
+    score_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the scoring.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+    predictions : pandas.DataFrame
+        The predictions that result from the predict.
+    score_value : float
+        The score value that results from the scoring.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    execute : {'fit', 'predict', 'score'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
+    """
+
     _estimator_type = "classifier"
 
     _input_vars = {"fit_targets": pandas.DataFrame, "score_targets": pandas.DataFrame}
@@ -198,6 +259,39 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
 
 
 class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, TransformerMixin):
+    """Base class for all the nodes that use an sklearn clusterer.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the clusterer.
+    predict_dataset : pandas.DataFrame
+        The dataset that will be used to perform the predict of the clusterer.
+    score_dataset : pandas.DataFrame
+        The dataset that will be used to perform the scoring.
+    transform_dataset : pandas.DataFrame
+        The dataset that will be used to perform the transform.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+    predictions : pandas.DataFrame
+        The predictions that result from the predict.
+    score_value : float
+        The score value that results from the scoring.
+    transformed_dataset : pandas.DataFrame
+        The dataset that results from the transform.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    execute : {'fit', 'predict', 'score', 'transform'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
+    """
+
     _estimator_type = "clusterer"
 
     def __init__(self, node_id: str, execute: list):

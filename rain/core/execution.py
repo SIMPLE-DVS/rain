@@ -12,6 +12,7 @@ from rain.core.exception import CyclicDataFlowException
 
 
 class Singleton(type):
+    """Singleton class to represent all the possible executors available in Rain"""
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -41,7 +42,18 @@ class Singleton(type):
 
 
 class LocalExecutor(metaclass=Singleton):
+    """A Local executor, meaning that the execution is performed on the machine that runs the Dataflow"""
+
     def execute(self, dataflow):
+        """Method that executes the given Dataflow in a precise order. At each step it propagates the results to the
+        following nodes by checking the edges.
+
+        Parameters
+        ----------
+        dataflow : Dataflow
+            The dataflow that has to be executed.
+        """
+
         logger.debug("Checking if the Dataflow contains cycles", dataflow_id=dataflow.id)
         if not dataflow.is_acyclic():
             logger.critical("The Dataflow contains a cycle thus it can't be executed", dataflow_id=dataflow.id)

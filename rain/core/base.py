@@ -18,7 +18,7 @@ from rain.loguru_logger import logger
 
 class LibTag(Enum):
     """
-    Enumeration representing the library which the SimpleNode refers to
+    Enumeration representing the library which the SimpleNode refers to.
     """
 
     PANDAS = "Pandas"
@@ -31,7 +31,7 @@ class LibTag(Enum):
 
 class TypeTag(Enum):
     """
-    Enumeration representing the type of the SimpleNode according to its functionality
+    Enumeration representing the type of the SimpleNode according to its functionality.
     """
 
     INPUT = "Input"
@@ -50,6 +50,13 @@ class TypeTag(Enum):
 class Tags:
     """
     DataClass that acts as a tag for a SimpleNode: it stores the library and the type of the node
+
+    Notes
+    -----
+    library: LibTag
+        The library used by the node.
+    type: TypeTag
+        The type of the SimpleNode
     """
 
     library: LibTag
@@ -84,6 +91,11 @@ def reset(simple_node):
 
 
 class Meta(type):
+    """
+    Metaclass used by a SimpleNode to manage the inheritance of the attributes. In particular, it updates the variables
+    related to the inputs, outputs and methods: in this way the attributes of the parents class are no longer lost by
+    child classes.
+    """
     def __new__(mcs, clsname, bases, dct):
         input_vars_string = "_input_vars"
         output_vars_string = "_output_vars"
@@ -165,6 +177,14 @@ class Meta(type):
 
 
 class SimpleNode(metaclass=Meta):
+    """Base class of each node in Rain.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique identifier of the node
+    """
+
     def __init__(self, node_id: str):
         logger.info("Create Node", node_name=type(self).__name__)
 
@@ -173,10 +193,30 @@ class SimpleNode(metaclass=Meta):
 
     @abstractmethod
     def execute(self):
+        """Expose the main functionality: depending on the node, the computation is done using a specific Python
+        library and its function/s.
+        """
         pass
 
     @abstractmethod
     def has_attribute(self, attribute: str) -> bool:
+        """Tell if the node has the given attribute
+
+        Parameters
+        ----------
+        attribute : str
+            The name of the parameter to check.
+
+        Returns
+        -------
+        bool
+            True if the node has the given parameter, False otherwise.
+        """
+        pass
+
+    @classmethod
+    def _get_tags(cls):
+        """Return the Tags associated to this node"""
         pass
 
     def __hash__(self):
@@ -199,6 +239,8 @@ class SimpleNode(metaclass=Meta):
 
 
 class InputMixin:
+    """Mixin used by a SimpleNode to inherit that it is an input node, so that the right output variables are set."""
+
     _output_vars = {}
 
     def __init__(self):
@@ -207,11 +249,25 @@ class InputMixin:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
-    def get_output_value(self, output_name: str):
+    def get_output_value(self, output_name: str) -> Any:
+        """Given the name of an output attribute return the corresponding value.
+
+        Parameters
+        ----------
+        output_name : str
+            The name of the output attribute.
+
+        Returns
+        -------
+        Any
+            The value of the given attribute.
+        """
         return vars(self).get(output_name)
 
 
 class OutputMixin:
+    """Mixin used by a SimpleNode to inherit that it is an output node, so that the right input variables are set."""
+
     _input_vars = {}
 
     def __init__(self):
@@ -221,10 +277,27 @@ class OutputMixin:
                 setattr(self, key, None)
 
     def set_input_value(self, input_name: str, input_value: Any):
+        """
+
+        Parameters
+        ----------
+        input_name : str
+            The name of the input attribute.
+        input_value : Any
+            The value to set for the given attribute.
+        """
         vars(self)[input_name] = input_value
 
 
 class InputNode(SimpleNode, InputMixin):
+    """Class representing an input node.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique identifier of the node.
+    """
+
     def __init__(self, node_id: str):
         super(InputNode, self).__init__(node_id)
 
@@ -241,6 +314,14 @@ class InputNode(SimpleNode, InputMixin):
 
 
 class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
+    """Class representing a computational node, having both input and output attributes.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique identifier of the node.
+    """
+
     def __init__(self, node_id: str):
         super(ComputationalNode, self).__init__(node_id)
 
@@ -254,6 +335,14 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
 
 
 class OutputNode(SimpleNode, OutputMixin):
+    """Class representing an output node.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique identifier of the node.
+    """
+
     def __init__(self, node_id: str):
         super(OutputNode, self).__init__(node_id)
 
@@ -343,6 +432,15 @@ class MultiEdge:
 
 
 class DataFlow:
+    """Class representing a Dataflow in Rain, containing nodes and edges.
+
+    Parameters
+    ----------
+    dataflow_id : str
+        The unique identifier of the dataflow
+    executor: Any, default LocalExecutor
+        The executor used to run the Dataflow
+    """
     def __init__(self, dataflow_id: str, executor: Any = LocalExecutor()):
         logger.info("Create Dataflow", dataflow_id=dataflow_id)
 
@@ -413,13 +511,34 @@ class DataFlow:
         return True
 
     def get_node(self, node_id: str):
+        """Method used to return the SimpleNode given its id.
+
+        Parameters
+        ----------
+        node_id : str
+            The id of the node to return.
+
+        Returns
+        -------
+        SimpleNode
+            The SimpleNode with the given id.
+        """
         return self._nodes.get(node_id) if node_id in self._nodes.keys() else None
 
     def add_edge(self, edge: MultiEdge):
+        """Method used to add an edge to the Dataflow.
+
+        Parameters
+        ----------
+        edge : MultiEdge
+            The edge that should be added to the Dataflow.
+        """
+
         logger.info(
             f"Add edge from {edge.source.node.node_id} - {edge.source.nodes_attributes} to {edge.destination.node.node_id} - {edge.destination.nodes_attributes}",
             dataflow_id=self.id,
         )
+
         try:
             self.add_node(edge.source.node)
         except DuplicatedNodeId:
@@ -434,10 +553,31 @@ class DataFlow:
         self._dag.add_edge(edge.source.node.node_id, edge.destination.node.node_id)
 
     def add_edges(self, edges: List[MultiEdge]):
+        """Method used to add a list of edges to the Dataflow.
+
+        Parameters
+        ----------
+        edges : List[MultiEdge]
+            The list of edges that should be added to the Dataflow.
+        """
         for edge in edges:
             self.add_edge(edge)
 
     def get_edge(self, source: SimpleNode, destination: SimpleNode) -> MultiEdge:
+        """Method used to get the edge with the specif source and destination node.
+
+        Parameters
+        ----------
+        source : SimpleNode
+            The source node of the edge.
+        destination : SimpleNode
+            The destination node of the edge.
+
+        Returns
+        -------
+        MultiEdge
+            The required edge with the specific source and destination node.
+        """
         matching_edges = list(
             filter(
                 lambda edge: source == edge.source.node
@@ -448,6 +588,19 @@ class DataFlow:
         return matching_edges[0] if matching_edges else None
 
     def get_outgoing_edges(self, source: SimpleNode) -> List[MultiEdge]:
+        """Method used to get all the outgoing edges of the specif source node.
+
+        Parameters
+        ----------
+        source : SimpleNode
+            The source node of the edges.
+
+        Returns
+        -------
+        List[MultiEdge]
+            The required outgoing edges with the specific source node.
+        """
+
         matching_edges = list(
             filter(
                 lambda edge: source == edge.source.node,
@@ -456,7 +609,20 @@ class DataFlow:
         )
         return matching_edges
 
-    def get_ingoing_edges(self, destination):
+    def get_ingoing_edges(self, destination) -> List[MultiEdge]:
+        """Method used to get all the ingoing edges of the specif destination node.
+
+        Parameters
+        ----------
+        destination : SimpleNode
+            The destination node of the edges.
+
+        Returns
+        -------
+        List[MultiEdge]
+            The required ingoing edges with the specific destination node.
+        """
+
         matching_edges = list(
             filter(
                 lambda edge: destination in edge.destination,
@@ -465,20 +631,42 @@ class DataFlow:
         )
         return matching_edges
 
-    def has_node(self, node):
+    def has_node(self, node: SimpleNode):
+        """Tell if the Dataflow contains the given SimpleNode
+
+        Parameters
+        ----------
+        node : SimpleNode
+            The SimpleNode to check
+
+        Returns
+        -------
+        bool
+            True if the Dataflow contains the given node, False otherwise.
+        """
+
         if type(node) is str:
             return lambda n: node in self._nodes.keys()
 
         return lambda n: node in self._nodes.values()
 
     def is_acyclic(self):
+        """Returns True if the Dataflow is a directed acyclic graph (DAG) or False if not."""
         return nx.is_directed_acyclic_graph(self._dag)
 
     def get_execution_ordered_nodes(self):
+        """Returns a list of SimpleNode in topologically sorted order.
+
+        Returns
+        -------
+        List[SimpleNode]
+            The list of ordered nodes to be executed.
+        """
         topological_order = nx.topological_sort(self._dag)
         return list(map(lambda node_id: self._nodes.get(node_id), topological_order))
 
     def execute(self):
+        """Execute all the nodes contained in the Dataflow if there are no cycle."""
         if not self.is_acyclic():
             raise CyclicDataFlowException(self.id)
         logger.info("Start execution of the Dataflow", dataflow_id=self.id)

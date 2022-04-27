@@ -1,11 +1,6 @@
-class ParameterNotFound(Exception):
-    def __init__(self, msg: str):
-        super(ParameterNotFound, self).__init__(msg)
-
-
-class BadParameterStructure(Exception):
-    def __init__(self, msg: str):
-        super(BadParameterStructure, self).__init__(msg)
+"""
+Module used to manage all the Exception that could occur during the creation and execution of a Dataflow
+"""
 
 
 class DuplicatedNodeId(Exception):

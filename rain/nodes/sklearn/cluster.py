@@ -6,12 +6,40 @@ from sklearn.cluster import KMeans
 
 
 class SimpleKMeans(SklearnClusterer):
-    """A clusterer for the sklearn KMeans.
+    """A clusterer for the sklearn KMeans that uses the 'sklearn.cluster.KMeans'.
+
+    Input
+    -----
+    fit_dataset : pandas.DataFrame
+        The dataset that will be used to perform the fit of the clusterer.
+    predict_dataset : pandas.DataFrame
+        The dataset that will be used to perform the predict of the clusterer.
+    score_dataset : pandas.DataFrame
+        The dataset that will be used to perform the scoring.
+    transform_dataset : pandas.DataFrame
+        The dataset that will be used to perform the transform.
+
+    Output
+    ------
+    fitted_model : sklearn.base.BaseEstimator
+        The model that results from the fit of the estimator.
+    predictions : pandas.DataFrame
+        The predictions that result from the predict.
+    score_value : float
+        The score value that results from the scoring.
+    transformed_dataset : pandas.DataFrame
+        The dataset that results from the transform.
+    labels : pandas.DataFrame
+        Labels of each point.
+        It corresponds to the 'labels_' attribute of the sklearn KMeans.
 
     Parameters
     ----------
-    execute : list[str]
-        Methods to execute with this clusterer, they can be: fit, predict, transform, score.
+    node_id : str
+        Id of the node.
+    execute : {'fit', 'predict', 'score', 'transform'}
+        List of strings to specify the methods to execute.
+        The allowed strings are those from the _method attribute.
     n_clusters : int
         The number of clusters to form as well as the number of centroids to generate.
     """
