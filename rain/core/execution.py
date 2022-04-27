@@ -7,6 +7,7 @@
 #
 # from rain.base import get_class
 # from rain.base import ComputationalNode
+from rain.loguru_logger import logger
 from rain.core.exception import CyclicDataFlowException
 
 
@@ -52,13 +53,19 @@ class LocalExecutor(metaclass=Singleton):
         dataflow : Dataflow
             The dataflow that has to be executed.
         """
+
+        logger.debug("Checking if the Dataflow contains cycles", dataflow_id=dataflow.id)
         if not dataflow.is_acyclic():
+            logger.critical("The Dataflow contains a cycle thus it can't be executed", dataflow_id=dataflow.id)
             raise CyclicDataFlowException(dataflow.id)
 
         ordered_nodes = dataflow.get_execution_ordered_nodes()
 
         for node in ordered_nodes:
+
+            logger.info("Starting execution of the node", dataflow_id=dataflow.id, node_name=type(node).__name__)
             node.execute()
+            logger.success("Node executed succesfully", dataflow_id=dataflow.id, node_name=type(node).__name__)
 
             node_out_edge = dataflow.get_outgoing_edges(node)
 
