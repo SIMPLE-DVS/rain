@@ -49,10 +49,11 @@ class PandasCSVLoader(PandasInputNode):
         Of the CSV file.
     delim : str, default ','
         Delimiter symbol of the CSV file.
-        
-    See Also
-    --------
-    `<https://pandas.pydata.org/pandas-docs/version/1.3/reference/api/pandas.read_csv.html>`_ : Pandas read_csv documentation.
+
+    Notes
+    -----
+    Visit `<https://pandas.pydata.org/pandas-docs/version/1.3/reference/api/pandas.read_csv.html>`_ for Pandas read_csv
+    documentation.
     """
 
     # _parameters = { "filepath_or_buffer": PandasParameter("filepath_or_buffer", str, is_mandatory=True),
@@ -83,7 +84,7 @@ class PandasCSVLoader(PandasInputNode):
 
 class PandasCSVWriter(PandasOutputNode):
     """Writes a pandas DataFrame into a CSV file.
-    
+
     Input
     -----
     dataset : pandas.DataFrame
@@ -104,10 +105,11 @@ class PandasCSVWriter(PandasOutputNode):
     columns : list[str], default None
         If column names must be included you can give names to them.
         The order is relevant.
-        
-    See Also
-    --------
-    `<https://pandas.pydata.org/pandas-docs/version/1.3/reference/api/pandas.DataFrame.to_csv.html>`_ : Pandas to_csv documentation.
+
+    Notes
+    -----
+    Visit `<https://pandas.pydata.org/pandas-docs/version/1.3/reference/api/pandas.DataFrame.to_csv.html>`_ for Pandas
+    to_csv documentation.
     """
 
     # _parameters = { "filepath_or_buffer": PandasParameter("filepath_or_buffer", str, is_mandatory=True),

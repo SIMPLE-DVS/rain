@@ -103,3 +103,6 @@ ENV/
 
 # IDE settings
 .vscode/
+
+analyzer_output/*
+!analyzer_output/.gitkeep

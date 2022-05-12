@@ -266,8 +266,8 @@ classes = [
         None,
         Tags(LibTag.SPARK, TypeTag.ESTIMATOR),
     ),  # IO
-    (MongoCSVReader, None, ["dataset"], None, Tags(LibTag.OTHER, TypeTag.INPUT)),
-    (MongoCSVWriter, ["dataset"], None, None, Tags(LibTag.OTHER, TypeTag.OUTPUT)),
+    (MongoCSVReader, None, ["dataset"], None, Tags(LibTag.MONGODB, TypeTag.INPUT)),
+    (MongoCSVWriter, ["dataset"], None, None, Tags(LibTag.MONGODB, TypeTag.OUTPUT)),
 ]
 
 
@@ -297,9 +297,7 @@ def test_class_integrity(class_, in_vars, out_vars, methods_vars, tags):
     else:
         assert set(methods_vars) == set(class_._methods.keys())
 
-    if tags is None:
-        assert not hasattr(class_, tags_methods_string)
-    else:
+    if tags is not None:
         assert hasattr(class_, tags_methods_string)
         assert callable(getattr(class_, tags_methods_string))
         assert class_._get_tags().__eq__(tags)
