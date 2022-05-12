@@ -26,9 +26,9 @@ class SparkPipelineNode(Estimator):
     stages: List[SparkNode]
         List of SparkNode that can be executed in a Spark Pipeline.
 
-    See Also
-    --------
-    `<https://spark.apache.org/docs/latest/ml-pipeline.html#pipeline>`_ : Spark Pipeline documentation.
+    Notes
+    -----
+    Visit `<https://spark.apache.org/docs/latest/ml-pipeline.html#pipeline>`_ for Spark Pipeline documentation.
 
     """
 

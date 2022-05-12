@@ -6,7 +6,6 @@ import inspect
 import sys
 
 from pkgutil import iter_modules
-import re
 
 from rain import SimpleNode
 
@@ -34,8 +33,6 @@ class SimpleNodeInfo:
         The list of the SimpleNode methods that can be executed
     node_tags: dict
         The tag containing the library and type of the SimpleNode
-    node_name: str
-        The name of the SimpleNode (it is a different representation of the node_class)
     node_description: str
         The description of the SimpleNode class
     """
@@ -49,7 +46,6 @@ class SimpleNodeInfo:
         node_parameter: list,
         node_methods: list,
         node_tags: dict,
-        node_name: str,
         node_description: str,
     ):
         self.clazz = node_class
@@ -59,7 +55,6 @@ class SimpleNodeInfo:
         self.parameter = node_parameter
         self.methods = node_methods
         self.tags = node_tags
-        self.name = node_name
         self.description = node_description
 
 
@@ -142,11 +137,6 @@ def get_simple_nodes_info(node_subclasses: set):
         out_vars = (
             get_io_structure(cls._output_vars) if hasattr(cls, "_output_vars") else None
         )
-        name = " ".join(
-            re.sub(
-                "([A-Z][a-z]+)", r" \1", re.sub("([A-Z]+)", r" \1", cls.__name__)
-            ).split()
-        )
         node_type = {
             "library": cls._get_tags().library.value,
             "type": cls._get_tags().type.value,
@@ -160,7 +150,6 @@ def get_simple_nodes_info(node_subclasses: set):
             parameters,
             methods,
             node_type,
-            name,
             cls_description,
         )
         simple_nodes.append(node_info)
