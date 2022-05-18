@@ -75,7 +75,7 @@ class PandasColumnsFiltering(PandasTransformer):
     - select columns in a range of indexes;
     - assign a type to a column.
     Every parameter but 'columns_type' is mutually exclusive, meaning that only one can be used.
-    
+
     Input
     -----
     dataset : pd.DataFrame
@@ -162,27 +162,30 @@ class PandasColumnsFiltering(PandasTransformer):
             if isinstance(col_type, str):
                 self.dataset.astype(col_type)
             elif isinstance(col_type, list):
-                self.dataset = self.dataset.astype(
-                    {
-                        col: col_type[index]
-                        for index, col in enumerate(self.dataset.columns)
-                        if col_type[index] is not None
-                    }
-                )
+                for index, col in enumerate(self.dataset.columns):
+                    if col_type[index] is not None:
+                        if col_type[index] == "timedelta":
+                            self.dataset[col] = pandas.to_timedelta(self.dataset[col])
+                            self.dataset[col] = self.dataset[col].apply(lambda elem: elem.total_seconds())
+                        else:
+                            self.dataset[col] = self.dataset[col].astype(col_type[index])
 
 
 class PandasSelectRows(PandasNode):
     """PandasSelectRows manages selection of rows, which can later be filtered or deleted.
-    
+
     Input
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
-    
+
     Output
     ------
     selection : pd.Series
         A pandas Series containing True on the selected rows and False on the other.
+
+    dataset : pd.DataFrame
+        The filtered pandas DataFrame.
 
     Parameters
     ----------
@@ -195,7 +198,7 @@ class PandasSelectRows(PandasNode):
     """
 
     _input_vars = {"dataset": pandas.DataFrame}
-    _output_vars = {"selection": pandas.Series}
+    _output_vars = {"selection": pandas.Series, "dataset": pandas.DataFrame}
 
     def __init__(
         self,
@@ -222,6 +225,7 @@ class PandasSelectRows(PandasNode):
                 conds.append(new_cond)
             conds = " | ".join(conds)
             self.selection = pandas.eval(conds, target=self.dataset)
+            self.dataset = self.dataset[self.selection]
 
 
 class PandasFilterRows(PandasTransformer):
@@ -233,7 +237,7 @@ class PandasFilterRows(PandasTransformer):
         A pandas DataFrame to filter.
     selected_rows : pd.Series
         A pandas Series containing True on the rows to keep.
-    
+
     Output
     ------
     dataset : pd.DataFrame
@@ -264,7 +268,7 @@ class PandasDropNan(PandasTransformer):
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
-        
+
     Output
     ------
     dataset : pd.DataFrame
@@ -304,12 +308,12 @@ class PandasDropNan(PandasTransformer):
 
 class PandasPivot(PandasTransformer):
     """Transforms a DataFrame into a Pivot table from the given rows, columns and values.
-    
+
     Input
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
-        
+
     Output
     ------
     dataset : pd.DataFrame
@@ -367,7 +371,7 @@ class PandasRenameColumn(PandasTransformer):
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
-        
+
     Output
     ------
     dataset : pd.DataFrame
@@ -398,12 +402,12 @@ class PandasSequence(PandasTransformer):
     PandasSequence wraps a list of nodes that must be executed in sequence into a single node.
     Intermediate values are passed along the chain using the 'dataset' variable, hence only
     PandasNodes can be used within a sequence.
-    
+
     Input
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
-        
+
     Output
     ------
     dataset : pd.DataFrame
@@ -436,14 +440,14 @@ class PandasSequence(PandasTransformer):
 class PandasAddColumn(PandasTransformer):
     """
     Node used to add a column to a Pandas Dataframe starting from a given Pandas Series.
-    
+
     Input
     -----
     dataset : pd.DataFrame
         A pandas DataFrame.
     column : pd.Series
         A pandas Series to add to the dataset.
-        
+
     Output
     ------
     dataset : pd.DataFrame
@@ -477,12 +481,12 @@ class PandasAddColumn(PandasTransformer):
 class PandasReplaceColumn(PandasNode):
     """
     Node used to replace the boolean values of a Pandas Series with other values given by the user.
-    
+
     Input
     -----
     column : pd.Series
         A pandas Series containing all True or False values.
-        
+
     Output
     ------
     column : pd.Series

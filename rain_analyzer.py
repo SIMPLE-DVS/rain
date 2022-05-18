@@ -105,17 +105,11 @@ def get_io_structure(io_dict: dict):
     """
     io = {}
     for k, v in io_dict.items():
-        io[k] = v.__name__
+        if isinstance(v, str):
+            io[k] = v
+        else:
+            io[k] = v.__name__
     return io
-
-
-def get_class(cls, package="simple_repo.", module=".node_structure"):
-    """
-    Given a module and a package string it returns the required class in that module.
-    """
-    module = importlib.import_module(module, package=package)
-    clazz = getattr(module, cls)
-    return clazz
 
 
 def get_simple_nodes_info(node_subclasses: set):
