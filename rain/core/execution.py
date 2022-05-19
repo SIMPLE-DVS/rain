@@ -108,6 +108,7 @@ class LocalExecutor(metaclass=Singleton):
                 else:
                     raise Exception("Error during values propagation!")
 
+        logger.success("Execution completed", dataflow_id=dataflow.id)
         return True
 
 
