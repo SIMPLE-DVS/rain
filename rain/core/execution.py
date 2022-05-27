@@ -62,9 +62,12 @@ class LocalExecutor(metaclass=Singleton):
         ordered_nodes = dataflow.get_execution_ordered_nodes()
 
         for node in ordered_nodes:
-
             logger.info("Starting execution of the node", dataflow_id=dataflow.id, node_name=node)
-            node.execute()
+            try:
+                node.execute()
+            except Exception as ex:
+                logger.error(ex.__str__(), dataflow_id=dataflow.id, node_name=node)
+                return False
             logger.success("Node executed succesfully", dataflow_id=dataflow.id, node_name=node)
 
             node_out_edge = dataflow.get_outgoing_edges(node)
