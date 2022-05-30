@@ -19,7 +19,7 @@ class IrisDatasetLoader(InputNode):
     ----------
     node_id : str
         Id of the node.
-    separate_target : bool, default='False'
+    separate_target : bool, default=False
         Whether to get the target labels in the separated output 'target'.
     """
 

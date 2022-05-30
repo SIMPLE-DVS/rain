@@ -26,13 +26,13 @@ class TrainTestDatasetSplit(SklearnFunction):
     ----------
     node_id : str
         Id of the node.
-    test_size: float = None
+    test_size : float, default=None
         The size as percentage of the test dataset (e.g. 0.3 is 30%).
-    train_size: float = None
+    train_size : float, default=None
         The size as percentage of the train dataset (e.g. 0.7 is 70%)
-    random_state: int = None
+    random_state : int, default=None
         Seed for the random generation.
-    shuffle : bool = True
+    shuffle : bool, default=True
         Whether to shuffle the dataset before the splitting.
     """
 
@@ -91,13 +91,13 @@ class TrainTestSampleTargetSplit(SklearnFunction):
     ----------
     node_id : str
         Id of the node.
-    test_size: float = None
+    test_size : float, default=None
         The size as percentage of the test dataset (e.g. 0.3 is 30%).
-    train_size: float = None
+    train_size : float, default=None
         The size as percentage of the train dataset (e.g. 0.7 is 70%)
-    random_state: int = None
+    random_state : int, default=None
         Seed for the random generation.
-    shuffle : bool = True
+    shuffle : bool, default=True
         Whether to shuffle the dataset before the splitting.
     """
 
@@ -116,9 +116,9 @@ class TrainTestSampleTargetSplit(SklearnFunction):
     def __init__(
         self,
         node_id: str,
-        test_size=None,
-        train_size=None,
-        random_state=None,
+        test_size: float = None,
+        train_size: float = None,
+        random_state: int = None,
         shuffle: bool = True,
     ):
         super(TrainTestSampleTargetSplit, self).__init__(node_id)
