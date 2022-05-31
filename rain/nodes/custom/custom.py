@@ -9,6 +9,8 @@ class CustomNode(ComputationalNode):
     def __init__(self, node_id: str, use_function, **kwargs):
         super(CustomNode, self).__init__(node_id)
         inputs, outputs, self._other_params = parse_custom_node(use_function)
+        for k, v in kwargs.items():
+            self._other_params[k] = v
 
         self._input_vars = {inp: None for inp in inputs}
         self._output_vars = {out: None for out in outputs}
