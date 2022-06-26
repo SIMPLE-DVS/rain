@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Tuple, Any
 
 import numpy
@@ -167,6 +168,12 @@ class PandasColumnsFiltering(PandasTransformer):
                         if col_type[index] == "timedelta":
                             self.dataset[col] = pandas.to_timedelta(self.dataset[col])
                             self.dataset[col] = self.dataset[col].apply(lambda elem: elem.total_seconds())
+                        elif col_type[index] == "datetime":
+                            self.dataset[col] = [pd.to_datetime(datetime.fromisoformat(d).replace(tzinfo=None)) for d in self.dataset[col]]
+                        elif col_type[index] == "int":
+                            self.dataset[col] = self.dataset[col].astype(col_type[index]).fillna(method='ffill')
+                        elif col_type[index] == "float":
+                            self.dataset[col] = self.dataset[col].astype(col_type[index]).fillna(method='ffill')
                         else:
                             self.dataset[col] = self.dataset[col].astype(col_type[index])
 
@@ -521,3 +528,68 @@ class PandasReplaceColumn(PandasNode):
                 self.parameters.get_dict().get("second_value"),
             )
         )
+
+
+class PandasGroupBy(PandasTransformer):
+    """PandasGroupBy manages filtering of rows that have been previously selected.
+
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame to group.
+
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame resulting from the GroupBy.
+
+    Parameters
+    ----------
+    node_id : str
+        Id of the node.
+    key : str
+        Groupby key, which selects the grouping column of the target.
+    freq : str
+        This will groupby the specified frequency if the target selection (via key) is a datetime-like object.
+        For full specification of available frequencies, please see
+        `here  /pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_.
+    axis : int, default=0
+        Number of the axis.
+    sort : bool, default=False
+        Whether to sort the resulting labels.
+    dropna : bool, default=True
+        If True, and if group keys contain NA values, NA values together with row/column will be dropped. If False, NA
+        values will also be treated as the key in groups.
+    aggregates : str or List[str]
+        The function used to aggregate the different columns during the GroupBy. It can be either a string, meaning
+        that it will try to apply the chosen aggregation function to all the columns, or a list of strings,
+        one for each column, meaning that it will try to assign a chosen type to each column in order.
+    """
+
+    def __init__(self, node_id: str, key: str = None, freq: str = None, axis: int = 0,
+                 sort: bool = False, dropna: bool = True, aggregates: str or List[str] = None):
+        super(PandasGroupBy, self).__init__(node_id)
+        self.parameters = Parameters(
+            key=KeyValueParameter("key", str, key, True),
+            freq=KeyValueParameter("freq", str, freq),
+            axis=KeyValueParameter("axis", int, axis),
+            sort=KeyValueParameter("sort", bool, sort),
+            dropna=KeyValueParameter("dropna", bool, dropna),
+            aggregates=KeyValueParameter("aggregates", str or List[str], aggregates)
+        )
+
+    def execute(self):
+        columns = [c for c in self.dataset.columns if c != self.parameters.key.value]
+        values = {columns[i]: self.parameters.aggregates.value
+            if type(self.parameters.aggregates.value) == str
+            else (self.parameters.aggregates.value[i] if self.parameters.aggregates.value else 'mean')
+                  for i in range(len(columns))}
+        self.dataset = self.dataset.groupby(pd.Grouper(
+            key=self.parameters.key.value,
+            freq=self.parameters.freq.value,
+            axis=self.parameters.axis.value,
+            sort=self.parameters.sort.value,
+            dropna=self.parameters.dropna.value
+        )).aggregate(values)
+        if self.parameters.dropna.value:
+            self.dataset = self.dataset.dropna(axis=self.parameters.axis.value, how='all')

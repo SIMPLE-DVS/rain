@@ -8,6 +8,7 @@ from rain.nodes.pandas.transform_nodes import (
     PandasFilterRows,
     PandasSelectRows,
     PandasAddColumn,
+    PandasGroupBy,
 )
 
 from rain.nodes.pandas.pandas_io import (
