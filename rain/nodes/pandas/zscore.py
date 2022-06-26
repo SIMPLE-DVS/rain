@@ -2,6 +2,8 @@ import pickle
 from typing import List
 import numpy as np
 import pandas as pd
+
+from rain import Tags, LibTag, TypeTag
 from rain.core.parameter import Parameters, KeyValueParameter
 from rain.nodes.pandas.node_structure import PandasNode
 
@@ -46,6 +48,10 @@ class ZScoreTrainer(PandasNode):
             mean[column] = np.mean(content)
             dev_std[column] = np.std(content)
         self.model = pickle.dumps({"mean": mean, "dev_std": dev_std})
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.PANDAS, TypeTag.TRAINER)
 
 
 class ZScorePredictor(PandasNode):
@@ -101,3 +107,7 @@ class ZScorePredictor(PandasNode):
                     self.predictions[column].append(0)
 
         self.predictions = pd.DataFrame.from_dict(self.predictions)
+
+    @classmethod
+    def _get_tags(cls):
+        return Tags(LibTag.PANDAS, TypeTag.PREDICTOR)

@@ -25,6 +25,7 @@ class LibTag(Enum):
     SPARK = "PySpark"
     SKLEARN = "Sklearn"
     MONGODB = "PyMongo"
+    TPOT = 'TPOT'
     OTHER = "Other"
     BASE = "Base"
 
@@ -38,9 +39,11 @@ class TypeTag(Enum):
     OUTPUT = "Output"
     TRANSFORMER = "Transformer"
     CLASSIFIER = "Classifier"
-    CLUSTERER = "CLusterer"
+    CLUSTERER = "Clusterer"
     REGRESSOR = "Regressor"
     ESTIMATOR = "Estimator"
+    TRAINER = "Trainer"
+    PREDICTOR = "Predictor"
     METRICS = "Metrics"
     OTHER = "Other"
     CUSTOM = "Custom"

@@ -20,12 +20,18 @@ try:
 except ModuleNotFoundError or ImportError:
     pass
 
+try:
+    from rain.nodes.tpot import *
+except ModuleNotFoundError or ImportError:
+    pass
+
 # The following code would be better for dynamical imports
 # but the code completion does not work in this way.
 # soft_dependencies = {
 #     "pymongo": "rain.mongodb",
 #     "pyspark": "rain.spark",
-#     "sklearn": "rain.sklearn"
+#     "sklearn": "rain.sklearn",
+#     "tpot": "rain.tpot"
 # }
 #
 # for dependency, plugin_module in soft_dependencies.items():
