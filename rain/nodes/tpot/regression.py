@@ -1,13 +1,13 @@
 import pickle
 
 import pandas as pd
-from tpot import TPOTClassifier
+from tpot import TPOTRegressor
 from rain import Tags, LibTag, TypeTag, ComputationalNode
 from rain.core.parameter import Parameters, KeyValueParameter
 
 
-class TPOTClassificationTrainer(ComputationalNode):
-    """Node that returns the classification model trained with the TPOT library.
+class TPOTRegressionTrainer(ComputationalNode):
+    """Node that returns the regression model trained with the TPOT library.
 
     Input
     -----
@@ -51,16 +51,12 @@ class TPOTClassificationTrainer(ComputationalNode):
         This parameter tells the genetic programming algorithm how many pipelines to
         "breed" every generation. We recommend using the default parameter unless you
         understand how the mutation rate affects GP algorithms.
-    scoring : str, default='accuracy'
+    scoring : str, default='neg_mean_squared_error'
         Function used to evaluate the quality of a given pipeline for the
-        problem. By default, accuracy is used for classification problems.
+        problem. By default, mean squared error (MSE) is used for regression problems.
         Offers the same options as sklearn.model_selection.cross_val_score as well as
-        a built-in score 'balanced_accuracy'. Classification metrics:
-        ['accuracy', 'adjusted_rand_score', 'average_precision', 'balanced_accuracy',
-        'f1', 'f1_macro', 'f1_micro', 'f1_samples', 'f1_weighted',
-        'precision', 'precision_macro', 'precision_micro', 'precision_samples',
-        'precision_weighted', 'recall', 'recall_macro', 'recall_micro',
-        'recall_samples', 'recall_weighted', 'roc_auc']
+        a built-in score 'balanced_accuracy'. Regression metrics: ['neg_median_absolute_error',
+        'neg_mean_absolute_error', 'neg_mean_squared_error', 'r2']
     cv : int, default=5
         The number of folds to evaluate each pipeline over in k-fold cross-validation
         during the TPOT optimization process.
@@ -142,8 +138,6 @@ class TPOTClassificationTrainer(ComputationalNode):
         How much information TPOT communicates while it's running.
         0 = none, 1 = minimal, 2 = high, 3 = all.
         A setting of 2 or higher will add a progress bar during the optimization procedure.
-    log_file : str
-        Save progress content to a file.
     """
 
     _input_vars = {"dataset": pd.DataFrame}
@@ -152,12 +146,12 @@ class TPOTClassificationTrainer(ComputationalNode):
 
     def __init__(self, node_id: str, target_feature: str = None, export_script: bool = False, generations: int = 100,
                  population_size: int = 100, offspring_size: int = None, mutation_rate: float = 0.9,
-                 crossover_rate: float = 0.1, scoring: str = 'accuracy', cv: int = 5, subsample: float = 1.0,
-                 n_jobs: int = 1, max_time_mins: int = None, max_eval_time_mins: float = 5, random_state: int = None,
-                 config_dict: str = None, template: str = None, warm_start: bool = False, memory: str = None,
-                 use_dask: bool = False, periodic_checkpoint_folder: str = None, early_stop: int = None,
-                 verbosity: int = 0, log_file: str = None):
-        super(TPOTClassificationTrainer, self).__init__(node_id)
+                 crossover_rate: float = 0.1, scoring: str = 'neg_mean_squared_error', cv: int = 5,
+                 subsample: float = 1.0, n_jobs: int = 1, max_time_mins: int = None, max_eval_time_mins: float = 5,
+                 random_state: int = None, config_dict: str = None, template: str = None, warm_start: bool = False,
+                 memory: str = None, use_dask: bool = False, periodic_checkpoint_folder: str = None,
+                 early_stop: int = None, verbosity: int = 0):
+        super(TPOTRegressionTrainer, self).__init__(node_id)
 
         self.parameters = Parameters(
             target_feature=KeyValueParameter("target_feature", str, target_feature, True),
@@ -182,7 +176,6 @@ class TPOTClassificationTrainer(ComputationalNode):
             periodic_checkpoint_folder=KeyValueParameter("periodic_checkpoint_folder", str, periodic_checkpoint_folder),
             early_stop=KeyValueParameter("early_stop", int, early_stop),
             verbosity=KeyValueParameter("verbosity", int, verbosity),
-            log_file=KeyValueParameter("log_file", str, log_file),
         )
 
     def execute(self):
@@ -192,7 +185,7 @@ class TPOTClassificationTrainer(ComputationalNode):
         del params['target_feature']
         del params['export_script']
         params['disable_update_check'] = True
-        tpot = TPOTClassifier(**params)
+        tpot = TPOTRegressor(**params)
         tpot.fit(x_train, y_train)
         self.code = tpot.export()
         self.model = pickle.dumps(tpot.fitted_pipeline_)
@@ -202,8 +195,8 @@ class TPOTClassificationTrainer(ComputationalNode):
         return Tags(LibTag.TPOT, TypeTag.TRAINER)
 
 
-class TPOTClassificationPredictor(ComputationalNode):
-    """Node that returns the predictions performed with a TPOT Classification model on the columns of a dataset
+class TPOTRegressionPredictor(ComputationalNode):
+    """Node that returns the predictions performed with a TPOT Regression model on the columns of a dataset
     without the target feature column.
 
     Input
@@ -212,7 +205,7 @@ class TPOTClassificationPredictor(ComputationalNode):
         The pandas DataFrame.
 
     model : pickle
-        The TPOT Classification model in pickle format.
+        The TPOT Regression model in pickle format.
 
     Output
     ------
@@ -225,7 +218,7 @@ class TPOTClassificationPredictor(ComputationalNode):
     _output_vars = {"predictions": pd.DataFrame}
 
     def __init__(self, node_id: str):
-        super(TPOTClassificationPredictor, self).__init__(node_id)
+        super(TPOTRegressionPredictor, self).__init__(node_id)
         self.predictions = {}
 
     def execute(self):

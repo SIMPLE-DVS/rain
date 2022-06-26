@@ -1,1 +1,2 @@
 from rain.nodes.tpot.classification import TPOTClassificationTrainer, TPOTClassificationPredictor
+from rain.nodes.tpot.regression import TPOTRegressionTrainer, TPOTRegressionPredictor
