@@ -40,18 +40,17 @@ def parse_custom_node(custom_function):
 
     code = inspect.getsource(custom_function)
     inputs = get_variables_matches(
-        code, r"{}(?:\[|\.get\()\"([a-zA-Z_\d-]+)\"".format(params[0])
+        code, r"{}(?:\[|\.get\()(\"|\')(?P<param>[a-zA-Z_\d-]+)(\"|\')\]".format(params[0])
     )
     outputs = get_variables_matches(
-        code, r"{}\[\"([a-zA-Z_\d-]+)\"\]".format(params[1])
+        code, r"{}\[(\"|\')(?P<param>[a-zA-Z_\d-]+)(\"|\')\]".format(params[1])
     )
 
     return inputs, outputs, kwargs_dict
 
 
 def get_variables_matches(code, regex):
-    matches = re.findall(regex, code, re.MULTILINE)
-    return matches
+    return [x.group("param") for x in re.finditer(regex, code, re.MULTILINE)]
 
 
 def get_kwargs(params):
