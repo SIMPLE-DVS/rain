@@ -40,7 +40,7 @@ def parse_custom_node(custom_function):
 
     code = inspect.getsource(custom_function)
     inputs = get_variables_matches(
-        code, r"{}(?:\[|\.get\()(\"|\')(?P<param>[a-zA-Z_\d-]+)(\"|\')\]".format(params[0])
+        code, r"{}(\[|\.get\()(\"|\')(?P<param>[a-zA-Z_\d-]+)(\"|\')(\]|\))".format(params[0])
     )
     outputs = get_variables_matches(
         code, r"{}\[(\"|\')(?P<param>[a-zA-Z_\d-]+)(\"|\')\]".format(params[1])

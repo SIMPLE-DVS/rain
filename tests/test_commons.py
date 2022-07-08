@@ -198,7 +198,7 @@ classes = [
     (
         PandasSelectRows,
         ["dataset"],
-        ["selection"],
+        ["selection", "dataset"],
         None,
         Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
     ),
