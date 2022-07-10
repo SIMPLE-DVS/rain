@@ -25,8 +25,17 @@ from rain import (
     PandasDropNan,
     DaviesBouldinScore,
     SklearnPCA,
+    IrisDatasetLoader,
+    PandasGroupBy,
+    ZScoreTrainer,
+    ZScorePredictor,
+    TPOTClassificationTrainer,
+    TPOTClassificationPredictor,
+    TPOTRegressionTrainer,
+    TPOTRegressionPredictor,
 )
-from rain.core.base import TypeTag, LibTag, Tags, SimpleNode
+from rain.core.base import TypeTag, LibTag, Tags, SimpleNode, InputNode, OutputNode
+from rain.nodes.custom import CustomNode
 from rain.nodes.pandas.pandas_io import (
     PandasInputNode,
     PandasOutputNode,
@@ -141,6 +150,16 @@ classes = [
         ["fitted_model", "predictions", "score_value"],
         ["fit", "predict", "score"],
         Tags(LibTag.SKLEARN, TypeTag.CLASSIFIER),
+    ),
+    (
+        IrisDatasetLoader,
+        None,
+        [
+            "dataset",
+            "target",
+        ],
+        None,
+        Tags(LibTag.SKLEARN, TypeTag.INPUT),
     ),  # Pandas Nodes
     (PandasInputNode, None, ["dataset"], None, Tags(LibTag.PANDAS, TypeTag.INPUT)),
     (PandasCSVLoader, None, ["dataset"], None, Tags(LibTag.PANDAS, TypeTag.INPUT)),
@@ -208,6 +227,13 @@ classes = [
         ["dataset"],
         None,
         Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
+    ),
+    (
+        PandasGroupBy,
+        ["dataset"],
+        ["dataset"],
+        None,
+        Tags(LibTag.PANDAS, TypeTag.TRANSFORMER),
     ),  # Spark Nodes
     (SparkInputNode, None, [], None, Tags(LibTag.SPARK, TypeTag.INPUT)),
     (SparkCSVLoader, None, ["dataset"], None, Tags(LibTag.SPARK, TypeTag.INPUT)),
@@ -268,6 +294,15 @@ classes = [
     ),  # IO
     (MongoCSVReader, None, ["dataset"], None, Tags(LibTag.MONGODB, TypeTag.INPUT)),
     (MongoCSVWriter, ["dataset"], None, None, Tags(LibTag.MONGODB, TypeTag.OUTPUT)),
+    (ZScoreTrainer, ["dataset"], ["model"], None, Tags(LibTag.PANDAS, TypeTag.TRAINER)),
+    (ZScorePredictor, ["dataset", "model"], ["predictions"], None, Tags(LibTag.PANDAS, TypeTag.PREDICTOR)),
+    (TPOTClassificationTrainer, ["dataset"], ["code", "model"], None, Tags(LibTag.TPOT, TypeTag.TRAINER)),
+    (TPOTClassificationPredictor, ["dataset", "model"], ["predictions"], None, Tags(LibTag.TPOT, TypeTag.PREDICTOR)),
+    (TPOTRegressionTrainer, ["dataset"], ["code", "model"], None, Tags(LibTag.TPOT, TypeTag.TRAINER)),
+    (TPOTRegressionPredictor, ["dataset", "model"], ["predictions"], None, Tags(LibTag.TPOT, TypeTag.PREDICTOR)),
+    (CustomNode, [], [], None, Tags(LibTag.BASE, TypeTag.CUSTOM)),
+    (InputNode, None, [], None, Tags(LibTag.OTHER, TypeTag.INPUT)),
+    (OutputNode, [], None, None, Tags(LibTag.OTHER, TypeTag.OUTPUT)),
 ]
 
 

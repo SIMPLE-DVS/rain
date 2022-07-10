@@ -14,7 +14,7 @@ class PandasInputNode(InputNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
@@ -28,7 +28,7 @@ class PandasOutputNode(OutputNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):

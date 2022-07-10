@@ -8,6 +8,8 @@ from rain import (
     PandasColumnsFiltering,
     PandasSequence,
     PandasRenameColumn,
+    ZScoreTrainer,
+    ZScorePredictor,
 )
 from rain.core.exception import ParametersException, PandasSequenceException
 from rain.nodes.pandas.transform_nodes import (
@@ -16,12 +18,14 @@ from rain.nodes.pandas.transform_nodes import (
     PandasDropNan,
     PandasAddColumn,
     PandasReplaceColumn,
+    PandasPivot,
+    PandasGroupBy,
 )
 
 
 @pytest.fixture
-def iris_data():
-    yield load_iris(as_frame=True).data
+def iris():
+    yield load_iris(as_frame=True)
 
 
 @pytest.fixture
@@ -238,13 +242,20 @@ class TestPandasDropNan:
 
 
 class TestPandasPivot:
-    pass
+    def test_pivot(self, iris):
+        ac = PandasPivot("ac", rows="sepal length (cm)", columns="sepal width (cm)", values="petal length (cm)")
+        ac.dataset = iris.data
+        r = ac.dataset["sepal length (cm)"].unique().size
+        c = ac.dataset["sepal width (cm)"].unique().size
+        assert len(ac.dataset.columns) == 4
+        ac.execute()
+        assert ac.dataset.shape == (r, c)
 
 
 class TestPandasAddColumn:
-    def test_add_column(self, iris_data):
+    def test_add_column(self, iris):
         ac = PandasAddColumn("ac", 2, "prova")
-        ac.dataset = iris_data
+        ac.dataset = iris.data
         ac.column = pd.Series(range(0, 150))
         assert len(ac.dataset.columns) == 4
         ac.execute()
@@ -264,6 +275,30 @@ class TestPandasReplaceColumn:
         assert numpy.array_equal(
             ac.column.values, pd.Series([10, 11, 11, 11, 10]).values
         )
+
+
+class TestPandasGroupBy:
+    def test_group_by(self, iris):
+        ac = PandasGroupBy("ac", key="time", freq="2D")
+        from datetime import datetime, timedelta
+        from random import randint
+        start = datetime(2000, 1, 1)
+        end = start + timedelta(days=iris.frame.shape[0])
+        datetime_column = [str(start + timedelta(days=x)) for x in range(0, (end - start).days)]
+        timedelta_column = [str(timedelta(hours=randint(0, 3), minutes=randint(0, 59))) for _ in
+                            range(iris.frame.shape[0])]
+        iris.frame.insert(value=datetime_column, loc=iris.frame.shape[1], column="time")
+        iris.frame.insert(value=timedelta_column, loc=iris.frame.shape[1], column="delta")
+        assert len(iris.frame.columns) == 7
+        pcf = PandasColumnsFiltering("pcf", columns_type=["float64", "float64", "float64", "float64", "int32",
+                                                          "datetime", "timedelta"])
+        pcf.dataset = iris.frame
+        pcf.execute()
+        ac.dataset = pcf.dataset
+        rows = ac.dataset.shape[0]
+        ac.execute()
+        assert ac.dataset.shape[0] == rows / 2
+        assert len(ac.dataset.columns) == 6
 
 
 class TestPandasSequence:
@@ -309,11 +344,11 @@ class TestPandasSequence:
 
         assert ps.dataset.equals(expected_df)
 
-    def test_integration_execution(self, tmpdir, iris_data):
+    def test_integration_execution(self, tmpdir, iris):
         # setup input dataset
         iris_file = tmpdir / "iris.csv"
 
-        iris_data.to_csv(iris_file, index=False)
+        iris.data.to_csv(iris_file, index=False)
 
         # setup sequence w/ stages
         import rain as sr
@@ -333,9 +368,23 @@ class TestPandasSequence:
 
         df.execute()
 
-        expected_df = iris_data.filter(
+        expected_df = iris.data.filter(
             axis=1, items=["sepal length (cm)", "petal length (cm)"]
         )
         expected_df.columns = ["a", "c"]
 
         assert ps.dataset.equals(expected_df)
+
+
+class TestZScore:
+    def test_zscore(self, iris):
+        zscore_trainer = ZScoreTrainer("zt")
+        zscore_trainer.dataset = iris.frame
+        zscore_trainer.execute()
+        model = zscore_trainer.model
+        assert model is not None
+        zscore_predictor = ZScorePredictor("zp")
+        zscore_predictor.dataset = iris.frame
+        zscore_predictor.model = model
+        zscore_predictor.execute()
+        assert zscore_predictor.predictions is not None

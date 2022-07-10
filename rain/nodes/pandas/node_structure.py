@@ -22,7 +22,7 @@ class PandasTransformer(ComputationalNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
@@ -32,7 +32,7 @@ class PandasTransformer(ComputationalNode):
 class PandasNode(ComputationalNode):
     """
     Node that perform some transformation using the Pandas library without input/output constraints.
-    
+
     Parameters
     ----------
     node_id : str
@@ -44,7 +44,7 @@ class PandasNode(ComputationalNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):

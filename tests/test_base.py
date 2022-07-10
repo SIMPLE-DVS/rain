@@ -56,6 +56,7 @@ computational_data = [
     sr.PandasDropNan,
     sr.PandasFilterRows,
     sr.PandasSelectRows,
+    sr.PandasGroupBy,
     sr.SimpleKMeans,
     sr.SklearnLinearSVC,
     sr.SparkPipelineNode,
@@ -64,6 +65,12 @@ computational_data = [
     sr.LogisticRegression,
     sr.SparkColumnSelector,
     sr.SparkSplitDataset,
+    sr.ZScoreTrainer,
+    sr.ZScorePredictor,
+    sr.TPOTClassificationTrainer,
+    sr.TPOTClassificationPredictor,
+    sr.TPOTRegressionTrainer,
+    sr.TPOTRegressionPredictor,
 ]
 
 

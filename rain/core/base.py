@@ -66,33 +66,6 @@ class Tags:
     type: TypeTag
 
 
-def get_class(fullname: str):
-    """
-    Given a fullname formed by "package + module + class" (a.e. sigmalib.load.loader.CSVLoader)
-    imports dynamically the module and returns the wanted <class>
-    """
-
-    full_name_parts = fullname.split(".")
-
-    package_name = ".".join(full_name_parts[:-2])
-    module_name = full_name_parts[-2]
-    class_name = full_name_parts[-1]
-
-    if package_name != "":
-        module = importlib.import_module("." + module_name, package_name)
-    else:
-        module = importlib.import_module(module_name)
-    class_ = getattr(module, class_name)
-
-    return class_
-
-
-def reset(simple_node):
-    dic = vars(simple_node)
-    for i in dic.keys():
-        dic[i] = None
-
-
 class Meta(type):
     """
     Metaclass used by a SimpleNode to manage the inheritance of the attributes. In particular, it updates the variables
@@ -189,7 +162,7 @@ class SimpleNode(metaclass=Meta):
     """
 
     def __init__(self, node_id: str):
-        logger.info("Create Node", node_name=type(self).__name__)
+        logger.info("Create Node", node_name=node_id)
 
         super(SimpleNode, self).__init__()
         self.node_id = node_id
@@ -199,7 +172,7 @@ class SimpleNode(metaclass=Meta):
         """Expose the main functionality: depending on the node, the computation is done using a specific Python
         library and its function/s.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def has_attribute(self, attribute: str) -> bool:
@@ -215,12 +188,12 @@ class SimpleNode(metaclass=Meta):
         bool
             True if the node has the given parameter, False otherwise.
         """
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
         """Return the Tags associated to this node"""
-        pass
+        pass  # pragma: no cover
 
     def __hash__(self):
         return hash(self.node_id)
@@ -306,7 +279,7 @@ class InputNode(SimpleNode, InputMixin):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     def has_attribute(self, attribute: str) -> bool:
         return attribute in self._output_vars.keys()
@@ -330,7 +303,7 @@ class ComputationalNode(SimpleNode, InputMixin, OutputMixin):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     def has_attribute(self, attribute: str) -> bool:
         in_out_vars = set(self._input_vars.keys()).union(self._output_vars.keys())
@@ -351,7 +324,7 @@ class OutputNode(SimpleNode, OutputMixin):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     def has_attribute(self, attribute: str) -> bool:
         return attribute in self._input_vars.keys()
@@ -427,7 +400,7 @@ class MultiEdge:
 
         logger.debug(
             f"Create edge from {source.nodes_attributes} to {destination.node.node_id} - {destination.nodes_attributes}",
-            node_name=type(source.node).__name__,
+            node_name=source.node.node_id,
         )
 
         self.source = source
@@ -476,7 +449,7 @@ class DataFlow:
             If a node with the same node id already exists.
 
         """
-        logger.info(f"Add node {type(node).__name__}", dataflow_id=self.id)
+        logger.info(f"Add node {node.node_id}", dataflow_id=self.id)
         if node.node_id in self._nodes.keys():
             raise DuplicatedNodeId(
                 "The node identified as {} already exists within the DataFlow.".format(

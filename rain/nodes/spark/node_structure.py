@@ -49,7 +49,7 @@ class SparkNode(ComputationalNode, SparkNodeSession, SparkStageMixin):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
 
 class Transformer(SparkNode):
@@ -78,7 +78,7 @@ class Transformer(SparkNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
@@ -111,7 +111,7 @@ class Estimator(SparkNode):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
@@ -123,7 +123,7 @@ class SparkInputNode(InputNode, SparkNodeSession):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):
@@ -135,7 +135,7 @@ class SparkOutputNode(OutputNode, SparkNodeSession):
 
     @abstractmethod
     def execute(self):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def _get_tags(cls):

@@ -147,11 +147,6 @@ class SimpleParameter:
         """Returns the variable that specify if the parameter is mandatory."""
         return self._is_mandatory
 
-    @abstractmethod
-    def get_structure(self) -> dict:
-        """Returns the structure of the parameter as a dictionary."""
-        pass
-
 
 class KeyValueParameter(SimpleParameter):
     """A KeyValue Parameter contains information about parameters that can be used during the transformation.
@@ -174,14 +169,6 @@ class KeyValueParameter(SimpleParameter):
         self._type = p_type
         self._value = value
         super(KeyValueParameter, self).__init__(is_mandatory)
-
-    def get_structure(self):
-        struct = dict()
-
-        struct["name"] = self._name
-        struct["type"] = self._type.__name__
-        struct["is_mandatory"] = self._is_mandatory
-        return struct
 
     @property
     def name(self) -> str:
@@ -229,5 +216,7 @@ class SimpleHyperParameter(SimpleParameter):
     def __init__(self, is_mandatory: bool = False):
         super(SimpleHyperParameter, self).__init__(is_mandatory)
 
-    def get_structure(self):
-        pass
+    @property
+    def is_mandatory(self):
+        """Returns the variable that specify if the parameter is mandatory."""
+        return self._is_mandatory
