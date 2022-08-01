@@ -537,3 +537,40 @@ class PandasGroupBy(PandasTransformer):
         )).aggregate(values)
         if self.parameters.dropna.value:
             self.dataset = self.dataset.dropna(axis=self.parameters.axis.value, how='all')
+
+
+class SplitFeaturesAndLabels(PandasTransformer):
+    """
+    Node used to split a Dataframe into Features and Labels.
+
+    Input
+    -----
+    dataset : pd.DataFrame
+        A pandas DataFrame.
+
+    Output
+    ------
+    dataset : pd.DataFrame
+        A pandas DataFrame representing the Features.
+    labels : pd.Series
+        A pandas Series containing the labels.
+
+    Parameters
+    ----------
+    node_id : str
+        The unique id of the node.
+    target : str
+        The name of the column containing the labels.
+    """
+
+    _output_vars = {"labels": pd.Series}
+
+    def __init__(self, node_id: str, target: str):
+        super(SplitFeaturesAndLabels, self).__init__(node_id)
+        self.parameters = Parameters(
+            target=KeyValueParameter("target", str, target)
+        )
+
+    def execute(self):
+        self.labels = self.dataset[self.parameters.target.value]
+        self.dataset = self.dataset.drop(columns=[self.parameters.target.value])

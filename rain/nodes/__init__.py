@@ -24,3 +24,8 @@ try:
     from rain.nodes.tpot import *
 except ModuleNotFoundError or ImportError:
     pass
+
+try:
+    from rain.nodes.pysad import *
+except ModuleNotFoundError or ImportError:
+    pass

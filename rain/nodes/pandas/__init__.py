@@ -9,6 +9,7 @@ from rain.nodes.pandas.transform_nodes import (
     PandasSelectRows,
     PandasAddColumn,
     PandasGroupBy,
+    SplitFeaturesAndLabels
 )
 
 from rain.nodes.pandas.pandas_io import (
@@ -19,4 +20,9 @@ from rain.nodes.pandas.pandas_io import (
 from rain.nodes.pandas.zscore import (
     ZScoreTrainer,
     ZScorePredictor,
+)
+
+from rain.nodes.pandas.model_io import (
+    PickleModelSave,
+    PickleModelLoad
 )

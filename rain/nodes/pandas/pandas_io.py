@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Union
 
 import pandas
 import pandas as pd
@@ -49,6 +50,8 @@ class PandasCSVLoader(PandasInputNode):
         Of the CSV file.
     delim : str, default ','
         Delimiter symbol of the CSV file.
+    index_col: Union[int, str], default=None
+        Column(s) to use as the row labels of the DataFrame, either given as string name or column index.
 
     Notes
     -----
@@ -67,12 +70,13 @@ class PandasCSVLoader(PandasInputNode):
     # encoding_errors='strict', dialect=None, error_bad_lines=None, warn_bad_lines=None, on_bad_lines=None,
     # delim_whitespace=False, low_memory=True, memory_map=False, float_precision=None, storage_options=None }
 
-    def __init__(self, node_id: str, path: str, delim: str = ","):
+    def __init__(self, node_id: str, path: str, delim: str = ",", index_col: Union[int, str] = None):
         super(PandasCSVLoader, self).__init__(node_id)
 
         self.parameters = Parameters(
             path=KeyValueParameter("filepath_or_buffer", str, path),
             delim=KeyValueParameter("delimiter", str, delim),
+            index_col=KeyValueParameter("index_col", str, index_col)
         )
 
         self.parameters.group_all("read_csv")

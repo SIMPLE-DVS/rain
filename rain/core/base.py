@@ -26,6 +26,7 @@ class LibTag(Enum):
     SKLEARN = "Sklearn"
     MONGODB = "PyMongo"
     TPOT = 'TPOT'
+    PYSAD = "PySad"
     OTHER = "Other"
     BASE = "Base"
 
