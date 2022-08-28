@@ -50,8 +50,8 @@ class PandasCSVLoader(PandasInputNode):
         Of the CSV file.
     delim : str, default ','
         Delimiter symbol of the CSV file.
-    index_col: Union[int, str], default=None
-        Column(s) to use as the row labels of the DataFrame, either given as string name or column index.
+    index_col : str, default=None
+        Column to use as the row labels of the DataFrame, given as string name
 
     Notes
     -----

@@ -75,7 +75,7 @@ class ZScorePredictor(PandasNode):
     columns : List[str]
         Column names to apply ZScore to. Empty to use all columns.
 
-    threshold : float, default=1.3,
+    threshold : float, default=1.3
         The threshold of the ZScore to distinguish anomalies.
     """
 

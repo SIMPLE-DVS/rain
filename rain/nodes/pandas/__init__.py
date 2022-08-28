@@ -23,6 +23,6 @@ from rain.nodes.pandas.zscore import (
 )
 
 from rain.nodes.pandas.model_io import (
-    PickleModelSave,
-    PickleModelLoad
+    PickleModelWriter,
+    PickleModelLoader
 )

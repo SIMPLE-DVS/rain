@@ -33,6 +33,8 @@ from rain import (
     TPOTClassificationPredictor,
     TPOTRegressionTrainer,
     TPOTRegressionPredictor,
+    PickleModelLoader,
+    PickleModelWriter,
 )
 from rain.core.base import TypeTag, LibTag, Tags, SimpleNode, InputNode, OutputNode
 from rain.nodes.custom import CustomNode
@@ -300,6 +302,8 @@ classes = [
     (TPOTClassificationPredictor, ["dataset", "model"], ["predictions"], None, Tags(LibTag.TPOT, TypeTag.PREDICTOR)),
     (TPOTRegressionTrainer, ["dataset"], ["code", "model"], None, Tags(LibTag.TPOT, TypeTag.TRAINER)),
     (TPOTRegressionPredictor, ["dataset", "model"], ["predictions"], None, Tags(LibTag.TPOT, TypeTag.PREDICTOR)),
+    (PickleModelLoader, None, ["model"], None, Tags(LibTag.PANDAS, TypeTag.INPUT)),
+    (PickleModelWriter, ["model"], None, None, Tags(LibTag.PANDAS, TypeTag.OUTPUT)),
     (CustomNode, [], [], None, Tags(LibTag.BASE, TypeTag.CUSTOM)),
     (InputNode, None, [], None, Tags(LibTag.OTHER, TypeTag.INPUT)),
     (OutputNode, [], None, None, Tags(LibTag.OTHER, TypeTag.OUTPUT)),

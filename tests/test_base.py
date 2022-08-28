@@ -12,6 +12,7 @@ input_data = [
     spark.SparkCSVLoader,
     spark.SparkModelLoader,
     pandas.PandasCSVLoader,
+    pandas.PickleModelLoader,
     sklearn.IrisDatasetLoader,
     mongodb.MongoCSVReader,
 ]
@@ -32,6 +33,7 @@ output_data = [
     spark.SparkSaveModel,
     spark.SparkSaveDataset,
     pandas.PandasCSVWriter,
+    pandas.PickleModelWriter,
     mongodb.MongoCSVWriter,
 ]
 
