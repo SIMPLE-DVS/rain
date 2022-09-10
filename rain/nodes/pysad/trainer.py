@@ -5,6 +5,7 @@ from rain.nodes.pysad.node_structure import PySadTrainer
 
 from pysad.models import IForestASD as IFASD, xStream as xS, HalfSpaceTrees as HST
 from pysad.evaluation import AUROCMetric
+from rain.loguru_logger import logger
 
 
 class HalfSpaceTree(PySadTrainer):
@@ -158,4 +159,4 @@ class IForestASD(PySadTrainer):
                     continue
                 self.metric.update(label, score)
             self.auroc = self.metric.get()
-            print(self.auroc)
+            logger.info(f"Model trained - AUROC: {self.auroc}", node_name=self.node_id)
