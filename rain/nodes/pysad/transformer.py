@@ -80,6 +80,7 @@ class ConformalProbabilityCalibrator(PySadNode):
     def execute(self):
         self.scores = self.calibrator.fit_transform(self.scores)
 
+    @classmethod
     def _get_tags(cls):
         return Tags(LibTag.PYSAD, TypeTag.TRANSFORMER)
 
@@ -123,5 +124,6 @@ class GaussianTailProbabilityCalibrator(PySadNode):
     def execute(self):
         self.scores = self.calibrator.fit_transform(self.scores)
 
+    @classmethod
     def _get_tags(cls):
         return Tags(LibTag.PYSAD, TypeTag.TRANSFORMER)
