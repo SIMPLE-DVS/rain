@@ -1,5 +1,6 @@
 import pandas as pd
 
+from rain import Tags, LibTag, TypeTag
 from rain.core.parameter import Parameters, KeyValueParameter
 from rain.nodes.pysad.node_structure import PySadTransformer, PySadNode
 from pysad.transform.preprocessing import InstanceUnitNormScaler as IUNScaler
@@ -79,6 +80,9 @@ class ConformalProbabilityCalibrator(PySadNode):
     def execute(self):
         self.scores = self.calibrator.fit_transform(self.scores)
 
+    def _get_tags(cls):
+        return Tags(LibTag.PYSAD, TypeTag.TRANSFORMER)
+
 
 class GaussianTailProbabilityCalibrator(PySadNode):
     """This class provides an interface to convert the scores into probabilities via Q-function, i.e., the tail
@@ -118,3 +122,6 @@ class GaussianTailProbabilityCalibrator(PySadNode):
 
     def execute(self):
         self.scores = self.calibrator.fit_transform(self.scores)
+
+    def _get_tags(cls):
+        return Tags(LibTag.PYSAD, TypeTag.TRANSFORMER)
