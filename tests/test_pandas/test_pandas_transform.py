@@ -136,9 +136,9 @@ class TestPandasColumnsFiltering:
         prf.execute()
 
         assert (
-            prf.dataset["one"].dtype == "int32"
+            (prf.dataset["one"].dtype == "int32" or prf.dataset["one"].dtype == "int64")
             and prf.dataset["two"].dtype == "float64"
-            and prf.dataset["three"].dtype == "int32"
+            and (prf.dataset["three"].dtype == "int32" or prf.dataset["three"].dtype == "int64")
         )
 
     def test_columns_type_list_none(self, initial_dataframe):
@@ -148,8 +148,8 @@ class TestPandasColumnsFiltering:
         prf.execute()
 
         assert (
-            prf.dataset["one"].dtype == "int32"
-            and prf.dataset["three"].dtype == "int32"
+            (prf.dataset["one"].dtype == "int32" or prf.dataset["one"].dtype == "int64")
+            and (prf.dataset["three"].dtype == "int32" or prf.dataset["three"].dtype == "int64")
         )
 
 

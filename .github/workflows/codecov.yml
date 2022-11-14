@@ -1,0 +1,29 @@
+name: Coverage
+
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  codecov-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4.3.0
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: pip install -r requirements_dev.txt
+      - name: Run tests and collect coverage
+        run: pytest --cov-report xml --cov=rain tests/
+      - name: Upload coverage results to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: rain
+          file: coverage.xml
+          verbose: true
