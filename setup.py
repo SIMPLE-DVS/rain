@@ -30,7 +30,6 @@ setup(
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
@@ -39,7 +38,6 @@ setup(
     ],
     description="SIMPLE Repository is a container for all the nodes used in the SIMPLE Project.",
     install_requires=requirements,
-    license="GNU General Public License v3",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords="rain",

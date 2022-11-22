@@ -12,8 +12,6 @@ Rain
     .. image:: https://img.shields.io/travis/DazeDC/simple_repo.svg
         :target: https://travis-ci.com/DazeDC/simple_repo
 
-* Free software: GNU General Public License v3
-
 What is it?
 -----------
 
@@ -148,14 +146,14 @@ From the main directory cd to the 'docs' directory.
     $ cd docs
 
 If you are on Windows then run the 'make.bat' file.
-    
+
 Otherwise download sphinx and the sphinx theme specified in the requirements_dev.txt file.
 Then run the command:
 
 .. code-block:: console
 
     $ sphinx-build . ./_build
-    
+
 The _build directory will contain the html files, open the index.html file to read the full documentation.
 
 Authors
