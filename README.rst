@@ -159,6 +159,4 @@ The _build directory will contain the html files, open the index.html file to re
 Authors
 -------
 
-* Alessandro Antinori <alessandro.antinori@studenti.unicam.it>
-* Riccardo Coltrinari <riccardo.coltrinari@studenti.unicam.it>
-* Marco Scarpetta <marco.scarpetta@studenti.unicam.it>
+* Università degli Studi di Camerino and Sigma S.p.A

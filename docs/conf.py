@@ -48,8 +48,8 @@ master_doc = "index"
 
 # General information about the project.
 project = "Rain Library"
-copyright = "2021, Riccardo Coltrinari"
-author = "Riccardo Coltrinari"
+copyright = "2023, Università degli Studi di Camerino and Sigma S.p.A"
+author = "Università degli Studi di Camerino and Sigma S.p.A"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -126,7 +126,7 @@ latex_documents = [
         master_doc,
         "rain.tex",
         "Rain Library Documentation",
-        "Riccardo Coltrinari",
+        "Università degli Studi di Camerino and Sigma S.p.A",
         "manual",
     ),
 ]

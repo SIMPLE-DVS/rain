@@ -24,8 +24,7 @@ test_requirements = [
 ]
 
 setup(
-    author="Alessandro Antinori, Riccardo Coltrinari, Marco Scarpetta",
-    author_email="alessandro.antinori@studenti.unicam.it, riccardo.coltrinari@studenti.unicam.it, marco.scarpetta@studenti.unicam.it",
+    author="Università degli Studi di Camerino and Sigma S.p.A",
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
