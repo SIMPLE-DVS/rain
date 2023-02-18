@@ -13,11 +13,11 @@ jobs:
       - name: Delete branch develop
         uses: dawidd6/action-delete-branch@v3
         with:
-          github_token: ${{secrets.GTB_TOKEN}}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branches: develop
       - name: Create branch develop
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GTB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           branch: 'develop'
