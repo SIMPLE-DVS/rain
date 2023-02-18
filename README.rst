@@ -159,4 +159,9 @@ The _build directory will contain the html files, open the index.html file to re
 Authors
 -------
 
+* Alessandro Antinori, Rosario Cappruccia, Riccardo Coltrinari, Flavio Corradini, Marco Piangerelli, Barbara Re, Marco Scarpetta
+
+Copyright
+---------
+
 * Università degli Studi di Camerino and Sigma S.p.A
