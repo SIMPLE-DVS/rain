@@ -22,7 +22,18 @@ jobs:
       - name: Execute analyzer
         run: |
           python ./rain_analyzer.py
-      - name: Upload to Firebase Storage
-        run: |
-          curl -i -X POST -H "Content-Type: multipart/form-data" -F "data=@analyzer_output/rain_structure.json" https://firebasestorage.googleapis.com/v0/b/rainfall-firebase.appspot.com/o/rain_structure.json
-
+      - name: Clone GitHub Pages Repository
+        uses: actions/checkout@v3
+        with:
+          ref: json
+          path: structure
+      - name: Move openapi.json to gh folder
+        run: mv analyzer_output/rain_structure.json structure
+      - name: Update gh-pages branch
+        uses: s0/git-publish-subdir-action@v2.6.0
+        env:
+          REPO: self
+          BRANCH: json
+          FOLDER: structure
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Update json branch with commit {sha}"
