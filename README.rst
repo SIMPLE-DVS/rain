@@ -1,4 +1,4 @@
-.. image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain?flag=rain&style=for-the-badge&token=FVANEYLT21
+.. image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain?flag=rain&style=for-the-badge
    :alt: Codecov
    :target: https://app.codecov.io/gh/SIMPLE-DVS/rain
 
