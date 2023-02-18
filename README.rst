@@ -130,8 +130,8 @@ More information about Rain usage, edges' semantic and all the possible executor
 A complete description of all the available nodes with their
 behavior, accepted parameters, inputs and outputs is available at this `link`_.
 
-.. _link: ./rain.nodes.html;
-.. _here: ./usage.html;
+.. _link: https://rain-library.readthedocs.io/en/latest/rain.nodes.html
+.. _here: https://rain-library.readthedocs.io/en/latest/usage.html
 
 
 Full Documentation
