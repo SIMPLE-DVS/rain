@@ -1,4 +1,23 @@
 #!/usr/bin/env python
+
+"""
+ Copyright (C) 2023 Università degli Studi di Camerino and Sigma S.p.A.
+ Authors: Alessandro Antinori, Rosario Capparuccia, Riccardo Coltrinari, Flavio Corradini, Marco Piangerelli, Barbara Re, Marco Scarpetta
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ """
+
 #
 # rain documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  9 13:47:02 2017.
@@ -48,8 +67,8 @@ master_doc = "index"
 
 # General information about the project.
 project = "Rain Library"
-copyright = "2023, Università degli Studi di Camerino and Sigma S.p.A"
-author = "Università degli Studi di Camerino and Sigma S.p.A"
+copyright = "2023, Università degli Studi di Camerino and Sigma S.p.A."
+author = "Università degli Studi di Camerino and Sigma S.p.A."
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -126,7 +145,7 @@ latex_documents = [
         master_doc,
         "rain.tex",
         "Rain Library Documentation",
-        "Università degli Studi di Camerino and Sigma S.p.A",
+        "Università degli Studi di Camerino and Sigma S.p.A.",
         "manual",
     ),
 ]

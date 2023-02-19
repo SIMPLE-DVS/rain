@@ -5,7 +5,7 @@ Credits
 Authors
 ----------------
 
-Università degli Studi di Camerino and Sigma S.p.A
+Università degli Studi di Camerino and Sigma S.p.A.
 
 Contributors
 ------------
