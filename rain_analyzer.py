@@ -224,6 +224,7 @@ def analyze():
 
     simple_nodes_info = get_simple_nodes_info(simple_node_subclasses)
     simple_nodes_info = [node.__dict__ for node in simple_nodes_info]
+    simple_nodes_info = sorted(simple_nodes_info, key=lambda d: d['package'])
 
     info = {"nodes": simple_nodes_info, "dependencies": libs}
 
