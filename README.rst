@@ -139,20 +139,17 @@ Full Documentation
 
 To load all the documentation follow the steps:
 
-From the main directory cd to the 'docs' directory.
+- Download sphinx and the sphinx theme specified in the requirements_dev.txt file or 
+  install all the requirements listed in that file (suggested choice)
+
+- From the main directory cd to the 'docs' directory.
 
 .. code-block:: console
 
     $ cd docs
 
-If you are on Windows then run the 'make.bat' file.
+Then run the 'make.bat singlehtml' file.
 
-Otherwise download sphinx and the sphinx theme specified in the requirements_dev.txt file.
-Then run the command:
-
-.. code-block:: console
-
-    $ sphinx-build . ./_build
 
 The _build directory will contain the html files, open the index.html file to read the full documentation.
 
