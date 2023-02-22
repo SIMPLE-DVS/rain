@@ -148,7 +148,11 @@ To load all the documentation follow the steps:
 
     $ cd docs
 
-Then run the 'make.bat singlehtml' file.
+Then run the 'make.bat singlehtml' file on Windows or run the command:
+
+.. code-block:: console
+
+    $ sphinx-build . ./_build
 
 
 The _build directory will contain the html files, open the index.html file to read the full documentation.
