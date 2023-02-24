@@ -1,6 +1,8 @@
 .. image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain?flag=rain&style=for-the-badge
    :alt: Codecov
    :target: https://app.codecov.io/gh/SIMPLE-DVS/rain
+   
+.. image:: https://img.shields.io/github/license/simple-dvs/rain
 
 ====
 Rain
@@ -11,6 +13,8 @@ Rain
         :target: https://pypi.python.org/pypi/simple_repo
     .. image:: https://img.shields.io/travis/DazeDC/simple_repo.svg
         :target: https://travis-ci.com/DazeDC/simple_repo
+![GitHub](https://img.shields.io/github/license/simple-dvs/rainfall)
+
 
 What is it?
 -----------
