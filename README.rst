@@ -1,4 +1,4 @@
-.. |Codecov| image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain?flag=rain
+.. |Codecov| image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain
    :alt: Codecov
    :target: https://app.codecov.io/gh/SIMPLE-DVS/rain
    
