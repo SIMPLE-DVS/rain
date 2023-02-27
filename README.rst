@@ -16,7 +16,6 @@ Rain
     .. image:: https://img.shields.io/travis/DazeDC/simple_repo.svg
         :target: https://travis-ci.com/DazeDC/simple_repo
 
-
 What is it?
 -----------
 
