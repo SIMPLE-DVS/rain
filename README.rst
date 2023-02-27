@@ -1,6 +1,10 @@
-.. image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain?flag=rain&style=for-the-badge
+.. |Codecov| image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain
    :alt: Codecov
    :target: https://app.codecov.io/gh/SIMPLE-DVS/rain
+   
+.. |License| image:: https://img.shields.io/github/license/simple-dvs/rain
+
+|Codecov| |License|
 
 ====
 Rain
