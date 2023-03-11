@@ -10,8 +10,10 @@ Subpackages
    rain.nodes.custom
    rain.nodes.mongodb
    rain.nodes.pandas
+   rain.nodes.pysad
    rain.nodes.sklearn
    rain.nodes.spark
+   rain.nodes.tpot
 
 Module contents
 ---------------

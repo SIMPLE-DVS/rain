@@ -36,14 +36,6 @@ rain.core.parameter module
    :undoc-members:
    :show-inheritance:
 
-rain.core.simple\_decorators module
------------------------------------
-
-.. automodule:: rain.core.simple_decorators
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

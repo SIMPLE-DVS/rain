@@ -64,7 +64,7 @@ setup(
     packages=find_packages(include=["rain", "rain.*"]),
     test_suite="tests",
     tests_require=test_requirements,
-    url="https://github.com/DazeDC/simple_repo",
+    url="https://github.com/SIMPLE-DVS/rain",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     zip_safe=False,

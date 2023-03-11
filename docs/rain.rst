@@ -13,10 +13,10 @@ Subpackages
 Submodules
 ----------
 
-rain.logger module
-------------------
+rain.loguru\_logger module
+--------------------------
 
-.. automodule:: rain.logger
+.. automodule:: rain.loguru_logger
    :members:
    :undoc-members:
    :show-inheritance:

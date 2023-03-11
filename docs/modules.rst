@@ -1,5 +1,5 @@
-Api Reference
-=============
+rain
+====
 
 .. toctree::
    :maxdepth: 4

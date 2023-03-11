@@ -16,7 +16,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  """
 
-import rain
+from rain import DataFlow, IrisDatasetLoader, PandasRenameColumn
 from rain.nodes.custom import CustomNode, parse_custom_node
 
 
@@ -37,10 +37,10 @@ def function_test(input_dict, output_dict, test, test1, test2=True, test3="ciao"
 
 
 def test_custom_node():
-    df = rain.DataFlow("df1")
+    df = DataFlow("df1")
 
-    iris = rain.IrisDatasetLoader("loadiris")
-    rename = rain.PandasRenameColumn("rcol", ["a", "b", "c", "d"])
+    iris = IrisDatasetLoader("loadiris")
+    rename = PandasRenameColumn("rcol", ["a", "b", "c", "d"])
     cnode = CustomNode("c", use_function=sumelements)
     cnode2 = CustomNode("c2", use_function=divide)
 

@@ -16,7 +16,6 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  """
 
-import importlib
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum
@@ -41,7 +40,7 @@ class LibTag(Enum):
 
     PANDAS = "Pandas"
     SPARK = "PySpark"
-    SKLEARN = "Sklearn"
+    SKLEARN = "Scikit-Learn"
     MONGODB = "PyMongo"
     TPOT = 'TPOT'
     PYSAD = "PySad"

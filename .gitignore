@@ -102,6 +102,7 @@ ENV/
 .mypy_cache/
 
 # IDE settings
+.idea/
 .vscode/
 
 analyzer_output/*

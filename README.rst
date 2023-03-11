@@ -1,7 +1,7 @@
 .. |Codecov| image:: https://img.shields.io/codecov/c/github/SIMPLE-DVS/rain
    :alt: Codecov
    :target: https://app.codecov.io/gh/SIMPLE-DVS/rain
-   
+
 .. |License| image:: https://img.shields.io/github/license/simple-dvs/rain
 
 |Codecov| |License|
@@ -11,10 +11,10 @@ Rain
 ====
 
 .. this is a comment, insert badge here
-    .. image:: https://img.shields.io/pypi/v/simple_repo.svg
-        :target: https://pypi.python.org/pypi/simple_repo
-    .. image:: https://img.shields.io/travis/DazeDC/simple_repo.svg
-        :target: https://travis-ci.com/DazeDC/simple_repo
+    .. image:: https://img.shields.io/pypi/v/rain.svg
+        :target: https://pypi.python.org/pypi/rain
+    .. image:: https://img.shields.io/travis/SIMPLE-DVS/rain.svg
+        :target: https://travis-ci.com/SIMPLE-DVS/rain
 
 What is it?
 -----------
@@ -143,7 +143,7 @@ Full Documentation
 
 To load all the documentation follow the steps:
 
-- Download sphinx and the sphinx theme specified in the requirements_dev.txt file or 
+- Download sphinx and the sphinx theme specified in the requirements_dev.txt file or
   install all the requirements listed in that file (suggested choice)
 
 - From the main directory cd to the 'docs' directory.
