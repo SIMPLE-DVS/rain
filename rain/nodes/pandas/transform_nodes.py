@@ -247,9 +247,9 @@ class PandasDropNan(PandasTransformer):
     ----------
     node_id : str
         Id of the node.
-    axis : {'rows', 'columns'}, default 'rows'
+    axis : {rows, columns}, default rows
         The axis from where to remove the nan values.
-    how : {'any', 'all'}, default 'any'
+    how : {any, all}, default any
         Whether to remove a row or a column which either contains any nan value or
         contains all nan values.
     """

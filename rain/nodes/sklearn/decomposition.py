@@ -50,14 +50,14 @@ class SklearnPCA(SklearnEstimator, TransformerMixin, ScorerMixin):
 
     Parameters
     ----------
-    execute : {'fit', 'score', 'transform'}
+    execute : [fit, score, transform]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     n_components : int
         Number of components to keep.
     whiten : bool
         When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
-    svd_solver : {'auto', 'full', 'arpack', 'randomized'}, default='auto'
+    svd_solver : {auto, full, arpack, randomized}, default=auto
         Svd solver.
     tol : float
         Tolerance for singular values computed by svd_solver == 'arpack'.

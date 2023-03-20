@@ -81,7 +81,7 @@ class SklearnEstimator(SklearnNode):
     ----------
     node_id : str
         Id of the node.
-    execute : {'fit'}
+    execute : [fit]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     """
@@ -241,7 +241,7 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
     ----------
     node_id : str
         Id of the node.
-    execute : {'fit', 'predict', 'score'}
+    execute : [fit, predict, score]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     """
@@ -305,7 +305,7 @@ class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, Transforme
     ----------
     node_id : str
         Id of the node.
-    execute : {'fit', 'predict', 'score', 'transform'}
+    execute : [fit, predict, score, transform]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     """

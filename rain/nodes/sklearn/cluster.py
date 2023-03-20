@@ -55,7 +55,7 @@ class SimpleKMeans(SklearnClusterer):
     ----------
     node_id : str
         Id of the node.
-    execute : {'fit', 'predict', 'score', 'transform'}
+    execute : [fit, predict, score, transform]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     n_clusters : int

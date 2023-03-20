@@ -103,7 +103,7 @@ class TPOTClassificationTrainer(ComputationalNode):
         Random number generator seed for TPOT. Use this parameter to make sure
         that TPOT will give you the same results each time you run it against the
         same data set with that seed.
-    config_dict : {'TPOT light', 'TPOT MDR', 'TPOT sparse', 'TPOT NN'}, default=None
+    config_dict : {TPOT light, TPOT MDR, TPOT sparse, TPOT NN}, default=None
         String 'TPOT light':
             TPOT uses a light version of operator configuration dictionary instead of
             the default one.

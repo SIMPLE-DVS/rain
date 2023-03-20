@@ -51,7 +51,7 @@ class SklearnLinearSVC(SklearnClassifier):
     ----------
     node_id : str
         Id of the node.
-    execute : {'fit', 'predict', 'score'}
+    execute : [fit, predict, score]
         List of strings to specify the methods to execute.
         The allowed strings are those from the _method attribute.
     penalty : str, default='l2'
