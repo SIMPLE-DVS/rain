@@ -30,12 +30,15 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = [
-    "setuptools==57.4.0",
-    "loguru==0.6.0",
-    "networkx==2.7.1",
-    "pandas==1.3.0",
-]
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
+
+with open("requirements_dev.txt") as f:
+    requirements_full = f.read()
+
+extras_require = {
+    "full": requirements_full.splitlines()
+}
 
 test_requirements = [
     "pytest>=3",
@@ -56,6 +59,7 @@ setup(
     ],
     description="SIMPLE Repository is a container for all the nodes used in the SIMPLE Project.",
     install_requires=requirements,
+    extras_require=extras_require,
     license="GNU Affero General Public License v3 or later (AGPLv3+)",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
