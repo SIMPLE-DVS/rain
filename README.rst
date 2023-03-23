@@ -24,7 +24,7 @@ here called Dataflow, in a rapid and easy way following a declarative approach.
 In particular helps in data preparation/engineering where data are processed,
 and in data analysis, consisting in the definition of the most suitable learning algorithm.
 
-RAIN contains a collection of nodes that abstract functions of the main Python's ML
+Rain contains a collection of nodes that abstract functions of the main Python's ML
 libraries as Scikit-learn, Pandas and PySpark. The capability to combine multiple Python libraries
 and the possibility to define more nodes or adding support for other libraries are the main Rain's
 strengths. Currently the library contains several nodes regarding Anomaly Detection strategies.
@@ -62,15 +62,20 @@ To install Rain, run this command in your terminal (preferred way to install the
 
     $ pip install git+https://github.com/SIMPLE-DVS/rain.git
 
+It is also possible to install Rain with all the optional dependencies by running the following command:
+
+.. code-block:: console
+
+    $ pip install "rain[full] @ git+https://github.com/SIMPLE-DVS/rain"
+
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
 
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
-Furthermore the tool comes with a back-end that lever-
-ages the library and exposes its functionalities to a GUI which eases the usage of
-the library itself.
+Furthermore the tool comes with a back-end that leverages the library and exposes its functionalities to a GUI
+which eases the usage of the library itself.
 
 QuickStart
 ----------
