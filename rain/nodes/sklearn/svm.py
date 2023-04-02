@@ -27,14 +27,12 @@ class SklearnLinearSVC(SklearnClassifier):
 
     Input
     -----
-    fit_dataset : pandas.DataFrame
-        The dataset that will be used to perform the fit of the classifier.
+    fitted_model : sklearn.base.BaseEstimator
+        A previously fitted model.
+    dataset : pandas.DataFrame
+        The dataset to be used by the estimator.
     fit_targets : pandas.DataFrame
         The dataset that will be used as targets (labels) to perform the fit of the classifier.
-    predict_dataset : pandas.DataFrame
-        The dataset that will be used to perform the predict of the classifier.
-    score_dataset : pandas.DataFrame
-        The dataset that will be used to perform the scoring.
     score_targets : pandas.DataFrame
         The dataset that will be used as targets (labels) to perform the scoring.
 

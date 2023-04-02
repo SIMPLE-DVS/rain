@@ -26,18 +26,18 @@ from rain.nodes.sklearn.node_structure import (
 )
 
 
-class SklearnPCA(SklearnEstimator, TransformerMixin, ScorerMixin):
+class SklearnPCA(SklearnEstimator, ScorerMixin, TransformerMixin):
     """
     Node representation of a sklearn PCA estimator that uses the 'sklearn.decomposition.PCA'.
 
     Input
     -----
-    fit_dataset : pandas.DataFrame
-        The dataset that will be used to perform the fit of the clusterer.
-    score_dataset : pandas.DataFrame
-        The dataset that will be used to perform the scoring.
-    transform_dataset : pandas.DataFrame
-        The dataset that will be used to perform the transform.
+    fitted_model : sklearn.base.BaseEstimator
+        A previously fitted model.
+    dataset : pandas.DataFrame
+        The dataset to be used by the estimator.
+    score_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the scoring.
 
     Output
     ------

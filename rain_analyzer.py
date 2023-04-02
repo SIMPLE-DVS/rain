@@ -247,7 +247,7 @@ def analyze():
     info = {"nodes": simple_nodes_info, "dependencies": libs}
 
     with open("./analyzer_output/rain_structure.json", "w") as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=2)
 
     return simple_nodes_info
 

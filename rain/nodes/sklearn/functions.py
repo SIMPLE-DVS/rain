@@ -91,7 +91,7 @@ class TrainTestSampleTargetSplit(SklearnFunction):
     -----
     sample_dataset : pandas.DataFrame
         The dataset containing the samples.
-    target_dataset: pandas.DataFrame
+    target_dataset : pandas.DataFrame
         The dataset containing the target labels.
 
     Output

@@ -69,8 +69,10 @@ class SklearnEstimator(SklearnNode):
 
     Input
     -----
-    fit_dataset : pandas.DataFrame
-        The dataset that will be used to perform the fit of the estimator.
+    fitted_model : sklearn.base.BaseEstimator
+        A previously fitted model.
+    dataset : pandas.DataFrame
+        The dataset that will be used to perform the different methods on.
 
     Output
     ------
@@ -86,7 +88,7 @@ class SklearnEstimator(SklearnNode):
         The allowed strings are those from the _method attribute.
     """
 
-    _input_vars = {"fit_dataset": pandas.DataFrame}
+    _input_vars = {"fitted_model": sklearn.base.BaseEstimator, "dataset": pandas.DataFrame}
     _methods = {"fit": False}
     _output_vars = {"fitted_model": sklearn.base.BaseEstimator}
 
@@ -104,7 +106,7 @@ class SklearnEstimator(SklearnNode):
             self._methods[method] = True
 
     def fit(self):
-        self.fitted_model = self._estimator_or_function.fit(self.fit_dataset)
+        self.fitted_model = self._estimator_or_function.fit(self.dataset)
 
     def execute(self):
         if self._estimator_or_function is None:
@@ -114,7 +116,9 @@ class SklearnEstimator(SklearnNode):
                 )
             )
 
-        # se la fit deve essere eseguita, allora sarà sempre eseguita per prima
+        # se la fit deve essere eseguita, allora sarà sempre eseguita per prima.
+        # se la fit deve sovrascrivere il fitted_model, allora rimuovere la
+        # seconda parte dell'if statement ("and self.fitted_model is None")
         if self._methods.get("fit") and self.fitted_model is None:
             self.fit()
 
@@ -136,15 +140,13 @@ class SklearnEstimator(SklearnNode):
 class PredictorMixin:
     """Mixin class to add a prediction functionality to an estimator."""
 
-    _input_vars = {"predict_dataset": pandas.DataFrame}
-
     _output_vars = {"predictions": pandas.DataFrame}
 
     _methods = {"predict": False}
 
     def predict(self):
-        if self.fitted_model is not None and self.predict_dataset is not None:
-            self.predictions = self.fitted_model.predict(self.predict_dataset)
+        if self.fitted_model is not None and self.dataset is not None:
+            self.predictions = self.fitted_model.predict(self.dataset)
 
             if (
                 type(self.predictions) is not pandas.DataFrame
@@ -155,20 +157,13 @@ class PredictorMixin:
 class ScorerMixin:
     """Mixin class to add a scoring functionality to an estimator."""
 
-    _input_vars = {"score_dataset": pandas.DataFrame}
+    _input_vars = {"score_targets": pandas.DataFrame}
 
     _output_vars = {"score_value": float}
 
     _methods = {"score": False}
 
     def score(self):
-        if self.score_dataset is None:
-            raise InputNotFoundException(
-                "The 'score_dataset' input is not set for node {}".format(
-                    self.__class__.__name__
-                )
-            )
-
         if self.fitted_model is not None:
             if self._estimator_type == "classifier":
                 if self.score_targets is None:
@@ -177,39 +172,30 @@ class ScorerMixin:
                             self.__class__.__name__
                         )
                     )
-                self.scores = self.fitted_model.score(
-                    self.score_dataset, self.score_targets
+                self.score_value = self.fitted_model.score(
+                    self.dataset, self.score_targets
                 )
             else:
-                self.scores = self.fitted_model.score(self.score_dataset)
+                self.score_value = self.fitted_model.score(self.dataset)
 
 
 class TransformerMixin:
     """Mixin class to add a transformer functionality to an estimator."""
-
-    _input_vars = {"transform_dataset": pandas.DataFrame}
 
     _output_vars = {"transformed_dataset": pandas.DataFrame}
 
     _methods = {"transform": False}
 
     def transform(self):
-        if self.transform_dataset is None:
-            raise InputNotFoundException(
-                "The 'transform_dataset' input is not set for node {}".format(
-                    self.__class__.__name__
-                )
-            )
-
         if self.fitted_model is not None:
             self.transformed_dataset = self.fitted_model.transform(
-                self.transform_dataset
+                self.dataset
             )
 
             if (
                 type(self.transformed_dataset) is not pandas.DataFrame
             ):  # some estimators returns a numpy ndarray
-                self.transformed_dataset = pandas.DataFrame(self.transformed_dataset)
+                self.transformed_dataset = pandas.DataFrame(self.dataset)
 
 
 class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
@@ -217,14 +203,12 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
 
     Input
     -----
-    fit_dataset : pandas.DataFrame
-        The dataset that will be used to perform the fit of the classifier.
+    fitted_model : sklearn.base.BaseEstimator
+        A previously fitted model.
+    dataset : pandas.DataFrame
+        The dataset to be used by the estimator.
     fit_targets : pandas.DataFrame
         The dataset that will be used as targets (labels) to perform the fit of the classifier.
-    predict_dataset : pandas.DataFrame
-        The dataset that will be used to perform the predict of the classifier.
-    score_dataset : pandas.DataFrame
-        The dataset that will be used to perform the scoring.
     score_targets : pandas.DataFrame
         The dataset that will be used as targets (labels) to perform the scoring.
 
@@ -248,13 +232,13 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
 
     _estimator_type = "classifier"
 
-    _input_vars = {"fit_targets": pandas.DataFrame, "score_targets": pandas.DataFrame}
+    _input_vars = {"fit_targets": pandas.DataFrame}
 
     def __init__(self, node_id: str, execute: list):
         super(SklearnClassifier, self).__init__(node_id, execute)
 
     def fit(self):
-        if self.fit_dataset is None:
+        if self.dataset is None:
             raise InputNotFoundException(
                 "The 'fit_dataset' input is not set for node {}".format(
                     self.__class__.__name__
@@ -268,7 +252,7 @@ class SklearnClassifier(SklearnEstimator, PredictorMixin, ScorerMixin):
             )
 
         self.fitted_model = self._estimator_or_function.fit(
-            self.fit_dataset, self.fit_targets
+            self.dataset, self.fit_targets
         )
 
     @classmethod
@@ -281,14 +265,12 @@ class SklearnClusterer(SklearnEstimator, PredictorMixin, ScorerMixin, Transforme
 
     Input
     -----
-    fit_dataset : pandas.DataFrame
-        The dataset that will be used to perform the fit of the clusterer.
-    predict_dataset : pandas.DataFrame
-        The dataset that will be used to perform the predict of the clusterer.
-    score_dataset : pandas.DataFrame
-        The dataset that will be used to perform the scoring.
-    transform_dataset : pandas.DataFrame
-        The dataset that will be used to perform the transform.
+    fitted_model : sklearn.base.BaseEstimator
+        A previously fitted model.
+    dataset : pandas.DataFrame
+        The dataset to be used by the estimator.
+    score_targets : pandas.DataFrame
+        The dataset that will be used as targets (labels) to perform the scoring.
 
     Output
     ------
