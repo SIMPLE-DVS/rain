@@ -41,14 +41,6 @@ def test_sklearn_execute(class_or_obj):
 
 
 @pytest.mark.parametrize("class_or_obj", sklearn_nodes)
-def test_sklearn_no_dataset_fit(class_or_obj):
-    """Checks whether the sklearn node raises an error when the 'fit' is executed with no input dataset."""
-    with pytest.raises(Exception):
-        node = class_or_obj("node", execute=["fit"])
-        node.execute()
-
-
-@pytest.mark.parametrize("class_or_obj", sklearn_nodes)
 def test_sklearn_no_dataset_but_model_fit(class_or_obj):
     iris = load_iris(as_frame=True).data
     kmeans = ss.SimpleKMeans("km", ["fit"])
@@ -149,3 +141,14 @@ class TestSklearnPCA:
 
         node2.execute()
         assert node2.transformed_dataset is not None
+
+
+@pytest.mark.parametrize("class_or_obj", sklearn_nodes)
+@pytest.mark.parametrize("method", ["fit", "predict", "score", "transform"])
+def test_sklearn_no_dataset_fit_predict_score_transform(class_or_obj, method):
+    """Checks whether the sklearn node raises an error when the 'fit', 'predict',
+    'score' and 'transform' are executed with no input dataset."""
+    if method in class_or_obj._methods:
+        with pytest.raises(Exception):
+            node = class_or_obj("node", execute=[method])
+            node.execute()

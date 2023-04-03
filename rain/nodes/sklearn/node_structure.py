@@ -145,7 +145,14 @@ class PredictorMixin:
     _methods = {"predict": False}
 
     def predict(self):
-        if self.fitted_model is not None and self.dataset is not None:
+        if self.dataset is None:
+            raise InputNotFoundException(
+                "The 'dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
+        if self.fitted_model is not None:
             self.predictions = self.fitted_model.predict(self.dataset)
 
             if (
@@ -164,6 +171,13 @@ class ScorerMixin:
     _methods = {"score": False}
 
     def score(self):
+        if self.dataset is None:
+            raise InputNotFoundException(
+                "The 'dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
         if self.fitted_model is not None:
             if self._estimator_type == "classifier":
                 if self.score_targets is None:
@@ -187,6 +201,13 @@ class TransformerMixin:
     _methods = {"transform": False}
 
     def transform(self):
+        if self.dataset is None:
+            raise InputNotFoundException(
+                "The 'dataset' input is not set for node {}".format(
+                    self.__class__.__name__
+                )
+            )
+
         if self.fitted_model is not None:
             self.transformed_dataset = self.fitted_model.transform(
                 self.dataset
