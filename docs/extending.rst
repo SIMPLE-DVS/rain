@@ -220,8 +220,17 @@ Would you like to implement the functionality of a library that is not yet imple
 - Think of one or more functions of a new Python library that you would like to implement;
 - Create a new package in *rain.nodes* with the name of the library;
 - Create the appropriate modules in that package where you will add your nodes/classes;
+- Update the *rain/nodes/__init__.py* adding the following code::
+
+    try:
+        from rain.nodes.newlibrary import *
+    except ModuleNotFoundError or ImportError:
+        pass
+
 - If necessary, create your hierarchy of nodes to better manage them;
 - Update the enumeration *LibTag* and *TypeTag* in module *rain.core.base.py*;
+- Add the requirements for the new library inside the requirements-modules.txt file following the appropriate syntax
+  and the *LibTag* enumeration entry created before;
 - Start to implement your nodes following the structure and guidelines described above. Pay attention!
-  Don't forget the parent class, inputs/outputs variables, constructor, parameters, tags, execute and documentation).
+  Don't forget the parent class, inputs/outputs variables, constructor, parameters, tags, execute and documentation;
 - Enjoy and use your new library and nodes!

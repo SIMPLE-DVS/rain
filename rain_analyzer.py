@@ -29,6 +29,8 @@ from rain import SimpleNode
 
 from numpydoc.docscrape import ClassDoc
 
+from modules_requirements import get_modules_requirements
+
 
 class SimpleNodeInfo:
     """
@@ -98,7 +100,7 @@ def find_modules(lib_path):
 
 def get_simple_node_subclasses(simple_modules: set):
     """
-    Given a list of python modules it return a set containing all the classes that are SimpleNode with no child.
+    Given a list of python modules it returns a set containing all the classes that are SimpleNode with no child.
     """
     parent_classes = set()
     child_classes = set()
@@ -170,7 +172,7 @@ def get_simple_nodes_info(node_subclasses: set):
 
 def extract_params_info(parameters):
     """
-    Given a list of parameters in numpyDoc format, it return two dict containing the information about the
+    Given a list of parameters in numpyDoc format, it returns two dict containing the information about the
     description and the type of each parameter.
     """
     params_desc = {}
@@ -210,24 +212,6 @@ def get_parameters(cls, params_desc, params_type):
     return parameters
 
 
-def get_libraries(classes):
-    libs = set()
-    for clz in classes:
-        libs.add(clz._get_tags().library.value)
-    return libs
-
-
-def get_dependencies(libs):
-    with open("requirements_dev.txt", "r") as f:
-        lines = f.readlines()
-    libs = [l.lower() for l in libs]
-    dependencies = []
-    for line in lines:
-        if any(lib in line for lib in libs):
-            dependencies.append(line.strip())
-    return dependencies
-
-
 def analyze():
     """
     Analyze the Rain library searching for all the classes that are SimpleNode. Return a list of object
@@ -237,14 +221,11 @@ def analyze():
 
     simple_node_subclasses = get_simple_node_subclasses(modules)
 
-    libs = get_libraries(simple_node_subclasses)
-    libs = get_dependencies(libs)
-
     simple_nodes_info = get_simple_nodes_info(simple_node_subclasses)
     simple_nodes_info = [node.__dict__ for node in simple_nodes_info]
     simple_nodes_info = sorted(simple_nodes_info, key=lambda d: d['package'])
 
-    info = {"nodes": simple_nodes_info, "dependencies": libs}
+    info = {"nodes": simple_nodes_info, "dependencies": get_modules_requirements()}
 
     with open("./analyzer_output/rain_structure.json", "w") as f:
         json.dump(info, f, indent=2)

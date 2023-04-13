@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: 3.9
       - name: Install dependencies
-        run: pip install -r requirements_dev.txt
+        run: pip install -r requirements.txt && pip install -r requirements-test.txt && pip install -r requirements-modules.txt
       - name: Run tests and collect coverage
         run: pytest --cov-report xml --cov=rain tests/
       - name: Upload coverage results to Codecov

@@ -21,6 +21,7 @@
 """The setup script."""
 
 import versioneer
+from modules_requirements import get_modules_requirements
 
 from setuptools import setup, find_packages
 
@@ -33,16 +34,27 @@ with open("HISTORY.rst") as history_file:
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
-with open("requirements_dev.txt") as f:
-    requirements_full = f.read()
+with open("requirements-dev.txt") as f:
+    requirements_dev = f.read().splitlines()
+
+with open("requirements-docs.txt") as f:
+    requirements_docs = f.read().splitlines()
+
+with open("requirements-test.txt") as f:
+    requirements_test = f.read().splitlines()
+
+modules = get_modules_requirements()
 
 extras_require = {
-    "full": requirements_full.splitlines()
+    "dev": requirements_dev,
+    "docs": requirements_docs,
+    "test": requirements_test,
+    "full": requirements_dev + requirements_docs + requirements_test,
 }
 
-test_requirements = [
-    "pytest>=3",
-]
+for module in modules:
+    extras_require[module] = modules[module]
+    extras_require["full"].extend(modules[module])
 
 setup(
     author="Università degli Studi di Camerino and Sigma S.p.A.",
@@ -67,7 +79,7 @@ setup(
     name="rain",
     packages=find_packages(include=["rain", "rain.*"]),
     test_suite="tests",
-    tests_require=test_requirements,
+    tests_require=requirements_test,
     url="https://github.com/SIMPLE-DVS/rain",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
